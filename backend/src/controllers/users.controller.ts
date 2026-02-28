@@ -1,16 +1,9 @@
 import type { Request, Response } from "express";
-import { z } from "zod";
+import { number, z } from "zod";
 import DB from "../db/api.ts";
 import handleError from "../util/handleError.ts";
 import type { User } from "../types/User.ts";
 import type { UserHistoryBody, UserBody } from "../schemas/users.schema.ts";
-
-type UserStarredQuestion = {
-    id: number;
-    question: string;
-    last_attempt_correct: boolean;
-    last_answered_at: string;
-};
 
 const UserParamsSchema = z.object({
     userId: z.coerce.number().min(1),
@@ -26,6 +19,15 @@ const StarredQuestionQuery = z.object({
     limit: z.coerce.number(),
     page: z.coerce.number().min(1),
 });
+
+type UserParams = z.infer<typeof UserParamsSchema>;
+
+type UserStarredQuestion = {
+    id: number;
+    question: string;
+    last_attempt_correct: boolean;
+    last_answered_at: string;
+};
 
 export const createUser = async (req: Request, res: Response) => {
     const { username }: UserBody = req.body;
@@ -160,4 +162,36 @@ export const saveAnswerHistory = async (req: Request, res: Response) => {
     } catch (e) {
         handleError(e, res);
     }
+};
+
+export const getQuestionCount = async (req: Request, res: Response) => {
+    const result = UserParamsSchema.safeParse(req.params);
+
+    if (!result.success) {
+        return res.status(400).json({ reason: "Invaild user ID" });
+    }
+
+    const { userId }: UserParams = result.data;
+
+    try {
+        // CHECK this return as string instead of number
+        const allQuestionCount = await DB().query<{
+            question_count: string;
+        }>("SELECT COUNT(id) AS question_count FROM question");
+        const answeredQuestionCount = await DB().query<{ answered_question_count: string }>(
+            "SELECT COUNT(DISTINCT question_id) AS answered_question_count FROM answer_history WHERE user_id = $1",
+            [userId],
+        );
+        const starredQuestionCount = await DB().query<{ starred_question_count: string }>(
+            "SELECT COUNT(*) AS starred_question_count FROM starred_question WHERE user_id = $1;",
+            [userId],
+        );
+
+        const data = {
+            all: Number(allQuestionCount[0]?.question_count),
+            answered: Number(answeredQuestionCount[0]?.answered_question_count),
+            starred: Number(starredQuestionCount[0]?.starred_question_count),
+        };
+        return res.status(200).json({ data });
+    } catch (e) {}
 };

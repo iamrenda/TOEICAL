@@ -1,6 +1,7 @@
 import express from "express";
 import {
     createUser,
+    getQuestionCount,
     getStarredQuestions,
     getUser,
     saveAnswerHistory,
@@ -19,5 +20,6 @@ router.get("/:userId/starred", getStarredQuestions);
 router.post("/:userId/starred/:questionId", starQuestion);
 router.delete("/:userId/starred/:questionId", unstarQuestion);
 router.post("/:userId/history/:questionId", vaildate(createHistorySchema), saveAnswerHistory);
+router.get("/:userId/count", getQuestionCount);
 
 export default router;
