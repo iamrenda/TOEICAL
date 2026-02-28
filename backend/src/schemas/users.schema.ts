@@ -1,13 +1,19 @@
 import { z } from "zod";
 
-export const createUserSchema = z.object({
+export const createUsernameSchema = z.object({
     username: z.string().min(1),
 });
 
-export const createHistorySchema = z.object({
+export const createUserIdSchema = z.object({
+    userId: z.number().min(1),
+});
+
+export const createUserHistorySchema = z.object({
     wasCorrect: z.boolean(),
 });
 
-export type UserBody = z.infer<typeof createUserSchema>;
+export type UsernameBody = z.infer<typeof createUsernameSchema>;
 
-export type UserHistoryBody = z.infer<typeof createHistorySchema>;
+export type UserHistoryBody = z.infer<typeof createUserHistorySchema>;
+
+export type UserIdBody = z.infer<typeof createUserIdSchema>;
