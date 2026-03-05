@@ -1,12 +1,14 @@
-import "../global.css";
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import React from "react";
 
-const Index = () => {
+const index = () => {
     return (
-        <View className="flex-1 items-center justify-center bg-black">
-            <Text className="text-white text-2xl">It works!</Text>
+        <View>
+            <Text>Hello World</Text>
         </View>
     );
 };
 
-export default Index;
+export default index;
+
+const styles = StyleSheet.create({});
