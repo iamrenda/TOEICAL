@@ -21,25 +21,24 @@ export default {
     yellow500: "#FBBF24",
 
     // Gray
-    gray800: "#000000",
-    gray700: "#222222",
-    gray600: "#3C3C3C",
-    gray500: "#555555",
-    gray400: "#777777",
-    gray300: "#AAAAAA",
-    gray200: "#CCCCCC",
-    gray150: "#D9D9D9",
-    gray100: "#E6E6E6",
-    gray50: "#F2F2F2",
+    // gray800: "#000000",
+    // gray700: "#222222",
+    // gray600: "#3C3C3C",
+    // gray500: "#555555",
+    // gray400: "#777777",
+    // gray300: "#AAAAAA",
+    // gray200: "#CCCCCC",
+    // gray150: "#D9D9D9",
+    // gray100: "#E6E6E6",
+    // gray50: "#F2F2F2",
     gray0: "#FFFFFF",
 
-    // Blue Gray
-    blueGray500: "#64748B",
-    blueGray100: "#F6F6F8",
-
-    background: "#FFFFFF",
-    surface: "#F6F6F8",
+    background: "#F6F6F8",
     textPrimary: "#222222",
     textSecondary: "#555555",
+    textTertiary: "#AAAAAA",
+
     border: "#D9D9D9",
+
+    shadow: "rgba(0, 0, 0, 0.06)",
 };

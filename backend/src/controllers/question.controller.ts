@@ -1,43 +1,111 @@
-import type { Request, Response } from "express";
-import z from "zod";
+import type { Response } from "express";
 import DB from "../db/api.ts";
 import handleError from "../util/handleError.ts";
 import type { Question } from "../types/Question.ts";
-import type { UserIdBody } from "../schemas/users.schema.ts";
+import {
+    HistorySaveSchema,
+    QuestionIdSchema,
+    RandomQuestionSchema,
+    StarredQuestionSchema,
+} from "../schemas/question.schema.ts";
+import type { ValidatedRequest } from "express-zod-safe";
+import type { UserIdSchema } from "../schemas/users.schema.ts";
 
-const RandomQuestionQuerySchema = z.object({
-    isStarred: z.stringbool(),
-    count: z.coerce.number().min(1),
-});
+type QuestionOverview = {
+    id: number;
+    question: string;
+    last_attempt_correct: boolean;
+    last_answered_at: string;
+};
 
-const QuestionParamsSchema = z.object({
-    questionId: z.coerce.number().min(1),
-});
+// CHECK validate sort by and order by format
+const validSortBy = new Set(["id"]);
+const validOrderBy = new Set(["asc", "desc"]);
 
-export const getQuestionById = async (req: Request, res: Response) => {
-    const result = QuestionParamsSchema.safeParse(req.params);
+export const getQuestionOverviews = async (
+    req: ValidatedRequest<{ query: typeof StarredQuestionSchema; params: typeof UserIdSchema }>,
+    res: Response,
+) => {
+    const { userId } = req.params;
+    const { sortBy, limit, page } = req.query;
 
-    if (!result.success) {
-        return res.status(400).json({ reason: "Invaild params" });
+    const sortByArr = sortBy.split(".");
+
+    if (sortByArr.length != 2) {
+        return res.status(400).json({ reason: "Invalid sortBy format." });
     }
 
-    const { questionId } = result.data;
+    const offset = (page - 1) * limit;
 
     try {
-        const data = await DB().query<Question>("SELECT * FROM question WHERE id = $1", [questionId]);
+        const data = await DB().query<QuestionOverview>(
+            `
+           SELECT 
+                q.id,
+                q.question,
+                CASE WHEN sq.question_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_starred,
+                la.was_correct AS was_last_attempt_correct,
+                la.answered_at AS last_answered_at
+            FROM question q
+            LEFT JOIN starred_question AS sq
+                ON sq.question_id = q.id
+                AND sq.user_id = $1
+            LEFT JOIN LATERAL (
+                SELECT ah.was_correct, ah.answered_at
+                FROM answer_history ah
+                WHERE ah.user_id = $1
+                AND ah.question_id = q.id
+                ORDER BY ah.answered_at DESC
+                LIMIT 1
+            ) la ON TRUE
+            ORDER BY q.${sortByArr[0]} ${sortByArr[1]}	
+            LIMIT $2 OFFSET $3;
+        `,
+            [userId, limit, offset],
+        );
 
-        if (data.length === 0) {
-            return res.status(404).json({ reason: `Question ID: ${questionId} not found` });
-        }
-
-        return res.status(200).json({ data: data[0] });
+        return res.status(200).json({ data });
     } catch (e) {
         handleError(e, res);
     }
 };
 
-export const getQuestionCount = async (req: Request, res: Response) => {
-    const { userId }: UserIdBody = req.body;
+export const getRandomQuestions = async (
+    req: ValidatedRequest<{ query: typeof RandomQuestionSchema; body: typeof UserIdSchema }>,
+    res: Response,
+) => {
+    const { userId } = req.body;
+    const { isStarred, count } = req.query;
+
+    try {
+        const query = isStarred
+            ? `
+                SELECT Q.id, Q.question, Q.correct_option_id, Q.translated_question, Q.type_description
+                FROM starred_question AS SQ
+                INNER JOIN question AS Q
+                ON SQ.question_id = Q.id
+                WHERE user_id = $1
+                ORDER BY RANDOM()
+                LIMIT $2;
+            `
+            : `
+                SELECT * 
+                FROM question 
+                ORDER BY RANDOM() 
+                LIMIT $1;
+            `;
+
+        const queryParameters = isStarred ? [userId, count] : [count];
+        const data = await DB().query<Question>(query, queryParameters);
+
+        return res.status(200).json({ data });
+    } catch (e) {
+        handleError(e, res);
+    }
+};
+
+export const getQuestionCount = async (req: ValidatedRequest<{ body: typeof UserIdSchema }>, res: Response) => {
+    const { userId } = req.body;
 
     try {
         const allQuestionCount = await DB().query<{
@@ -63,38 +131,42 @@ export const getQuestionCount = async (req: Request, res: Response) => {
     }
 };
 
-export const getRandomQuestions = async (req: Request, res: Response) => {
-    const result = RandomQuestionQuerySchema.safeParse(req.query);
-
-    if (!result.success) {
-        return res.status(400).json({ reason: "Invaild query" });
-    }
-
-    const { isStarred, count } = result.data;
-    const { userId }: UserIdBody = req.body;
+export const saveAnswerHistory = async (
+    req: ValidatedRequest<{
+        body: typeof UserIdSchema & typeof HistorySaveSchema;
+        params: typeof QuestionIdSchema;
+    }>,
+    res: Response,
+) => {
+    const { questionId } = req.params;
+    const { userId, wasCorrect } = req.body;
 
     try {
-        const query = isStarred
-            ? `
-                SELECT Q.id, Q.question, Q.correct_option_id, Q.translated_question, Q.type_description
-                FROM starred_question AS SQ
-                INNER JOIN question AS Q
-                ON SQ.question_id = Q.id
-                WHERE user_id = $1
-                ORDER BY RANDOM()
-                LIMIT $2;
-            `
-            : `
-                SELECT * 
-                FROM question 
-                ORDER BY RANDOM() 
-                LIMIT $1;
-            `;
+        await DB().query("INSERT INTO answer_history (user_id, question_id, was_correct) VALUES ($1, $2, $3);", [
+            userId,
+            questionId,
+            wasCorrect,
+        ]);
+        return res.sendStatus(201);
+    } catch (e) {
+        handleError(e, res);
+    }
+};
 
-        const queryParameters = isStarred ? [userId, count] : [count];
-        const data = await DB().query<Question>(query, queryParameters);
+export const getQuestionById = async (
+    req: ValidatedRequest<{ body: typeof UserIdSchema; params: typeof QuestionIdSchema }>,
+    res: Response,
+) => {
+    const { questionId } = req.params;
 
-        return res.status(200).json({ data });
+    try {
+        const data = await DB().query<Question>("SELECT * FROM question WHERE id = $1", [questionId]);
+
+        if (data.length === 0) {
+            return res.status(404).json({ reason: `Question ID: ${questionId} not found` });
+        }
+
+        return res.status(200).json({ data: data[0] });
     } catch (e) {
         handleError(e, res);
     }

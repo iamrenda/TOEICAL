@@ -23,6 +23,9 @@ const HomeLayout = () => {
                         color: Colors.primary600,
                         fontWeight: "800",
                     },
+                    headerSearchBarOptions: {
+                        placeholder: "IDまたは内容で検索",
+                    },
                 }}
             />
         </Stack>
