@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { z } from "zod";
-import DB from "../db/api.ts";
-import handleError from "../util/handleError.ts";
+import DB from "../../../db/api.ts";
+import handleError from "../../../util/handleError.ts";
 
 const QuestionParamsSchema = z.object({
     questionId: z.coerce.number().min(1),

@@ -22,6 +22,8 @@ const handleError = (e: Error | unknown, res: Response) => {
         console.log("Database error: " + e);
 
         const pgErr = e as PostgresError;
+        console.log(pgErr.code);
+
         const errorInfo = errorMapping[pgErr.code];
 
         if (errorInfo) {
