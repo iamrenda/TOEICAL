@@ -1,9 +1,16 @@
 import { z } from "zod";
 
-export const UserIdSchema = z.object({
-    userId: z.coerce.number().min(1),
+export const UserSigninSchema = z.object({
+    username: z.string(),
+    password: z.string(),
+    email: z.email(),
 });
 
-export const UsernameSchema = z.object({
-    username: z.string().min(1),
+export const UserLoginSchema = z.object({
+    email: z.email(),
+    password: z.string(),
+});
+
+export const UserTokenSchema = z.object({
+    token: z.string(),
 });

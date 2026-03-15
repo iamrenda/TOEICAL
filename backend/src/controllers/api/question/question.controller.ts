@@ -1,15 +1,15 @@
 import type { Response } from "express";
-import DB from "../db/api.ts";
-import handleError from "../util/handleError.ts";
-import type { Question } from "../types/Question.ts";
+import DB from "../../../db/api.ts";
+import handleError from "../../../util/handleError.ts";
+import type { Question } from "../../../types/Question.ts";
 import {
     HistorySaveSchema,
     QuestionIdSchema,
     RandomQuestionSchema,
     StarredQuestionSchema,
-} from "../schemas/question.schema.ts";
+} from "../../../schemas/question.schema.ts";
 import type { ValidatedRequest } from "express-zod-safe";
-import type { UserIdSchema } from "../schemas/users.schema.ts";
+import type { UserIdSchema } from "../../../schemas/users.schema.ts";
 
 type QuestionOverview = {
     id: number;
@@ -154,13 +154,29 @@ export const saveAnswerHistory = async (
 };
 
 export const getQuestionById = async (
-    req: ValidatedRequest<{ body: typeof UserIdSchema; params: typeof QuestionIdSchema }>,
+    req: ValidatedRequest<{ params: typeof QuestionIdSchema & typeof UserIdSchema }>,
     res: Response,
 ) => {
-    const { questionId } = req.params;
+    const { questionId, userId } = req.params;
 
     try {
-        const data = await DB().query<Question>("SELECT * FROM question WHERE id = $1", [questionId]);
+        const data = await DB().query<Question>(
+            `
+            SELECT
+                q.*,
+                EXISTS(SELECT 1 FROM starred_question WHERE question_id = $1 AND user_id = $2) AS is_starred,
+                json_agg(DISTINCT jsonb_build_object('option_id', o.id, 'option', o.option, 'translated_option', o.translated_option)) AS options,
+                json_agg(DISTINCT dd.description) AS detailed_descriptions,
+                json_agg(DISTINCT tv.translated_options_text) AS translated_vocabs
+            FROM question AS q
+            LEFT JOIN option AS o ON q.id = o.question_id
+            LEFT JOIN detailed_description AS dd ON q.id = dd.question_id
+            LEFT JOIN translated_vocab AS tv ON q.id = tv.question_id
+            WHERE q.id = $3
+            GROUP BY q.id;
+            `,
+            [questionId, userId, questionId],
+        );
 
         if (data.length === 0) {
             return res.status(404).json({ reason: `Question ID: ${questionId} not found` });

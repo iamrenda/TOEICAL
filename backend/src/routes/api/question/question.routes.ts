@@ -5,7 +5,7 @@ import {
     getQuestionOverviews,
     getRandomQuestions,
     saveAnswerHistory,
-} from "../../../controllers/question.controller.ts";
+} from "../../../controllers/api/question/question.controller.ts";
 import {
     HistorySaveSchema,
     QuestionIdSchema,
@@ -14,7 +14,7 @@ import {
 } from "../../../schemas/question.schema.ts";
 import validate from "express-zod-safe";
 
-const router = express.Router();
+const router = express.Router({mergeParams: true});
 
 router.get("/overview", validate({ query: StarredQuestionSchema }), getQuestionOverviews);
 router.get("/random", validate({ query: RandomQuestionSchema }), getRandomQuestions);

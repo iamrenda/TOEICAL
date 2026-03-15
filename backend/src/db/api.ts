@@ -26,15 +26,14 @@ const DB = () => {
             const db = await getPool();
 
             if (db instanceof Error) {
-                throw new Error("Unable to connect to the database");
+                throw db;
             }
 
             try {
                 const result = await db.query(sql, params);
                 return result.rows as T[];
             } catch (e) {
-                console.error(e);
-                throw new Error("Query execution failed");
+                throw e;
             } finally {
                 db.release();
             }

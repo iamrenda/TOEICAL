@@ -1,7 +1,7 @@
 import express from "express";
-import { starQuestion, unstarQuestion } from "../../../controllers/questionStarred.controller.ts";
+import { starQuestion, unstarQuestion } from "../../../controllers/api/question/questionStarred.controller.ts";
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 router.post("/:questionId", starQuestion);
 router.delete("/:questionId", unstarQuestion);
