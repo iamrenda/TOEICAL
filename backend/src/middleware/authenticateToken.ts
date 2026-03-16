@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import type { UserTokenPayload, User } from "../types/User.ts";
+import type { UserTokenPayload } from "../types/User.ts";
 
 dotenv.config();
 
@@ -9,7 +9,7 @@ const verifyToken = (accessToken: string): UserTokenPayload => {
     try {
         return jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET!) as UserTokenPayload;
     } catch (e) {
-        throw new Error("invalid token");
+        throw new Error();
     }
 };
 

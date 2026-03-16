@@ -1,7 +1,7 @@
 import type { Response } from "express";
 import type { ValidatedRequest } from "express-zod-safe";
 import type { UserLoginSchema, UserSigninSchema, UserTokenSchema } from "../../schemas/users.schema.ts";
-import type { UserTokenPayload, User } from "../../types/User.ts";
+import type { UserTokenPayload, UserEntity } from "../../types/User.ts";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -12,12 +12,14 @@ dotenv.config();
 
 const refreshTokens: string[] = [];
 
-const generateAccessToken = (user: User) => {
-    return jwt.sign({ username: user.username }, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: "30m" });
+const generateAccessToken = (user: UserTokenPayload) => {
+    return jwt.sign({ id: user.id, username: user.username, email: user.email }, process.env.ACCESS_TOKEN_SECRET!, {
+        expiresIn: "30m",
+    });
 };
 
-const generateRefreshToken = (user: User) => {
-    return jwt.sign({ username: user.username }, process.env.REFRESH_TOKEN_SECRET!);
+const generateRefreshToken = (user: UserEntity) => {
+    return jwt.sign({ id: user.id, username: user.username, email: user.email }, process.env.REFRESH_TOKEN_SECRET!);
 };
 
 const verifyToken = (refreshToken: string): UserTokenPayload => {
@@ -48,7 +50,7 @@ export const userSignin = async (req: ValidatedRequest<{ body: typeof UserSignin
 
 export const userLogin = async (req: ValidatedRequest<{ body: typeof UserLoginSchema }>, res: Response) => {
     try {
-        const [user] = await DB().query<User>("SELECT * FROM users WHERE email = $1;", [req.body.email]);
+        const [user] = await DB().query<UserEntity>("SELECT * FROM users WHERE email = $1;", [req.body.email]);
 
         if (!user) {
             return res.status(400).json({ reason: "User not found." });

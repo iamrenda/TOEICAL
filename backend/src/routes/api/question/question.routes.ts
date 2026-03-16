@@ -14,7 +14,7 @@ import {
 } from "../../../schemas/question.schema.ts";
 import validate from "express-zod-safe";
 
-const router = express.Router({mergeParams: true});
+const router = express.Router();
 
 router.get("/overview", validate({ query: StarredQuestionSchema }), getQuestionOverviews);
 router.get("/random", validate({ query: RandomQuestionSchema }), getRandomQuestions);

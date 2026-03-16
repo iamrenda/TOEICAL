@@ -2,25 +2,17 @@ import type { Request, Response } from "express";
 import { z } from "zod";
 import DB from "../../../db/api.ts";
 import handleError from "../../../util/handleError.ts";
+import type { ValidatedRequest } from "express-zod-safe";
+import type { QuestionIdSchema } from "../../../schemas/question.schema.ts";
 
-const QuestionParamsSchema = z.object({
-    questionId: z.coerce.number().min(1),
-});
-
-export const starQuestion = async (req: Request, res: Response) => {
-    const result = QuestionParamsSchema.safeParse(req.params);
-
-    if (!result.success) {
-        return res.status(400).json({ reason: "Invaild question ID" });
-    }
-
-    const { questionId } = result.data;
-    const { userId } = req.body;
+export const starQuestion = async (req: ValidatedRequest<{ params: typeof QuestionIdSchema }>, res: Response) => {
+    const { questionId } = req.params;
+    const { user } = req;
 
     try {
         await DB().query(
             "INSERT INTO starred_question (user_id, question_id) VALUES ($1, $2) ON CONFLICT (user_id, question_id) DO NOTHING;",
-            [userId, questionId],
+            [user?.id, questionId],
         );
         return res.sendStatus(201);
     } catch (e) {
@@ -28,18 +20,15 @@ export const starQuestion = async (req: Request, res: Response) => {
     }
 };
 
-export const unstarQuestion = async (req: Request, res: Response) => {
-    const result = QuestionParamsSchema.safeParse(req.params);
-
-    if (!result.success) {
-        return res.status(400).json({ reason: "Invaild question ID" });
-    }
-
-    const { questionId } = result.data;
-    const { userId } = req.body;
+export const unstarQuestion = async (req: ValidatedRequest<{ params: typeof QuestionIdSchema }>, res: Response) => {
+    const { questionId } = req.params;
+    const { user } = req;
 
     try {
-        await DB().query("DELETE FROM starred_question WHERE user_id = $1 AND question_id = $2;", [userId, questionId]);
+        await DB().query("DELETE FROM starred_question WHERE user_id = $1 AND question_id = $2;", [
+            user?.id,
+            questionId,
+        ]);
         return res.sendStatus(200);
     } catch (e) {
         handleError(e, res);

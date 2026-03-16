@@ -7,7 +7,7 @@ import {
     QuestionIdSchema,
     RandomQuestionSchema,
     StarredQuestionSchema,
-} from "../schemas/question.schema.ts";
+} from "../../../schemas/question.schema.ts";
 import type { ValidatedRequest } from "express-zod-safe";
 
 type QuestionOverview = {
