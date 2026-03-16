@@ -26,7 +26,7 @@ export const getQuestionOverviews = async (
     res: Response,
 ) => {
     const { user } = req;
-    const { sortBy, limit, page } = req.query;
+    const { sortBy, limit, page, starred } = req.query;
 
     const sortByArr = sortBy.split(".");
 
@@ -36,32 +36,54 @@ export const getQuestionOverviews = async (
 
     const offset = (page - 1) * limit;
 
+    const query = starred
+        ? `
+    SELECT
+        q.id,
+        q.question,
+        TRUE AS is_starred,
+        la.was_correct AS was_last_attempt_correct,
+        la.answered_at AS last_answered_at
+    FROM starred_question sq
+    JOIN question q
+        ON q.id = sq.question_id
+        AND sq.user_id = $1
+    LEFT JOIN LATERAL (
+        SELECT ah.was_correct, ah.answered_at
+        FROM answer_history ah
+        WHERE ah.user_id = $1
+        AND ah.question_id = q.id
+        ORDER BY ah.answered_at DESC
+        LIMIT 1
+    ) la ON TRUE
+    ORDER BY q.${sortByArr[0]} ${sortByArr[1]}
+    LIMIT $2 OFFSET $3;
+    `
+        : `
+    SELECT 
+        q.id,
+        q.question,
+        CASE WHEN sq.question_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_starred,
+        la.was_correct AS was_last_attempt_correct,
+        la.answered_at AS last_answered_at
+    FROM question q
+    LEFT JOIN starred_question AS sq
+        ON sq.question_id = q.id
+        AND sq.user_id = $1
+    LEFT JOIN LATERAL (
+        SELECT ah.was_correct, ah.answered_at
+        FROM answer_history ah
+        WHERE ah.user_id = $1
+        AND ah.question_id = q.id
+        ORDER BY ah.answered_at DESC
+        LIMIT 1
+    ) la ON TRUE
+    ORDER BY q.${sortByArr[0]} ${sortByArr[1]}	
+    LIMIT $2 OFFSET $3;
+    `;
+
     try {
-        const data = await DB().query<QuestionOverview>(
-            `
-           SELECT 
-                q.id,
-                q.question,
-                CASE WHEN sq.question_id IS NOT NULL THEN TRUE ELSE FALSE END AS is_starred,
-                la.was_correct AS was_last_attempt_correct,
-                la.answered_at AS last_answered_at
-            FROM question q
-            LEFT JOIN starred_question AS sq
-                ON sq.question_id = q.id
-                AND sq.user_id = $1
-            LEFT JOIN LATERAL (
-                SELECT ah.was_correct, ah.answered_at
-                FROM answer_history ah
-                WHERE ah.user_id = $1
-                AND ah.question_id = q.id
-                ORDER BY ah.answered_at DESC
-                LIMIT 1
-            ) la ON TRUE
-            ORDER BY q.${sortByArr[0]} ${sortByArr[1]}	
-            LIMIT $2 OFFSET $3;
-        `,
-            [user?.id, limit, offset],
-        );
+        const data = await DB().query<QuestionOverview>(query, [user?.id, limit, offset]);
 
         return res.status(200).json({ data });
     } catch (e) {
