@@ -1,8 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import Colors from "@/constants/Colors";
-import GamemodeList from "@/components/gamemodes/gamemodeList";
-import StatusList from "@/components/status/statusList";
+import GamemodeList from "@/components/gamemodeList";
+import StatusList from "@/components/statusList";
 
 const Home = () => {
     return (

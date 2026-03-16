@@ -25,6 +25,17 @@ const HomeLayout = () => {
                     },
                 }}
             />
+            <Stack.Screen
+                name="[questionId]"
+                options={{
+                    title: "TOEICAL",
+                    headerTitleStyle: {
+                        color: Colors.primary600,
+                        fontWeight: "800",
+                    },
+                    headerBackTitle: "戻る",
+                }}
+            />
         </Stack>
     );
 };

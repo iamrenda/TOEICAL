@@ -1,14 +1,34 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
+import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
 import Colors from "@/constants/Colors";
-import { FontAwesome6 } from "@expo/vector-icons";
-import { Status } from "@/components/status/status";
 
-interface Props {
-    status: Status;
+interface Status {
+    color: string;
+    icon: string;
+    title: string;
+    subTitle: string;
+    status: string;
 }
 
-const StatusItem = ({ status }: Props) => {
+const statuses: Status[] = [
+    {
+        color: "#F97316",
+        icon: "fire-flame-curved",
+        title: "継続日数",
+        status: "15日",
+        subTitle: "この調子！",
+    },
+    {
+        color: "#3B82F6",
+        icon: "snowman",
+        title: "XP",
+        status: "12,450",
+        subTitle: "昨日 +150",
+    },
+];
+
+const StatusItem = ({ status }: { status: Status }) => {
     return (
         <View style={styles.container}>
             <View style={styles.titleContainer}>
@@ -21,9 +41,25 @@ const StatusItem = ({ status }: Props) => {
     );
 };
 
-export default StatusItem;
+const StatusList = () => {
+    return (
+        <View style={styles.statusContainer}>
+            {statuses.map((status, i) => (
+                <StatusItem status={status} key={i} />
+            ))}
+        </View>
+    );
+};
+
+export default StatusList;
 
 const styles = StyleSheet.create({
+    statusContainer: {
+        flexDirection: "row",
+        marginBottom: 32,
+        gap: 12,
+    },
+
     container: {
         flex: 1,
         borderWidth: 1,

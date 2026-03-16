@@ -9,3 +9,11 @@ export interface Question {
     translated_option: string[];
     translated_vocab: string[];
 }
+
+export interface Overview {
+    id: number;
+    question: string;
+    is_starred: boolean;
+    was_last_attempt_correct: boolean | null;
+    last_answered_at: string | null;
+}

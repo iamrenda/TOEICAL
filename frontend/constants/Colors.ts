@@ -20,23 +20,26 @@ export default {
     // Yellow
     yellow500: "#FBBF24",
 
+    // Green
+    green600: "#26BA52",
+
     // Gray
-    // gray800: "#000000",
-    // gray700: "#222222",
-    // gray600: "#3C3C3C",
-    // gray500: "#555555",
-    // gray400: "#777777",
-    // gray300: "#AAAAAA",
-    // gray200: "#CCCCCC",
-    // gray150: "#D9D9D9",
-    // gray100: "#E6E6E6",
-    // gray50: "#F2F2F2",
+    gray800: "#000000",
+    gray700: "#222222",
+    gray600: "#3C3C3C",
+    gray500: "#555555",
+    gray400: "#777777",
+    gray300: "#AAAAAA",
+    gray200: "#CCCCCC",
+    gray150: "#D9D9D9",
+    gray100: "#E6E6E6",
+    gray50: "#F2F2F2",
     gray0: "#FFFFFF",
 
     background: "#F6F6F8",
     textPrimary: "#222222",
     textSecondary: "#555555",
-    textTertiary: "#AAAAAA",
+    textTertiary: "#777777",
 
     border: "#D9D9D9",
 
