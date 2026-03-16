@@ -1,4 +1,4 @@
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import DB from "../../../db/api.ts";
 import handleError from "../../../util/handleError.ts";
 import type { Question } from "../../../types/Question.ts";
@@ -7,9 +7,8 @@ import {
     QuestionIdSchema,
     RandomQuestionSchema,
     StarredQuestionSchema,
-} from "../../../schemas/question.schema.ts";
+} from "../schemas/question.schema.ts";
 import type { ValidatedRequest } from "express-zod-safe";
-import type { UserIdSchema } from "../../../schemas/users.schema.ts";
 
 type QuestionOverview = {
     id: number;
@@ -23,10 +22,10 @@ const validSortBy = new Set(["id"]);
 const validOrderBy = new Set(["asc", "desc"]);
 
 export const getQuestionOverviews = async (
-    req: ValidatedRequest<{ query: typeof StarredQuestionSchema; params: typeof UserIdSchema }>,
+    req: ValidatedRequest<{ query: typeof StarredQuestionSchema }>,
     res: Response,
 ) => {
-    const { userId } = req.params;
+    const { user } = req;
     const { sortBy, limit, page } = req.query;
 
     const sortByArr = sortBy.split(".");
@@ -61,7 +60,7 @@ export const getQuestionOverviews = async (
             ORDER BY q.${sortByArr[0]} ${sortByArr[1]}	
             LIMIT $2 OFFSET $3;
         `,
-            [userId, limit, offset],
+            [user?.id, limit, offset],
         );
 
         return res.status(200).json({ data });
@@ -71,31 +70,70 @@ export const getQuestionOverviews = async (
 };
 
 export const getRandomQuestions = async (
-    req: ValidatedRequest<{ query: typeof RandomQuestionSchema; body: typeof UserIdSchema }>,
+    req: ValidatedRequest<{ query: typeof RandomQuestionSchema }>,
     res: Response,
 ) => {
-    const { userId } = req.body;
+    const { user } = req;
     const { isStarred, count } = req.query;
 
     try {
         const query = isStarred
             ? `
-                SELECT Q.id, Q.question, Q.correct_option_id, Q.translated_question, Q.type_description
-                FROM starred_question AS SQ
-                INNER JOIN question AS Q
-                ON SQ.question_id = Q.id
-                WHERE user_id = $1
-                ORDER BY RANDOM()
-                LIMIT $2;
+                SELECT
+                    q.*,
+                    TRUE AS is_starred,
+                    json_agg(DISTINCT jsonb_build_object(
+                        'option_id', o.id,
+                        'option', o.option,
+                        'translated_option', o.translated_option
+                    )) AS options,
+                    json_agg(DISTINCT dd.description) AS detailed_descriptions,
+                    json_agg(DISTINCT tv.translated_options_text) AS translated_vocabs
+                FROM question AS q
+                JOIN starred_question sq ON sq.question_id = q.id
+                    AND sq.user_id = $1
+                LEFT JOIN option AS o ON q.id = o.question_id
+                LEFT JOIN detailed_description AS dd ON q.id = dd.question_id
+                LEFT JOIN translated_vocab AS tv ON q.id = tv.question_id
+                WHERE q.id IN (
+                    SELECT question_id
+                    FROM starred_question
+                    WHERE user_id = $1
+                    ORDER BY RANDOM()
+                    LIMIT $2
+                )
+                GROUP BY q.id;
             `
             : `
-                SELECT * 
-                FROM question 
-                ORDER BY RANDOM() 
-                LIMIT $1;
+                SELECT
+                    q.*,
+                    EXISTS (
+                        SELECT 1
+                        FROM starred_question sq
+                        WHERE sq.question_id = q.id
+                        AND sq.user_id = $1
+                    ) AS is_starred,
+                    json_agg(DISTINCT jsonb_build_object(
+                        'option_id', o.id,
+                        'option', o.option,
+                        'translated_option', o.translated_option
+                    )) AS options,
+                    json_agg(DISTINCT dd.description) AS detailed_descriptions,
+                    json_agg(DISTINCT tv.translated_options_text) AS translated_vocabs
+                FROM question AS q
+                LEFT JOIN option AS o ON q.id = o.question_id
+                LEFT JOIN detailed_description AS dd ON q.id = dd.question_id
+                LEFT JOIN translated_vocab AS tv ON q.id = tv.question_id
+                WHERE q.id IN (
+                    SELECT id
+                    FROM question
+                    ORDER BY RANDOM()
+                    LIMIT $2
+                )
+                GROUP BY q.id;
             `;
 
-        const queryParameters = isStarred ? [userId, count] : [count];
+        const queryParameters = [user?.id, count];
         const data = await DB().query<Question>(query, queryParameters);
 
         return res.status(200).json({ data });
@@ -104,8 +142,8 @@ export const getRandomQuestions = async (
     }
 };
 
-export const getQuestionCount = async (req: ValidatedRequest<{ body: typeof UserIdSchema }>, res: Response) => {
-    const { userId } = req.body;
+export const getQuestionCount = async (req: Request, res: Response) => {
+    const { user } = req;
 
     try {
         const allQuestionCount = await DB().query<{
@@ -113,17 +151,37 @@ export const getQuestionCount = async (req: ValidatedRequest<{ body: typeof User
         }>("SELECT COUNT(id) AS question_count FROM question");
         const answeredQuestionCount = await DB().query<{ answered_question_count: string }>(
             "SELECT COUNT(DISTINCT question_id) AS answered_question_count FROM answer_history WHERE user_id = $1",
-            [userId],
+            [user?.id],
+        );
+        const lastWrongAttemptCount = await DB().query<{ wrong_last_attempt_count: string }>(
+            `
+            SELECT COUNT(*) AS wrong_last_attempt_count
+            FROM (
+                SELECT 
+                    question_id,
+                    was_correct,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY question_id 
+                        ORDER BY answered_at DESC
+                    ) AS rn
+                FROM answer_history
+                WHERE user_id = $1
+            ) t
+            WHERE rn = 1
+                AND was_correct = false;
+            `,
+            [user?.id],
         );
         const starredQuestionCount = await DB().query<{ starred_question_count: string }>(
             "SELECT COUNT(*) AS starred_question_count FROM starred_question WHERE user_id = $1;",
-            [userId],
+            [user?.id],
         );
 
         const data = {
             all: Number(allQuestionCount[0]?.question_count),
             answered: Number(answeredQuestionCount[0]?.answered_question_count),
             starred: Number(starredQuestionCount[0]?.starred_question_count),
+            last_answered_wrong: Number(lastWrongAttemptCount[0]?.wrong_last_attempt_count),
         };
         return res.status(200).json({ data });
     } catch (e) {
@@ -133,17 +191,18 @@ export const getQuestionCount = async (req: ValidatedRequest<{ body: typeof User
 
 export const saveAnswerHistory = async (
     req: ValidatedRequest<{
-        body: typeof UserIdSchema & typeof HistorySaveSchema;
+        body: typeof HistorySaveSchema;
         params: typeof QuestionIdSchema;
     }>,
     res: Response,
 ) => {
+    const { user } = req;
     const { questionId } = req.params;
-    const { userId, wasCorrect } = req.body;
+    const { wasCorrect } = req.body;
 
     try {
         await DB().query("INSERT INTO answer_history (user_id, question_id, was_correct) VALUES ($1, $2, $3);", [
-            userId,
+            user?.id,
             questionId,
             wasCorrect,
         ]);
@@ -153,11 +212,9 @@ export const saveAnswerHistory = async (
     }
 };
 
-export const getQuestionById = async (
-    req: ValidatedRequest<{ params: typeof QuestionIdSchema & typeof UserIdSchema }>,
-    res: Response,
-) => {
-    const { questionId, userId } = req.params;
+export const getQuestionById = async (req: ValidatedRequest<{ params: typeof QuestionIdSchema }>, res: Response) => {
+    const { user } = req;
+    const { questionId } = req.params;
 
     try {
         const data = await DB().query<Question>(
@@ -175,7 +232,7 @@ export const getQuestionById = async (
             WHERE q.id = $3
             GROUP BY q.id;
             `,
-            [questionId, userId, questionId],
+            [questionId, user?.id, questionId],
         );
 
         if (data.length === 0) {

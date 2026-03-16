@@ -1,6 +1,6 @@
 import type { JwtPayload } from "jsonwebtoken";
 
-export interface User {
+export interface UserEntity {
     id: number;
     username: string;
     email: string;
@@ -8,4 +8,4 @@ export interface User {
     created_at: string;
 }
 
-export type UserTokenPayload = User & JwtPayload;
+export type UserTokenPayload = Pick<UserEntity, "id" | "username" | "email"> & JwtPayload;
