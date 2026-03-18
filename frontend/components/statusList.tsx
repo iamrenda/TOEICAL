@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
-import Colors from "@/constants/Colors";
+import Variables from "@/constants/Variables";
 
 interface Status {
     color: string;
@@ -63,12 +63,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         borderWidth: 1,
-        borderColor: Colors.border,
-        borderRadius: 10,
+        borderColor: Variables.border,
+        borderRadius: Variables.borderRadiusPrimary,
         paddingHorizontal: 16,
         paddingVertical: 16,
-        backgroundColor: Colors.gray0,
-        boxShadow: `0px 1px 2px ${Colors.shadow}`,
+        backgroundColor: Variables.white,
+        boxShadow: `0px 1px 2px ${Variables.shadow}`,
     },
     titleContainer: {
         flexDirection: "row",
@@ -77,13 +77,13 @@ const styles = StyleSheet.create({
         paddingBottom: 8,
     },
     title: {
-        color: Colors.textSecondary,
+        color: Variables.textSecondary,
         fontSize: 14,
     },
     status: {
         fontSize: 32,
         fontWeight: "600",
-        color: Colors.textPrimary,
+        color: Variables.textPrimary,
         paddingBottom: 4,
     },
     subtitle: {

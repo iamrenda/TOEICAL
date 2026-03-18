@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import Colors from "@/constants/Colors";
+import Variables from "@/constants/Variables";
 import GamemodeList from "@/components/gamemodeList";
 import StatusList from "@/components/statusList";
 
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     conatiner: {
         paddingVertical: 36,
         paddingHorizontal: 24,
-        backgroundColor: Colors.background,
+        backgroundColor: Variables.background,
         height: "100%",
     },
 
@@ -32,13 +32,13 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     greetTitle: {
-        color: Colors.textPrimary,
+        color: Variables.textPrimary,
         fontWeight: "600",
         fontSize: 28,
         paddingBottom: 2,
     },
     greetSubtitle: {
-        color: Colors.textSecondary,
+        color: Variables.textSecondary,
         fontSize: 16,
     },
 });

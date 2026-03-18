@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Overview } from "@/types/question";
-import Colors from "@/constants/Colors";
+import Variables from "@/constants/Variables";
 import FontAwesome from "@expo/vector-icons/build/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
 import { Link } from "expo-router";
@@ -19,38 +19,42 @@ const QuestionOverview = ({ overview }: Props) => {
 
     const statusColor =
         was_last_attempt_correct === null
-            ? Colors.textTertiary
+            ? Variables.textTertiary
             : was_last_attempt_correct
-              ? Colors.green600
-              : Colors.red600;
+              ? Variables.green600
+              : Variables.red600;
 
     const statusLabel = was_last_attempt_correct === null ? "未回答" : was_last_attempt_correct ? "正解" : "不正解";
 
     return (
-        <View style={styles.container}>
-            <View style={styles.questionIdContainer}>
-                <Text style={styles.questionIdText}>問題ID: {id.toString().padStart(4, "0")}</Text>
-                <FontAwesome
-                    name={is_starred ? "star" : "star-o"}
-                    color={is_starred ? Colors.yellow500 : Colors.textTertiary}
-                    size={20}
-                />
-            </View>
-            <Text style={styles.questionText} numberOfLines={2}>
-                {question}
-            </Text>
+        <Link href={`/review/${id.toString()}`} asChild>
+            <Pressable>
+                <View style={styles.container}>
+                    <View style={styles.questionIdContainer}>
+                        <Text style={styles.questionIdText}>問題ID: {id.toString().padStart(4, "0")}</Text>
+                        <FontAwesome
+                            name={is_starred ? "star" : "star-o"}
+                            color={is_starred ? Variables.yellow500 : Variables.textTertiary}
+                            size={20}
+                        />
+                    </View>
+                    <Text style={styles.questionText} numberOfLines={2}>
+                        {question}
+                    </Text>
 
-            <View style={styles.questionStatusContainer}>
-                <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
-                <Text style={styles.answeredAtText}>{last_answered_at ? `(${getRelativeTime(diffInDays)})` : ""}</Text>
-                <Link href={`/home/${id.toString()}`} asChild>
-                    <Pressable style={styles.reviewButtonContainer}>
-                        <Text style={styles.reviewButtonText}>詳細</Text>
-                        <FontAwesome6 name="angle-right" size={16} color={Colors.primary600} />
-                    </Pressable>
-                </Link>
-            </View>
-        </View>
+                    <View style={styles.questionStatusContainer}>
+                        <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
+                        <Text style={styles.answeredAtText}>
+                            {last_answered_at ? `(${getRelativeTime(diffInDays)})` : ""}
+                        </Text>
+                        <Pressable style={styles.reviewButtonContainer}>
+                            <Text style={styles.reviewButtonText}>復習する</Text>
+                            <FontAwesome6 name="angle-right" size={16} color={Variables.primary600} />
+                        </Pressable>
+                    </View>
+                </View>
+            </Pressable>
+        </Link>
     );
 };
 
@@ -60,9 +64,9 @@ const styles = StyleSheet.create({
     container: {
         padding: 16,
         backgroundColor: "#FFFFFF",
-        borderRadius: 8,
+        borderRadius: Variables.borderRadiusPrimary,
         borderWidth: 1,
-        borderColor: Colors.border,
+        borderColor: Variables.border,
         marginBottom: 12,
     },
 
@@ -73,18 +77,18 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     questionIdText: {
-        color: Colors.primary600,
-        backgroundColor: Colors.primary100,
+        color: Variables.primary600,
+        backgroundColor: Variables.primary100,
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderWidth: 1,
-        borderColor: Colors.primary600,
-        borderRadius: 4,
+        borderColor: Variables.primary600,
+        borderRadius: Variables.borderRadiusPrimary,
         fontSize: 12,
         fontWeight: "600",
     },
     questionText: {
-        color: Colors.textSecondary,
+        color: Variables.textSecondary,
         fontSize: 16,
         fontWeight: "500",
         marginBottom: 16,
@@ -94,7 +98,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         borderTopWidth: 1,
-        borderTopColor: Colors.border,
+        borderTopColor: Variables.border,
         paddingTop: 12,
     },
     statusText: {
@@ -104,7 +108,7 @@ const styles = StyleSheet.create({
     },
     answeredAtText: {
         fontSize: 12,
-        color: Colors.textTertiary,
+        color: Variables.textTertiary,
     },
     reviewButtonContainer: {
         flexDirection: "row",
@@ -113,7 +117,7 @@ const styles = StyleSheet.create({
         gap: 4,
     },
     reviewButtonText: {
-        color: Colors.primary600,
+        color: Variables.primary600,
         fontSize: 14,
         fontWeight: "500",
     },

@@ -1,42 +1,54 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import Colors from "@/constants/Colors";
+import Variables from "@/constants/Variables";
 import { Href, Link } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
+import useSettingsStore from "@/store/useSettingsStore";
 
 interface GameModeDetails {
     href: Href;
     icon: string;
     title: string;
     subTitle: string;
+    hideTabs: boolean;
 }
 
 const gamemodes: GameModeDetails[] = [
     {
-        href: "/home/refresh",
+        href: "/review",
         icon: "book-open",
         title: "リフレッシュ",
         subTitle: "間違えた問題を振り返ろう！",
+        hideTabs: false,
     },
     {
-        href: "",
+        href: "/home/soloQuizSettings",
         icon: "pen-to-square",
         title: "ソロクイズ",
         subTitle: "問題を自分で取り組んでみよう！",
+        hideTabs: true,
     },
     {
-        href: "",
+        href: "/battle",
         icon: "gamepad",
         title: "対戦バトル",
         subTitle: "ほかのユーザーと競い合おう！",
+        hideTabs: false,
     },
 ];
 
 const GamemodeItem = ({ gamemode }: { gamemode: GameModeDetails }) => {
+    const { setTabsVisibility } = useSettingsStore();
+
     return (
         <Link href={gamemode.href} push asChild>
-            <Pressable style={styles.button}>
-                <FontAwesome6 name={gamemode.icon} size={16} color={Colors.primary600} style={styles.buttonIcon} />
+            <Pressable
+                style={styles.button}
+                onPress={() => {
+                    gamemode.hideTabs && setTabsVisibility(gamemode.hideTabs);
+                }}
+            >
+                <FontAwesome6 name={gamemode.icon} size={16} color={Variables.primary600} style={styles.buttonIcon} />
                 <View>
                     <Text style={styles.buttonTitle}>{gamemode.title}</Text>
                     <Text style={styles.buttonSubtitle}>{gamemode.subTitle}</Text>
@@ -65,7 +77,7 @@ export default GamemodeList;
 
 const styles = StyleSheet.create({
     gamemodeTitle: {
-        color: Colors.textPrimary,
+        color: Variables.textPrimary,
         fontSize: 18,
         fontWeight: "600",
         paddingLeft: 4,
@@ -80,17 +92,17 @@ const styles = StyleSheet.create({
         paddingVertical: 18,
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: Colors.gray0,
-        borderRadius: 10,
+        backgroundColor: Variables.white,
+        borderRadius: Variables.borderRadiusPrimary,
         borderWidth: 2,
-        borderColor: Colors.border,
+        borderColor: Variables.border,
         borderStyle: "dotted",
     },
     buttonIcon: {
-        backgroundColor: Colors.primary100,
+        backgroundColor: Variables.primary100,
         padding: 12,
         marginRight: 12,
-        borderRadius: 10,
+        borderRadius: Variables.borderRadiusPrimary,
     },
     buttonTitle: {
         fontSize: 18,
@@ -98,7 +110,7 @@ const styles = StyleSheet.create({
         paddingBottom: 2,
     },
     buttonSubtitle: {
-        color: Colors.textSecondary,
+        color: Variables.textSecondary,
     },
     buttonRightIcon: {
         marginLeft: "auto",

@@ -2,6 +2,7 @@ import { FlatList, StyleSheet, View } from "react-native";
 import React from "react";
 import { Overview } from "@/types/question";
 import QuestionOverview from "@/components/questionOverview";
+import OverviewQuestionFilter from "@/components/overviewQuestionFilter";
 
 const DUMMY: Overview[] = [
     {
@@ -83,7 +84,9 @@ const DUMMY: Overview[] = [
 
 const Refresh = () => {
     return (
-        <View style={{ flex: 1 }}>
+        <View style={styles.container}>
+            <OverviewQuestionFilter />
+
             <FlatList
                 data={DUMMY}
                 renderItem={({ item }) => <QuestionOverview overview={item} />}
@@ -97,7 +100,16 @@ const Refresh = () => {
 export default Refresh;
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
     contentContainer: {
-        padding: 24,
+        paddingHorizontal: 24,
+        paddingBottom: 96,
+    },
+    dropdownContainer: {
+        flex: 1,
+        marginBottom: 16,
+        width: "50%",
     },
 });
