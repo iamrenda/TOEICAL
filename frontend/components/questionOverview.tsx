@@ -27,7 +27,7 @@ const QuestionOverview = ({ overview }: Props) => {
     const statusLabel = was_last_attempt_correct === null ? "未回答" : was_last_attempt_correct ? "正解" : "不正解";
 
     return (
-        <Link href={`/review/${id.toString()}`} asChild>
+        <Link href={`/question/${id.toString()}`} asChild>
             <Pressable>
                 <View style={styles.container}>
                     <View style={styles.questionIdContainer}>

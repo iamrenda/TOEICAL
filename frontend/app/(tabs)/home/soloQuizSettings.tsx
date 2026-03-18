@@ -81,6 +81,7 @@ const SoloQuizSettingsStack = () => {
                 <CustomButtonPrimary
                     text="クイズ開始"
                     iconName="angle-right"
+                    isSelected={true}
                     onPress={() => console.log("Start Session")}
                 />
             </Footer>

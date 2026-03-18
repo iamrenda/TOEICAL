@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginTop: "auto",
         paddingTop: 12,
-        paddingBottom: 24,
+        paddingBottom: 42,
         backgroundColor: Variables.white,
         // borderTopWidth: 1,
         // borderTopColor: Variables.border,
