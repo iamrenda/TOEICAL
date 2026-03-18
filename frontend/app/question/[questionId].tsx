@@ -1,15 +1,17 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
-import { Option, Question } from "@/types/question";
+import { Question } from "@/types/question";
 import Variables from "@/constants/Variables";
 import Footer from "@/components/footer";
-import CustomButtonPrimary from "@/components/buttonPrimary";
+import OptionComponent from "@/components/question/option";
+import CustomButton from "@/components/util/customButton";
 
 const optionLetter = ["A", "B", "C", "D"];
 
 const QuestionScreen = () => {
     const [selectedOptionId, setSelectedOptionId] = React.useState<number | null>(null);
+    const [isSubmitted, setIsSubmitted] = React.useState(false);
     const { questionId: id } = useLocalSearchParams();
 
     const question: Question = {
@@ -25,22 +27,22 @@ const QuestionScreen = () => {
             {
                 option: "Because of",
                 option_id: 9,
-                translated_option: "(A) Because of（前置詞：～の理由で）",
+                translated_option: "Because of（前置詞：～の理由で）",
             },
             {
                 option: "If",
                 option_id: 12,
-                translated_option: "(D) If（もし～ならば）",
+                translated_option: "If（もし～ならば）",
             },
             {
                 option: "Immediately",
                 option_id: 11,
-                translated_option: "(C) Immediately（副詞；すぐに）",
+                translated_option: "Immediately（副詞；すぐに）",
             },
             {
                 option: "In case of",
                 option_id: 10,
-                translated_option: "(B) In case of（前置詞；～の場合に備えて）",
+                translated_option: "In case of（前置詞；～の場合に備えて）",
             },
         ],
         detailed_descriptions: [
@@ -52,6 +54,10 @@ const QuestionScreen = () => {
         translated_vocabs: ["equipment（機器、装置）", "property（不動産、物件）"],
     };
 
+    const onSubmit = () => {
+        setIsSubmitted(true);
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.questionIdText}>問題ID: {id.toString().padStart(4, "0")}</Text>
@@ -60,36 +66,32 @@ const QuestionScreen = () => {
             {question.options.map((option, index) => (
                 <OptionComponent
                     key={option.option_id}
+                    isCorrect={option.option_id === question.correct_option_id}
                     option={option}
                     letter={optionLetter[index]}
                     isSelected={selectedOptionId === option.option_id}
                     onPress={() => setSelectedOptionId(option.option_id)}
+                    isSubmitted={isSubmitted}
                 />
             ))}
 
             <Footer>
-                <CustomButtonPrimary text="決定！" isSelected={!!selectedOptionId} onPress={() => {}} />
+                {isSubmitted ? (
+                    <View style={styles.submittedContainer}>
+                        <CustomButton text="解説" variant="secondary" onPress={() => {}} flex={3} />
+                        <CustomButton text="次の問題" variant="primary" onPress={() => {}} flex={7} />
+                    </View>
+                ) : (
+                    <CustomButton
+                        text="決定！"
+                        variant="primary"
+                        onPress={onSubmit}
+                        isSelected={!!selectedOptionId}
+                        isDisabled={!selectedOptionId}
+                    />
+                )}
             </Footer>
         </View>
-    );
-};
-
-const OptionComponent = ({
-    option,
-    letter,
-    isSelected,
-    onPress,
-}: {
-    option: Option;
-    letter: string;
-    isSelected: boolean;
-    onPress: () => void;
-}) => {
-    return (
-        <Pressable style={[styles.optionContainer, isSelected && styles.selectedOptionContainer]} onPress={onPress}>
-            <Text style={[styles.optionLetter, isSelected && styles.selectedOptionLetter]}>{letter}</Text>
-            <Text style={[styles.optionText, isSelected && styles.selectedOptionText]}>{option.option}</Text>
-        </Pressable>
     );
 };
 
@@ -123,47 +125,8 @@ const styles = StyleSheet.create({
         lineHeight: 28,
     },
 
-    optionContainer: {
-        width: "100%",
+    submittedContainer: {
         flexDirection: "row",
-        alignItems: "center",
         gap: 12,
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderRadius: Variables.borderRadiusPrimary,
-        borderWidth: 1,
-        borderColor: Variables.border,
-        marginBottom: 12,
-        boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.05)",
-    },
-    optionLetter: {
-        fontSize: 16,
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        alignSelf: "center",
-        fontWeight: "600",
-        borderWidth: 1,
-        borderRadius: Variables.borderRadiusPrimary,
-        borderColor: Variables.border,
-    },
-    optionText: {
-        fontSize: 16,
-        fontWeight: "500",
-    },
-
-    // selected
-    selectedOptionContainer: {
-        backgroundColor: Variables.primary100,
-        borderColor: Variables.primary600,
-        borderWidth: 2,
-    },
-    selectedOptionLetter: {
-        color: Variables.white,
-        borderColor: Variables.primary600,
-        backgroundColor: Variables.primary600,
-    },
-    selectedOptionText: {
-        color: Variables.primary600,
-        fontWeight: "700",
     },
 });

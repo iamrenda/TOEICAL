@@ -12,13 +12,9 @@ const styles = StyleSheet.create({
     container: {
         width: "100%",
         flexDirection: "row",
-        justifyContent: "center",
         alignItems: "center",
         marginTop: "auto",
-        paddingTop: 12,
         paddingBottom: 42,
         backgroundColor: Variables.white,
-        // borderTopWidth: 1,
-        // borderTopColor: Variables.border,
     },
 });

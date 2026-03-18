@@ -3,8 +3,8 @@ import { useState } from "react";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Variables from "@/constants/Variables";
 import CustomPickerModal from "@/components/customPickerModal";
-import CustomButtonPrimary from "@/components/buttonPrimary";
 import Footer from "@/components/footer";
+import CustomButton from "@/components/util/customButton";
 
 const problemTypes = [
     { id: 1, title: "ランダム", subtitle: "こちらが決めちゃいますよ！", icon: "dice" },
@@ -78,8 +78,9 @@ const SoloQuizSettingsStack = () => {
             </View>
 
             <Footer>
-                <CustomButtonPrimary
+                <CustomButton
                     text="クイズ開始"
+                    variant="primary"
                     iconName="angle-right"
                     isSelected={true}
                     onPress={() => console.log("Start Session")}
