@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Question } from "@/types/question";
 import Variables from "@/constants/Variables";
 import Footer from "@/components/footer";
@@ -13,6 +13,8 @@ const QuestionScreen = () => {
     const [selectedOptionId, setSelectedOptionId] = React.useState<number | null>(null);
     const [isSubmitted, setIsSubmitted] = React.useState(false);
     const { questionId: id } = useLocalSearchParams();
+
+    const router = useRouter();
 
     const question: Question = {
         id: 3,
@@ -78,7 +80,12 @@ const QuestionScreen = () => {
             <Footer>
                 {isSubmitted ? (
                     <View style={styles.submittedContainer}>
-                        <CustomButton text="解説" variant="secondary" onPress={() => {}} flex={3} />
+                        <CustomButton
+                            text="解説"
+                            variant="secondary"
+                            onPress={() => router.push("/question/explanation")}
+                            flex={3}
+                        />
                         <CustomButton text="次の問題" variant="primary" onPress={() => {}} flex={7} />
                     </View>
                 ) : (

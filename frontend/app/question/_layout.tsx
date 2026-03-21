@@ -1,16 +1,5 @@
-import { FontAwesome6 } from "@expo/vector-icons";
-import { Link, Stack } from "expo-router";
-import { Pressable } from "react-native";
-
-const HeaderBackButton = () => {
-    return (
-        <Link href=".." asChild>
-            <Pressable>
-                <FontAwesome6 name="angle-left" size={24} color="black" />
-            </Pressable>
-        </Link>
-    );
-};
+import HeaderBackIconButton from "@/components/util/headerBackIconButton";
+import { Stack } from "expo-router";
 
 const QuestionLayout = () => {
     return (
@@ -20,7 +9,15 @@ const QuestionLayout = () => {
                 options={{
                     headerTitle: "",
                     headerShadowVisible: false,
-                    headerLeft: () => <HeaderBackButton />,
+                    headerLeft: () => <HeaderBackIconButton iconName="angle-left" />,
+                }}
+            />
+            <Stack.Screen
+                name="explanation"
+                options={{
+                    presentation: "modal",
+                    headerTitle: "解説",
+                    headerLeft: () => <HeaderBackIconButton iconName="xmark" />,
                 }}
             />
         </Stack>
