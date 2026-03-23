@@ -6,13 +6,14 @@ import Variables from "@/constants/Variables";
 import Footer from "@/components/footer";
 import OptionComponent from "@/components/question/option";
 import CustomButton from "@/components/util/customButton";
+import QuestionIdLabel from "@/components/question/questionIdLabel";
 
 const optionLetter = ["A", "B", "C", "D"];
 
 const QuestionScreen = () => {
     const [selectedOptionId, setSelectedOptionId] = React.useState<number | null>(null);
     const [isSubmitted, setIsSubmitted] = React.useState(false);
-    const { questionId: id } = useLocalSearchParams();
+    const { questionId } = useLocalSearchParams();
 
     const router = useRouter();
 
@@ -62,20 +63,22 @@ const QuestionScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.questionIdText}>問題ID: {id.toString().padStart(4, "0")}</Text>
+            <QuestionIdLabel id={Number(questionId)} style={{ alignSelf: "flex-start", marginBottom: 12 }} />
             <Text style={styles.questionText}>{question.question}</Text>
 
-            {question.options.map((option, index) => (
-                <OptionComponent
-                    key={option.option_id}
-                    isCorrect={option.option_id === question.correct_option_id}
-                    option={option}
-                    letter={optionLetter[index]}
-                    isSelected={selectedOptionId === option.option_id}
-                    onPress={() => setSelectedOptionId(option.option_id)}
-                    isSubmitted={isSubmitted}
-                />
-            ))}
+            {question.options
+                .sort((a, b) => a.option_id - b.option_id)
+                .map((option, index) => (
+                    <OptionComponent
+                        key={option.option_id}
+                        isCorrect={option.option_id === question.correct_option_id}
+                        option={option}
+                        letter={optionLetter[index]}
+                        isSelected={selectedOptionId === option.option_id}
+                        onPress={() => setSelectedOptionId(option.option_id)}
+                        isSubmitted={isSubmitted}
+                    />
+                ))}
 
             <Footer>
                 {isSubmitted ? (

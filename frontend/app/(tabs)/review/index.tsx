@@ -3,6 +3,7 @@ import React from "react";
 import { Overview } from "@/types/question";
 import QuestionOverview from "@/components/questionOverview";
 import OverviewQuestionFilter from "@/components/overviewQuestionFilter";
+import Variables from "@/constants/Variables";
 
 const DUMMY: Overview[] = [
     {
@@ -102,6 +103,7 @@ export default Refresh;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: Variables.background,
     },
     contentContainer: {
         paddingHorizontal: 24,

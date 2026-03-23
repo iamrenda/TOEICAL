@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Option } from "@/types/question";
 import Variables from "@/constants/Variables";
@@ -42,12 +42,20 @@ const OptionComponent = ({
             isSubmitted && isCorrect && styles.correctOptionText,
             isSubmitted && isIncorrect && styles.incorrectOptionText,
         ],
+        translatedOptionText: [
+            styles.translatedOptionText,
+            isSubmitted && isCorrect && styles.translatedOptionTextCorrect,
+            isSubmitted && isIncorrect && styles.translatedOptionTextIncorrect,
+        ],
     };
 
     return (
         <Pressable style={stylesArray.container} onPress={onPress} disabled={isSubmitted}>
             <Text style={stylesArray.letter}>{letter}</Text>
-            <Text style={stylesArray.text}>{option.option}</Text>
+            <View>
+                <Text style={stylesArray.text}>{option.option}</Text>
+                {isSubmitted && <Text style={stylesArray.translatedOptionText}>{option.translated_option}</Text>}
+            </View>
         </Pressable>
     );
 };
@@ -61,7 +69,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         gap: 12,
         paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingVertical: 16,
         borderRadius: Variables.borderRadiusPrimary,
         borderWidth: 1,
         borderColor: Variables.border,
@@ -147,5 +155,19 @@ const styles = StyleSheet.create({
     incorrectOptionText: {
         color: Variables.white,
         fontWeight: "700",
+    },
+
+    // translated option
+    translatedOptionText: {
+        color: Variables.gray400,
+        paddingTop: 4,
+        fontSize: 14,
+        fontStyle: "italic",
+    },
+    translatedOptionTextCorrect: {
+        color: Variables.white,
+    },
+    translatedOptionTextIncorrect: {
+        color: Variables.white,
     },
 });

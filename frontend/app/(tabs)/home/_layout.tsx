@@ -18,16 +18,14 @@ const HomeLayout = () => {
                         color: Variables.primary600,
                         fontWeight: "800",
                     },
+                    headerTitleAlign: "left",
+                    headerShadowVisible: false,
                 }}
             />
             <Stack.Screen
                 name="soloQuizSettings"
                 options={{
-                    title: "ソロクイズ設定",
-                    headerTitleStyle: {
-                        color: Variables.primary600,
-                        fontWeight: "800",
-                    },
+                    title: "",
                     animation: "slide_from_bottom",
                     headerLeft: () => (
                         <Pressable
@@ -39,6 +37,7 @@ const HomeLayout = () => {
                             <Ionicons name="close" size={24} color="black" />
                         </Pressable>
                     ),
+                    headerShadowVisible: false,
                 }}
             />
         </Stack>

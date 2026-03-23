@@ -12,12 +12,7 @@ const HomeLayout = () => {
                         color: Variables.primary600,
                         fontWeight: "800",
                     },
-                }}
-            />
-            <Stack.Screen
-                name="[questionId]"
-                options={{
-                    headerBackTitle: "戻る",
+                    headerShadowVisible: false,
                 }}
             />
         </Stack>

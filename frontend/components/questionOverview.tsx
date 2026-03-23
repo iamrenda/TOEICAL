@@ -6,6 +6,7 @@ import FontAwesome from "@expo/vector-icons/build/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
 import { Link } from "expo-router";
 import getRelativeTime from "@/util/getRelativeTime";
+import QuestionIdLabel from "./question/questionIdLabel";
 
 interface Props {
     overview: Overview;
@@ -31,7 +32,7 @@ const QuestionOverview = ({ overview }: Props) => {
             <Pressable>
                 <View style={styles.container}>
                     <View style={styles.questionIdContainer}>
-                        <Text style={styles.questionIdText}>問題ID: {id.toString().padStart(4, "0")}</Text>
+                        <QuestionIdLabel id={id} />
                         <FontAwesome
                             name={is_starred ? "star" : "star-o"}
                             color={is_starred ? Variables.yellow500 : Variables.textTertiary}
@@ -65,9 +66,8 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: "#FFFFFF",
         borderRadius: Variables.borderRadiusPrimary,
-        borderWidth: 1,
-        borderColor: Variables.border,
         marginBottom: 12,
+        boxShadow: "0px 1px 3px rgba(0, 0, 0, 0.05)",
     },
 
     questionIdContainer: {
@@ -76,24 +76,13 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         marginBottom: 12,
     },
-    questionIdText: {
-        color: Variables.primary600,
-        backgroundColor: Variables.primary100,
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderWidth: 1,
-        borderColor: Variables.primary600,
-        borderRadius: Variables.borderRadiusPrimary,
-        fontSize: 12,
-        fontWeight: "600",
-    },
     questionText: {
         color: Variables.textSecondary,
         fontSize: 16,
         fontWeight: "500",
         marginBottom: 16,
+        lineHeight: 22,
     },
-
     questionStatusContainer: {
         flexDirection: "row",
         alignItems: "center",

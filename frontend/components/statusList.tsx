@@ -68,7 +68,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 16,
         backgroundColor: Variables.white,
-        boxShadow: `0px 1px 2px ${Variables.shadow}`,
     },
     titleContainer: {
         flexDirection: "row",

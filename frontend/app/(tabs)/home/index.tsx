@@ -22,9 +22,9 @@ export default Home;
 
 const styles = StyleSheet.create({
     conatiner: {
-        paddingVertical: 36,
+        paddingTop: 16,
         paddingHorizontal: 24,
-        backgroundColor: Variables.background,
+        backgroundColor: Variables.white,
         height: "100%",
     },
 
