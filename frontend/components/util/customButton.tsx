@@ -10,15 +10,37 @@ interface Props {
     isSelected?: boolean;
     isDisabled?: boolean;
     flex?: number;
+    style?: any;
     onPress: () => void;
 }
 
-const CustomButton = ({ text, iconName, variant = "primary", isSelected = true, isDisabled, flex, onPress }: Props) => {
+const CustomButton = ({
+    text,
+    iconName,
+    variant = "primary",
+    isSelected = true,
+    isDisabled,
+    flex = 0,
+    style,
+    onPress,
+}: Props) => {
     const isPrimary = variant === "primary";
 
-    const backgroundColor = isPrimary ? (isSelected ? Variables.primary600 : Variables.gray100) : Variables.white;
-    const textColor = isPrimary ? (isSelected ? Variables.white : Variables.gray400) : Variables.primary600;
-    const iconColor = textColor;
+    const backgroundColor = isDisabled
+        ? Variables.gray100
+        : isPrimary
+          ? isSelected
+              ? Variables.primary600
+              : Variables.gray100
+          : Variables.white;
+    const textColor = isDisabled
+        ? Variables.gray300
+        : isPrimary
+          ? isSelected
+              ? Variables.white
+              : Variables.gray400
+          : Variables.primary600;
+    const iconColor = isDisabled ? Variables.gray300 : textColor;
 
     return (
         <Pressable
@@ -27,8 +49,10 @@ const CustomButton = ({ text, iconName, variant = "primary", isSelected = true, 
             style={[
                 styles.container,
                 !isPrimary && styles.secondary,
-                isSelected && isPrimary && styles.shadow,
-                { backgroundColor, flex: flex ?? 1 },
+                isSelected && isPrimary && !isDisabled && styles.shadow,
+                isDisabled && styles.disabledContainer,
+                { backgroundColor, flex },
+                style,
             ]}
         >
             <Text style={[styles.text, { color: textColor }]}>{text}</Text>
@@ -48,6 +72,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingVertical: 20,
         borderRadius: Variables.borderRadiusSecondary,
+    },
+    disabledContainer: {
+        backgroundColor: Variables.gray100,
     },
 
     secondary: {

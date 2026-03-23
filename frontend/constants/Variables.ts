@@ -40,6 +40,7 @@ export default {
     textPrimary: "#222222",
     textSecondary: "#555555",
     textTertiary: "#777777",
+    error: "#DC3955",
 
     border: "#D9D9D9",
 

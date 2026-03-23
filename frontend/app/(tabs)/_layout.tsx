@@ -15,8 +15,8 @@ export default function TabLayout() {
                 <NativeTabs.Trigger.Label>復習</NativeTabs.Trigger.Label>
                 <NativeTabs.Trigger.Icon sf="list.clipboard.fill" md="list" />
             </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="battle">
-                <NativeTabs.Trigger.Label>対戦</NativeTabs.Trigger.Label>
+            <NativeTabs.Trigger name="quiz">
+                <NativeTabs.Trigger.Label>クイズ</NativeTabs.Trigger.Label>
                 <NativeTabs.Trigger.Icon sf="gamecontroller.fill" md="gamepad" />
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="speaking">

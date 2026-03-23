@@ -3,9 +3,8 @@ import { Stack } from "expo-router";
 const RootLayout = () => {
     return (
         <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(auth)" />
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="question" />
+            <Stack.Screen name="login" />
+            <Stack.Screen name="signup" />
         </Stack>
     );
 };

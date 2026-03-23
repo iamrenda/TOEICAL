@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 
-const Battle = () => {
+const Quiz = () => {
     return (
         <View>
-            <Text>Battle</Text>
+            <Text>Quiz</Text>
         </View>
     );
 };
 
-export default Battle;
+export default Quiz;
 
 const styles = StyleSheet.create({});
