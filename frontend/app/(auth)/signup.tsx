@@ -7,6 +7,7 @@ import Variables from "@/constants/Variables";
 import FormInput from "@/components/auth/textInput";
 import CustomButton from "@/components/util/customButton";
 import AuthFooter from "@/components/auth/authFooter";
+import AuthHeader from "@/components/auth/header";
 
 interface Inputs {
     username: string;
@@ -23,11 +24,7 @@ const Signup = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.headerContainer}>
-                <FontAwesome6 name="graduation-cap" size={24} color={Variables.white} style={styles.headerIcon} />
-                <Text style={styles.headerTitle}>TOEICAL</Text>
-                <Text style={styles.headerSubtitle}>TOEICから始める英語学習アプリ</Text>
-            </View>
+            <AuthHeader />
 
             <View style={styles.formContainer}>
                 <FormInput
@@ -56,7 +53,7 @@ const Signup = () => {
                 />
 
                 <CustomButton
-                    text="Sign Up"
+                    text="新規作成"
                     onPress={handleSubmit(onSubmit)}
                     iconName="arrow-right"
                     isDisabled={false}
@@ -77,27 +74,6 @@ const styles = StyleSheet.create({
         backgroundColor: Variables.white,
         paddingHorizontal: 24,
         paddingTop: 56,
-    },
-
-    headerContainer: {
-        alignItems: "center",
-        marginBottom: 36,
-    },
-    headerIcon: {
-        marginBottom: 8,
-        backgroundColor: Variables.primary600,
-        borderRadius: Variables.borderRadiusPrimary,
-        padding: 10,
-    },
-    headerTitle: {
-        fontSize: 32,
-        fontWeight: "700",
-        color: Variables.primary600,
-        marginBottom: 4,
-    },
-    headerSubtitle: {
-        fontSize: 14,
-        color: Variables.textTertiary,
     },
 
     formContainer: {
