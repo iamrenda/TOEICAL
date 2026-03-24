@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 import React from "react";
 import Variables from "@/constants/Variables";
 import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
@@ -9,6 +9,7 @@ interface Props {
     variant?: "primary" | "secondary";
     isSelected?: boolean;
     isDisabled?: boolean;
+    isLoading?: boolean;
     flex?: number;
     style?: any;
     onPress: () => void;
@@ -20,19 +21,21 @@ const CustomButton = ({
     variant = "primary",
     isSelected = true,
     isDisabled,
+    isLoading = false,
     flex = 0,
     style,
     onPress,
 }: Props) => {
     const isPrimary = variant === "primary";
 
-    const backgroundColor = isDisabled
-        ? Variables.gray100
-        : isPrimary
-          ? isSelected
-              ? Variables.primary600
-              : Variables.gray100
-          : Variables.white;
+    const backgroundColor =
+        isDisabled || isLoading
+            ? Variables.gray100
+            : isPrimary
+              ? isSelected
+                  ? Variables.primary600
+                  : Variables.gray100
+              : Variables.white;
     const textColor = isDisabled
         ? Variables.gray300
         : isPrimary
@@ -40,7 +43,7 @@ const CustomButton = ({
               ? Variables.white
               : Variables.gray400
           : Variables.primary600;
-    const iconColor = isDisabled ? Variables.gray300 : textColor;
+    const iconColor = isDisabled || isLoading ? Variables.gray300 : textColor;
 
     return (
         <Pressable
@@ -49,15 +52,16 @@ const CustomButton = ({
             style={[
                 styles.container,
                 !isPrimary && styles.secondary,
-                isSelected && isPrimary && !isDisabled && styles.shadow,
+                isSelected && isPrimary && !isDisabled && !isLoading && styles.shadow,
                 isDisabled && styles.disabledContainer,
                 { backgroundColor, flex },
                 style,
             ]}
         >
-            <Text style={[styles.text, { color: textColor }]}>{text}</Text>
+            {!isLoading && <Text style={[styles.text, { color: textColor }]}>{text}</Text>}
 
-            {iconName && <FontAwesome6 name={iconName} size={16} color={iconColor} style={styles.icon} />}
+            {iconName && !isLoading && <FontAwesome6 name={iconName} size={16} color={iconColor} style={styles.icon} />}
+            {isLoading && <ActivityIndicator size="small" color={iconColor} style={styles.icon} />}
         </Pressable>
     );
 };

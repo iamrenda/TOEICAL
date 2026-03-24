@@ -8,13 +8,15 @@ interface Props {
     label: string;
     requirements?: string;
     style?: any;
+    rules?: any;
     [x: string]: any;
 }
 
-const FormInput = ({ control, name, label, requirements, style, ...textInputProps }: Props) => (
+const FormInput = ({ control, name, label, requirements, style, rules, ...textInputProps }: Props) => (
     <Controller
         control={control}
         name={name}
+        rules={rules}
         render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
             <View style={style}>
                 <Text style={styles.label}>{label}</Text>
@@ -27,8 +29,8 @@ const FormInput = ({ control, name, label, requirements, style, ...textInputProp
                     accessibilityLabel={label}
                     {...textInputProps}
                 />
-                {requirements && <Text style={styles.requirements}>{requirements}</Text>}
 
+                {requirements && !error && <Text style={styles.requirements}>{requirements}</Text>}
                 {error && <Text style={styles.errorText}>{error.message}</Text>}
             </View>
         )}

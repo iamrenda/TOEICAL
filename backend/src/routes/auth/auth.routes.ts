@@ -1,10 +1,10 @@
 import express from "express";
-import { userLogin, userSignin, fetchAccessToken } from "../../controllers/auth/auth.controller.ts";
+import { userLogin, userSignup, fetchAccessToken } from "../../controllers/auth/auth.controller.ts";
 
 // /auth/users
 const router = express.Router();
 
-router.post("/signin", userSignin);
+router.post("/signup", userSignup);
 router.post("/login", userLogin);
 router.get("/token", fetchAccessToken);
 

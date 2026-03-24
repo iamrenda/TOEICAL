@@ -1,6 +1,6 @@
 import type { Response } from "express";
 import type { ValidatedRequest } from "express-zod-safe";
-import type { UserLoginSchema, UserSigninSchema, UserTokenSchema } from "../../schemas/users.schema.ts";
+import type { UserLoginSchema, UserSignupSchema, UserTokenSchema } from "../../schemas/users.schema.ts";
 import type { UserTokenPayload, UserEntity } from "../../types/User.ts";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -31,7 +31,7 @@ const verifyToken = (refreshToken: string): UserTokenPayload => {
     }
 };
 
-export const userSignin = async (req: ValidatedRequest<{ body: typeof UserSigninSchema }>, res: Response) => {
+export const userSignup = async (req: ValidatedRequest<{ body: typeof UserSignupSchema }>, res: Response) => {
     try {
         const hashPassword = await bcrypt.hash(req.body.password, 10); // 10 is the amount of salt
         const user = { username: req.body.username, email: req.body.email, password: hashPassword };
