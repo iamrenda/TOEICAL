@@ -53,13 +53,13 @@ export const userLogin = async (req: ValidatedRequest<{ body: typeof UserLoginSc
         const [user] = await DB().query<UserEntity>("SELECT * FROM users WHERE email = $1;", [req.body.email]);
 
         if (!user) {
-            return res.status(400).json({ reason: "User not found." });
+            return res.status(401).json({ errorType: "INVALID_CREDENTIALS", message: "Invalid email or password" });
         }
 
         const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password);
 
-        if (!isPasswordCorrect) {
-            return res.sendStatus(403);
+        if (!isPasswordCorrect || !user) {
+            return res.status(401).json({ errorType: "INVALID_CREDENTIALS", message: "Invalid email or password" });
         }
 
         const accessToken = generateAccessToken(user);
@@ -67,9 +67,9 @@ export const userLogin = async (req: ValidatedRequest<{ body: typeof UserLoginSc
 
         refreshTokens.push(refreshToken);
 
-        return res.status(200).send({ accessToken, refreshToken });
+        return res.status(200).json({ accessToken, refreshToken });
     } catch (e) {
-        return res.sendStatus(500);
+        return res.status(500).json({ errorType: "SERVER_ERROR", message: "Internal server error" });
     }
 };
 
@@ -77,11 +77,11 @@ export const fetchAccessToken = (req: ValidatedRequest<{ body: typeof UserTokenS
     const refreshToken = req.body.token;
 
     if (!refreshToken) {
-        return res.sendStatus(401);
+        return res.status(401).json({ errorType: "INVALID_CREDENTIALS", message: "No token provided" });
     }
 
     if (!refreshTokens.includes(refreshToken)) {
-        return res.sendStatus(403);
+        return res.status(403).json({ errorType: "INVALID_CREDENTIALS", message: "Invalid token" });
     }
 
     try {
@@ -90,6 +90,6 @@ export const fetchAccessToken = (req: ValidatedRequest<{ body: typeof UserTokenS
 
         return res.status(200).json({ accessToken });
     } catch (e) {
-        return res.sendStatus(403);
+        return res.status(403).json({ errorType: "INVALID_CREDENTIALS", message: "Invalid token" });
     }
 };

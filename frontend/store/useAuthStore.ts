@@ -1,21 +1,31 @@
 import Links from "@/constants/Links";
-import axios from "axios";
-import { Alert } from "react-native";
+import axios, { isAxiosError } from "axios";
 import { create } from "zustand";
 import { router } from "expo-router";
+import showAlert from "@/util/alert";
+import { UserLoginResponse } from "@/types/auth";
+import { LoginErrorType } from "@/types/error";
 // import { setItemAsync, deleteItemAsync } from "expo-secure-store";
 
+const loginErrorMessages: Record<number, LoginErrorType> = {
+    401: LoginErrorType.INVALID_CREDENTIALS,
+    429: LoginErrorType.TOO_MANY_ATTEMPTS,
+    500: LoginErrorType.SERVER_ERROR,
+};
+
 interface AuthState {
+    accessToken: string | null;
     isLoading: boolean;
     isLoggedIn: boolean;
 
     setLoading: (isLoading: boolean) => void;
     signUp: (username: string, email: string, password: string) => Promise<void>;
-    login: (token: string) => Promise<void>;
+    login: (email: string, password: string) => Promise<{ success: boolean; errorType: LoginErrorType } | null>;
     logout: () => Promise<void>;
 }
 
 const useAuthStore = create<AuthState>((set) => ({
+    accessToken: null,
     isLoading: false,
     isLoggedIn: false,
 
@@ -31,28 +41,39 @@ const useAuthStore = create<AuthState>((set) => ({
                 password,
             });
 
-            Alert.alert("サインアップ成功", "アカウントが作成されました。ログインしてください。", [{ text: "閉じる" }]);
-            router.push("/(auth)/login");
+            showAlert("サインアップ成功", "アカウントが作成されました。ログインしてください。");
+            router.replace("/login");
         } catch (e) {
-            Alert.alert("サインアップエラー", "サインアップに失敗しました。もう一度お試しください。", [
-                { text: "閉じる" },
-            ]);
+            showAlert("サインアップエラー", "サインアップに失敗しました。もう一度お試しください。");
             console.log(e);
         } finally {
             set({ isLoading: false });
         }
     },
 
-    login: async (token) => {
+    login: async (email, password) => {
         set({ isLoading: true });
+
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            // In a real app, you would call your login API here
-            // const response = await axios.post("/login", { token });
-            set({ isLoggedIn: true });
-        } catch (error) {
-            // console.error("Login error:", error);
+            const res = await axios.post<UserLoginResponse>(`${Links.BASE_URL_AUTH}/login`, {
+                email,
+                password,
+            });
+
+            // TODO: Store tokens securely
+            const { accessToken, refreshToken } = res.data;
+            set({ isLoggedIn: true, accessToken });
+
+            return null; // Success
+        } catch (e) {
+            if (isAxiosError(e)) {
+                const status = e.response?.status;
+                const errorType = loginErrorMessages[status || 500];
+
+                return { success: false, errorType };
+            }
+
+            return { success: false, errorType: LoginErrorType.NETWORK_ERROR };
         } finally {
             set({ isLoading: false });
         }
@@ -65,7 +86,7 @@ const useAuthStore = create<AuthState>((set) => ({
             await new Promise((resolve) => setTimeout(resolve, 1000));
             // In a real app, you would call your logout API here
             // const response = await axios.post("/logout");
-            set({ isLoggedIn: false });
+            set({ isLoggedIn: false, accessToken: null });
         } catch (error) {
             console.error("Logout error:", error);
         } finally {

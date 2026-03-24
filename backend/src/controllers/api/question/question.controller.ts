@@ -31,7 +31,7 @@ export const getQuestionOverviews = async (
     const sortByArr = sortBy.split(".");
 
     if (sortByArr.length != 2) {
-        return res.status(400).json({ reason: "Invalid sortBy format." });
+        return res.status(400).json({ reason: "Invalid sortBy format. Expected format: field.order (e.g. id.asc)" });
     }
 
     const offset = (page - 1) * limit;
@@ -205,6 +205,7 @@ export const getQuestionCount = async (req: Request, res: Response) => {
             starred: Number(starredQuestionCount[0]?.starred_question_count),
             last_answered_wrong: Number(lastWrongAttemptCount[0]?.wrong_last_attempt_count),
         };
+
         return res.status(200).json({ data });
     } catch (e) {
         handleError(e, res);
