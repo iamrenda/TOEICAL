@@ -9,7 +9,7 @@ const ErrorText = ({ message }: Props) => {
     return <Text style={styles.errorText}>{message}</Text>;
 };
 
-export default ErrorText;
+export { ErrorText };
 
 const styles = StyleSheet.create({
     errorText: {

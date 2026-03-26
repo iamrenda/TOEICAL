@@ -1,7 +1,6 @@
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import React from "react";
-import QuestionOverview from "@/components/questionOverview";
-import OverviewQuestionFilter from "@/components/overviewQuestionFilter";
+import { QuestionOverviewItem, OverviewQuestionFilter } from "@/components";
 import Variables from "@/constants/Variables";
 import useQuestionOverviewStore from "@/store/useQuestionOverview";
 
@@ -21,7 +20,7 @@ const ReviewScreen = () => {
             ) : (
                 <FlatList
                     data={questions}
-                    renderItem={({ item }) => <QuestionOverview overview={item} />}
+                    renderItem={({ item }) => <QuestionOverviewItem overview={item} />}
                     keyExtractor={(item) => item.id.toString()}
                     contentContainerStyle={styles.contentContainer}
                 />

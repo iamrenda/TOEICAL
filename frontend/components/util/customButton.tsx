@@ -66,7 +66,7 @@ const CustomButton = ({
     );
 };
 
-export default CustomButton;
+export { CustomButton };
 
 const styles = StyleSheet.create({
     container: {

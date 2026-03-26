@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Href, Link } from "expo-router";
 import React from "react";
 import Variables from "@/constants/Variables";
-import { Href, Link } from "expo-router";
 import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
 import useSettingsStore from "@/store/useSettingsStore";
 
@@ -73,7 +73,7 @@ const GamemodeList = () => {
     );
 };
 
-export default GamemodeList;
+export { GamemodeList };
 
 const styles = StyleSheet.create({
     gamemodeTitle: {

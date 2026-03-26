@@ -2,9 +2,7 @@ import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import React from "react";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Variables from "@/constants/Variables";
-import CustomPickerModal from "@/components/customPickerModal";
-import Footer from "@/components/footer";
-import CustomButton from "@/components/util/customButton";
+import { QuestionNumberPickerModal, Footer, CustomButton } from "@/components";
 
 const problemTypes = [
     { id: 1, title: "ランダム", subtitle: "こちらが決めちゃいますよ！", icon: "dice" },
@@ -35,7 +33,7 @@ const SoloQuizSettingsStack = () => {
                         <FontAwesome6 name="angle-down" size={16} />
                     </Pressable>
 
-                    <CustomPickerModal
+                    <QuestionNumberPickerModal
                         visible={isPickerVisible}
                         onClose={() => setIsPickerVisible(false)}
                         value={questionCount}

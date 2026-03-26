@@ -16,4 +16,4 @@ const HeaderBackIconButton = ({ iconName }: Props) => {
     );
 };
 
-export default HeaderBackIconButton;
+export { HeaderBackIconButton };

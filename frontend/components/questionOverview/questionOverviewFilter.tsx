@@ -42,7 +42,7 @@ const OverviewQuestionFilter = () => {
     );
 };
 
-export default OverviewQuestionFilter;
+export { OverviewQuestionFilter };
 
 const styles = StyleSheet.create({
     filterContainer: {

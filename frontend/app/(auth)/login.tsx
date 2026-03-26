@@ -1,16 +1,12 @@
-import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from "react-native";
-import AuthHeader from "@/components/auth/header";
-import { SafeAreaView } from "react-native-safe-area-context";
 import Variables from "@/constants/Variables";
-import FormInput from "@/components/auth/textInput";
-import CustomButton from "@/components/util/customButton";
-import { SubmitHandler, useForm } from "react-hook-form";
-import AuthFooter from "@/components/auth/authFooter";
 import useAuthStore from "@/store/useAuthStore";
 import showAlert from "@/util/alert";
+import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { LoginErrorType, loginErrorMessages } from "@/types/error";
 import { router } from "expo-router";
-import ErrorText from "@/components/auth/errorText";
+import { AuthHeader, FormInput, CustomButton, AuthFooter, ErrorText } from "@/components";
 
 interface Inputs {
     email: string;

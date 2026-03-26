@@ -51,7 +51,7 @@ const StatusList = () => {
     );
 };
 
-export default StatusList;
+export { StatusList };
 
 const styles = StyleSheet.create({
     statusContainer: {

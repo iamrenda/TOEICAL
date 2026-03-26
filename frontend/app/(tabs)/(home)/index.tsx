@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
+import { GamemodeList, StatusList } from "@/components";
 import Variables from "@/constants/Variables";
-import GamemodeList from "@/components/gamemodeList";
-import StatusList from "@/components/statusList";
 import useUserStore from "@/store/useUserStore";
 
 const Index = () => {

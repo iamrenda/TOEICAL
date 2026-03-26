@@ -3,7 +3,7 @@ import React from "react";
 import { Option } from "@/types/question";
 import Variables from "@/constants/Variables";
 
-const OptionComponent = ({
+const QuestionOption = ({
     option,
     letter,
     isSelected,
@@ -60,7 +60,7 @@ const OptionComponent = ({
     );
 };
 
-export default OptionComponent;
+export { QuestionOption };
 
 const styles = StyleSheet.create({
     optionContainer: {

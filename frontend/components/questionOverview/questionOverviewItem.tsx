@@ -1,19 +1,19 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { Overview } from "@/types/question";
 import Variables from "@/constants/Variables";
 import FontAwesome from "@expo/vector-icons/build/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
-import { Link } from "expo-router";
 import getRelativeTime from "@/util/getRelativeTime";
-import QuestionIdLabel from "./question/questionIdLabel";
 import useQuestionOverviewStore from "@/store/useQuestionOverview";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Overview } from "@/types/question";
+import { Link } from "expo-router";
+import { QuestionIdLabel } from "@/components";
 
 interface Props {
     overview: Overview;
 }
 
-const QuestionOverview = ({ overview }: Props) => {
+const QuestionOverviewItem = ({ overview }: Props) => {
     const { id, question, is_starred, was_last_attempt_correct, last_answered_at } = overview;
     const { toggleStarQuestion } = useQuestionOverviewStore();
 
@@ -70,7 +70,7 @@ const QuestionOverview = ({ overview }: Props) => {
     );
 };
 
-export default QuestionOverview;
+export { QuestionOverviewItem };
 
 const styles = StyleSheet.create({
     container: {

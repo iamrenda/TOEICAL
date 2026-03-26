@@ -12,7 +12,7 @@ const AuthHeader = () => {
     );
 };
 
-export default AuthHeader;
+export { AuthHeader };
 
 const styles = StyleSheet.create({
     headerContainer: {

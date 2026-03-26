@@ -28,7 +28,7 @@ const AuthFooter = ({ text, linkLabel, linkDir }: Props) => {
     );
 };
 
-export default AuthFooter;
+export { AuthFooter };
 
 const styles = StyleSheet.create({
     container: {

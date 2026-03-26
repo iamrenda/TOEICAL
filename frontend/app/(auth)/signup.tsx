@@ -1,15 +1,15 @@
 import { ScrollView, StyleSheet, View, KeyboardAvoidingView } from "react-native";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Variables from "@/constants/Variables";
-import FormInput from "@/components/auth/textInput";
+import FormInput from "@/components/auth/authTextInput";
 import CustomButton from "@/components/util/customButton";
 import AuthFooter from "@/components/auth/authFooter";
-import AuthHeader from "@/components/auth/header";
+import AuthHeader from "@/components/auth/authHeader";
 import useAuthStore from "@/store/useAuthStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import showAlert from "@/util/alert";
 import { signUpErrorMessages, SignUpErrorType } from "@/types/error";
-import ErrorText from "@/components/auth/errorText";
+import ErrorText from "@/components/auth/authErrorText";
 
 interface Inputs {
     username: string;

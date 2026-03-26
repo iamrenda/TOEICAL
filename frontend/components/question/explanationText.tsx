@@ -53,4 +53,4 @@ function ExplanationText({ htmlContent }: Props) {
     );
 }
 
-export default ExplanationText;
+export { ExplanationText };

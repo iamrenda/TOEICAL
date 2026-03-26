@@ -37,7 +37,7 @@ const FormInput = ({ control, name, label, requirements, style, rules, ...textIn
     />
 );
 
-export default FormInput;
+export { FormInput };
 
 const styles = StyleSheet.create({
     label: {
