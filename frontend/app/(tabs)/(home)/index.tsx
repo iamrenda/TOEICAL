@@ -1,13 +1,18 @@
 import { StyleSheet, Text, View } from "react-native";
-import { GamemodeList, StatusList } from "@/components";
+import { GamemodeList, Header, StatusList } from "@/components";
 import Variables from "@/constants/Variables";
 import useUserStore from "@/store/useUserStore";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Index = () => {
     const { username } = useUserStore();
 
     return (
-        <View style={styles.conatiner}>
+        <SafeAreaView style={styles.conatiner}>
+            <Header style={styles.headerStyle}>
+                <Text style={styles.headerTitleText}>TOEICAL</Text>
+            </Header>
+
             <View style={styles.greetContainer}>
                 <Text style={styles.greetTitle}>おはよう、{username}</Text>
                 <Text style={styles.greetSubtitle}>今日も練習を始めましょう。</Text>
@@ -15,7 +20,7 @@ const Index = () => {
 
             <StatusList />
             <GamemodeList />
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -27,6 +32,15 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         backgroundColor: Variables.white,
         height: "100%",
+    },
+
+    headerStyle: {
+        paddingBottom: 36,
+    },
+    headerTitleText: {
+        color: Variables.primary600,
+        fontWeight: "800",
+        fontSize: 20,
     },
 
     greetContainer: {

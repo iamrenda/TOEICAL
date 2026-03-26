@@ -13,13 +13,7 @@ const HomeLayout = () => {
             <Stack.Screen
                 name="index"
                 options={{
-                    title: "TOEICAL",
-                    headerTitleStyle: {
-                        color: Variables.primary600,
-                        fontWeight: "800",
-                    },
-                    headerTitleAlign: "left",
-                    headerShadowVisible: false,
+                    headerShown: false,
                 }}
             />
             <Stack.Screen

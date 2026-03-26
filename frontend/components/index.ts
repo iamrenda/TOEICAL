@@ -17,4 +17,5 @@ export { QuestionOverviewItem } from "./questionOverview/questionOverviewItem";
 
 export { CustomButton } from "./util/customButton";
 export { Footer } from "./util/footer";
+export { Header } from "./util/header";
 export { HeaderBackIconButton } from "./util/headerBackIconButton";
