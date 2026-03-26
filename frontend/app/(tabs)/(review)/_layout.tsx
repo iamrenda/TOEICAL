@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import Variables from "@/constants/Variables";
 
-const HomeLayout = () => {
+const ReviewLayout = () => {
     return (
         <Stack>
             <Stack.Screen
@@ -19,4 +19,4 @@ const HomeLayout = () => {
     );
 };
 
-export default HomeLayout;
+export default ReviewLayout;

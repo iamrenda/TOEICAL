@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import React from "react";
 import Variables from "@/constants/Variables";
 import FontAwesome from "@expo/vector-icons/build/FontAwesome";
+import useQuestionOverviewStore from "@/store/useQuestionOverview";
 
 type Filter = "all" | "starred";
 
@@ -11,37 +12,32 @@ const filters: { label: string; icon: string | null; iconFilled?: string; value:
 ];
 
 const OverviewQuestionFilter = () => {
-    const [selectedFilter, setSelectedFilter] = useState<Filter>("all");
+    const { selectedFilter, setSelectedFilter } = useQuestionOverviewStore();
 
     return (
         <View style={styles.filterContainer}>
-            {filters.map((filter) => (
-                <Pressable
-                    key={filter.value}
-                    style={[styles.filterButton, selectedFilter === filter.value && styles.selectedFilterButton]}
-                    onPress={() => setSelectedFilter(filter.value)}
-                >
-                    {filter.icon && (
-                        <FontAwesome
-                            name={
-                                selectedFilter === filter.value && filter.iconFilled
-                                    ? filter.iconFilled
-                                    : (filter.icon as any)
-                            }
-                            size={16}
-                            color={selectedFilter === filter.value ? Variables.white : Variables.textTertiary}
-                        />
-                    )}
-                    <Text
-                        style={[
-                            styles.filterButtonText,
-                            selectedFilter === filter.value && styles.selectedFilterButtonText,
-                        ]}
+            {filters.map((filter) => {
+                const isSelected = selectedFilter === filter.value;
+
+                return (
+                    <Pressable
+                        key={filter.value}
+                        style={[styles.filterButton, isSelected && styles.selectedFilterButton]}
+                        onPress={() => setSelectedFilter(filter.value)}
                     >
-                        {filter.label}
-                    </Text>
-                </Pressable>
-            ))}
+                        {filter.icon && (
+                            <FontAwesome
+                                name={isSelected && filter.iconFilled ? filter.iconFilled : (filter.icon as any)}
+                                size={16}
+                                color={isSelected ? Variables.white : Variables.textTertiary}
+                            />
+                        )}
+                        <Text style={[styles.filterButtonText, isSelected && styles.selectedFilterButtonText]}>
+                            {filter.label}
+                        </Text>
+                    </Pressable>
+                );
+            })}
         </View>
     );
 };

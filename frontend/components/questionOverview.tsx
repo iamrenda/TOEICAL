@@ -7,6 +7,7 @@ import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
 import { Link } from "expo-router";
 import getRelativeTime from "@/util/getRelativeTime";
 import QuestionIdLabel from "./question/questionIdLabel";
+import useQuestionOverviewStore from "@/store/useQuestionOverview";
 
 interface Props {
     overview: Overview;
@@ -14,6 +15,9 @@ interface Props {
 
 const QuestionOverview = ({ overview }: Props) => {
     const { id, question, is_starred, was_last_attempt_correct, last_answered_at } = overview;
+    const { toggleStarQuestion } = useQuestionOverviewStore();
+
+    const [isStarred, setIsStarred] = React.useState(is_starred);
 
     const diffInMs = last_answered_at !== null ? Date.now() - new Date(last_answered_at).getTime() : 0;
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
@@ -27,6 +31,12 @@ const QuestionOverview = ({ overview }: Props) => {
 
     const statusLabel = was_last_attempt_correct === null ? "未回答" : was_last_attempt_correct ? "正解" : "不正解";
 
+    const starQuestion = async () => {
+        // UI update for instant feedback
+        setIsStarred(!isStarred);
+        await toggleStarQuestion(id, isStarred);
+    };
+
     return (
         <Link href={`/question/${id.toString()}`} asChild>
             <Pressable>
@@ -34,9 +44,10 @@ const QuestionOverview = ({ overview }: Props) => {
                     <View style={styles.questionIdContainer}>
                         <QuestionIdLabel id={id} />
                         <FontAwesome
-                            name={is_starred ? "star" : "star-o"}
-                            color={is_starred ? Variables.yellow500 : Variables.textTertiary}
+                            name={isStarred ? "star" : "star-o"}
+                            color={isStarred ? Variables.yellow500 : Variables.textTertiary}
                             size={20}
+                            onPress={starQuestion}
                         />
                     </View>
                     <Text style={styles.questionText} numberOfLines={2}>

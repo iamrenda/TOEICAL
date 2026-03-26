@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, ScrollView, StyleSheet, View, Text } from "react-native";
+import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from "react-native";
 import AuthHeader from "@/components/auth/header";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Variables from "@/constants/Variables";
@@ -10,6 +10,7 @@ import useAuthStore from "@/store/useAuthStore";
 import showAlert from "@/util/alert";
 import { LoginErrorType, loginErrorMessages } from "@/types/error";
 import { router } from "expo-router";
+import ErrorText from "@/components/auth/errorText";
 
 interface Inputs {
     email: string;
@@ -20,9 +21,9 @@ const Login = () => {
     const {
         handleSubmit,
         control,
-        formState: { errors },
         setError,
         clearErrors,
+        formState: { errors },
     } = useForm<Inputs>();
     const { login, isLoading } = useAuthStore();
 
@@ -32,19 +33,16 @@ const Login = () => {
 
         clearErrors();
 
-        // Success
-        if (res === null) {
-            router.replace("/home");
+        if (res.success) {
+            router.replace("/");
             return;
         }
 
         const { errorType } = res;
 
-        console.log(errorType);
-
         switch (errorType) {
             case LoginErrorType.INVALID_CREDENTIALS:
-                setError("root", { message: "メールアドレスかパスワードが違います" });
+                setError("root", { message: loginErrorMessages[errorType] });
                 break;
 
             case LoginErrorType.TOO_MANY_ATTEMPTS:
@@ -82,7 +80,7 @@ const Login = () => {
                                 style={styles.formInput}
                             />
 
-                            {errors.root && <Text style={styles.errorText}>{errors.root.message}</Text>}
+                            {errors.root && <ErrorText message={errors.root.message} />}
                             <CustomButton
                                 text="ログイン"
                                 onPress={handleSubmit(onSubmit)}
@@ -116,9 +114,5 @@ const styles = StyleSheet.create({
     formButton: {
         marginTop: 16,
         marginBottom: 16,
-    },
-    errorText: {
-        color: Variables.error,
-        marginBottom: 8,
     },
 });

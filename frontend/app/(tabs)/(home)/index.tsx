@@ -1,14 +1,16 @@
 import { StyleSheet, Text, View } from "react-native";
-import React from "react";
 import Variables from "@/constants/Variables";
 import GamemodeList from "@/components/gamemodeList";
 import StatusList from "@/components/statusList";
+import useUserStore from "@/store/useUserStore";
 
-const Home = () => {
+const Index = () => {
+    const { username } = useUserStore();
+
     return (
         <View style={styles.conatiner}>
             <View style={styles.greetContainer}>
-                <Text style={styles.greetTitle}>おはよう、アレックス</Text>
+                <Text style={styles.greetTitle}>おはよう、{username}</Text>
                 <Text style={styles.greetSubtitle}>今日も練習を始めましょう。</Text>
             </View>
 
@@ -18,7 +20,7 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default Index;
 
 const styles = StyleSheet.create({
     conatiner: {

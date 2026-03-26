@@ -26,3 +26,5 @@ export interface Overview {
     was_last_attempt_correct: boolean | null;
     last_answered_at: string | null;
 }
+
+export type OverviewFilters = "all" | "starred";

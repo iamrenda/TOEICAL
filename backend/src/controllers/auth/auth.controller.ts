@@ -67,7 +67,7 @@ export const userLogin = async (req: ValidatedRequest<{ body: typeof UserLoginSc
 
         refreshTokens.push(refreshToken);
 
-        return res.status(200).json({ accessToken, refreshToken });
+        return res.status(200).json({ username: user.username, accessToken, refreshToken });
     } catch (e) {
         return res.status(500).json({ errorType: "SERVER_ERROR", message: "Internal server error" });
     }

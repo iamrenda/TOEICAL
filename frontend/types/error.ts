@@ -11,3 +11,15 @@ export const loginErrorMessages: Record<LoginErrorType, string> = {
     NETWORK_ERROR: "ネットワークエラー。インターネット接続を確認してください",
     SERVER_ERROR: "サーバーエラーが発生しました。後でもう一度お試しください",
 };
+
+export enum SignUpErrorType {
+    USER_ALREADY_EXISTS = "USER_ALREADY_EXISTS",
+    NETWORK_ERROR = "NETWORK_ERROR",
+    SERVER_ERROR = "SERVER_ERROR",
+}
+
+export const signUpErrorMessages: Record<SignUpErrorType, string> = {
+    USER_ALREADY_EXISTS: "ユーザーは既に存在しています",
+    NETWORK_ERROR: "ネットワークエラー。インターネット接続を確認してください",
+    SERVER_ERROR: "サーバーエラーが発生しました。後でもう一度お試しください",
+};

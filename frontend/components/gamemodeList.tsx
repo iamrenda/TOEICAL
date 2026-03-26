@@ -15,21 +15,21 @@ interface GameModeDetails {
 
 const gamemodes: GameModeDetails[] = [
     {
-        href: "/review",
+        href: "/(tabs)/(review)",
         icon: "book-open",
         title: "リフレッシュ",
         subTitle: "間違えた問題を振り返ろう！",
         hideTabs: false,
     },
     {
-        href: "/home/soloQuizSettings",
+        href: "/(tabs)/(home)/soloQuizSettings",
         icon: "pen-to-square",
         title: "ソロクイズ",
         subTitle: "問題を自分で取り組んでみよう！",
         hideTabs: true,
     },
     {
-        href: "/battle",
+        href: "/(tabs)/battle",
         icon: "gamepad",
         title: "対戦バトル",
         subTitle: "ほかのユーザーと競い合おう！",

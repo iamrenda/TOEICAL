@@ -9,9 +9,9 @@ interface PostgresError extends Error {
 
 // https://www.postgresql.org/docs/current/errcodes-appendix.html
 const errorMapping: Record<string, { status: number; message: string }> = {
-    "23505": { status: 409, message: "This record already exists." },
     "23503": { status: 400, message: "Related record not found." },
     "22P02": { status: 400, message: "Invalid input format." },
+    "23505": { status: 409, message: "This record already exists." },
     "42P01": { status: 500, message: "Database configuration error (Table missing)." },
     "57P01": { status: 503, message: "Database is shutting down." },
     "08006": { status: 503, message: "Database connection failed." },

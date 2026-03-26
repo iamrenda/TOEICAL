@@ -1,5 +1,4 @@
 import { ScrollView, StyleSheet, View, KeyboardAvoidingView } from "react-native";
-import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Variables from "@/constants/Variables";
 import FormInput from "@/components/auth/textInput";
@@ -8,6 +7,9 @@ import AuthFooter from "@/components/auth/authFooter";
 import AuthHeader from "@/components/auth/header";
 import useAuthStore from "@/store/useAuthStore";
 import { SafeAreaView } from "react-native-safe-area-context";
+import showAlert from "@/util/alert";
+import { signUpErrorMessages, SignUpErrorType } from "@/types/error";
+import ErrorText from "@/components/auth/errorText";
 
 interface Inputs {
     username: string;
@@ -16,13 +18,41 @@ interface Inputs {
 }
 
 const Signup = () => {
-    const { handleSubmit, control } = useForm<Inputs>();
+    const {
+        handleSubmit,
+        control,
+        clearErrors,
+        setError,
+        formState: { errors },
+    } = useForm<Inputs>();
     const { isLoading, signUp } = useAuthStore();
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         const { username, email, password } = data;
+        const res = await signUp(username, email, password);
 
-        await signUp(username, email, password);
+        clearErrors();
+
+        if (res.success) {
+            showAlert("サインアップ成功", "アカウントが作成されました。ログインしてください。");
+            return;
+        }
+
+        const { errorType } = res;
+
+        switch (errorType) {
+            case SignUpErrorType.USER_ALREADY_EXISTS:
+                setError("root", { message: signUpErrorMessages[errorType] });
+                break;
+
+            case SignUpErrorType.NETWORK_ERROR:
+            case SignUpErrorType.SERVER_ERROR:
+                showAlert("サインアップエラー", signUpErrorMessages[errorType]);
+                break;
+
+            default:
+                showAlert("サインアップエラー", "不明なエラーが発生しました。もう一度お試しください。");
+        }
     };
 
     return (
@@ -71,6 +101,8 @@ const Signup = () => {
                                 secureTextEntry
                                 style={styles.formInput}
                             />
+
+                            {errors.root && <ErrorText message={errors.root.message} />}
                             <CustomButton
                                 text="新規作成"
                                 onPress={handleSubmit(onSubmit)}

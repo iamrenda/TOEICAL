@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
-import { useState } from "react";
+import React from "react";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Variables from "@/constants/Variables";
 import CustomPickerModal from "@/components/customPickerModal";
@@ -14,9 +14,9 @@ const problemTypes = [
 ];
 
 const SoloQuizSettingsStack = () => {
-    const [questionCount, setQuestionCount] = useState(20);
-    const [isPickerVisible, setIsPickerVisible] = useState(false);
-    const [selectedProblemType, setSelectedProblemType] = useState(1);
+    const [questionCount, setQuestionCount] = React.useState(20);
+    const [isPickerVisible, setIsPickerVisible] = React.useState(false);
+    const [selectedProblemType, setSelectedProblemType] = React.useState(1);
 
     return (
         <View style={styles.container}>
@@ -84,6 +84,7 @@ const SoloQuizSettingsStack = () => {
                     iconName="angle-right"
                     isSelected={true}
                     onPress={() => console.log("Start Session")}
+                    flex={1}
                 />
             </Footer>
         </View>
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
     subtitleText: {
         fontSize: 18,
         color: Variables.textSecondary,
-        marginBottom: 24,
+        marginBottom: 32,
     },
 
     questionCountSettingsContainer: {
@@ -122,11 +123,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        marginBottom: 16,
+        marginBottom: 20,
     },
     questionTypeSettingsContainer: {
         width: "100%",
-        marginBottom: 16,
+        marginBottom: 20,
     },
     questionSettingsTitleContainer: {
         flexDirection: "row",
