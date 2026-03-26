@@ -12,7 +12,7 @@ interface Props {
     [x: string]: any;
 }
 
-const FormInput = ({ control, name, label, requirements, style, rules, ...textInputProps }: Props) => (
+const AuthTextInput = ({ control, name, label, requirements, style, rules, ...textInputProps }: Props) => (
     <Controller
         control={control}
         name={name}
@@ -37,7 +37,7 @@ const FormInput = ({ control, name, label, requirements, style, rules, ...textIn
     />
 );
 
-export { FormInput };
+export { AuthTextInput };
 
 const styles = StyleSheet.create({
     label: {

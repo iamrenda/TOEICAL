@@ -1,15 +1,11 @@
 import { ScrollView, StyleSheet, View, KeyboardAvoidingView } from "react-native";
 import { useForm, SubmitHandler } from "react-hook-form";
 import Variables from "@/constants/Variables";
-import FormInput from "@/components/auth/authTextInput";
-import CustomButton from "@/components/util/customButton";
-import AuthFooter from "@/components/auth/authFooter";
-import AuthHeader from "@/components/auth/authHeader";
 import useAuthStore from "@/store/useAuthStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import showAlert from "@/util/alert";
 import { signUpErrorMessages, SignUpErrorType } from "@/types/error";
-import ErrorText from "@/components/auth/authErrorText";
+import { AuthTextInput, CustomButton, AuthFooter, AuthHeader, AuthErrorText } from "@/components";
 
 interface Inputs {
     username: string;
@@ -63,7 +59,7 @@ const Signup = () => {
                         <AuthHeader />
 
                         <View style={styles.formContainer}>
-                            <FormInput
+                            <AuthTextInput
                                 control={control}
                                 name="username"
                                 label="Username"
@@ -71,7 +67,7 @@ const Signup = () => {
                                 style={styles.formInput}
                                 rules={{ required: "この項目は必須です" }}
                             />
-                            <FormInput
+                            <AuthTextInput
                                 control={control}
                                 name="email"
                                 label="Email"
@@ -84,7 +80,7 @@ const Signup = () => {
                                 }}
                                 style={styles.formInput}
                             />
-                            <FormInput
+                            <AuthTextInput
                                 control={control}
                                 name="password"
                                 label="Password"
@@ -102,7 +98,7 @@ const Signup = () => {
                                 style={styles.formInput}
                             />
 
-                            {errors.root && <ErrorText message={errors.root.message} />}
+                            {errors.root && <AuthErrorText message={errors.root.message} />}
                             <CustomButton
                                 text="新規作成"
                                 onPress={handleSubmit(onSubmit)}

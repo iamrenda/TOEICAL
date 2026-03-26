@@ -7,7 +7,7 @@ import useQuestionOverviewStore from "@/store/useQuestionOverview";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Overview } from "@/types/question";
 import { Link } from "expo-router";
-import { QuestionIdLabel } from "@/components";
+import { QuestionIdLabel } from "../question/questionIdLabel";
 
 interface Props {
     overview: Overview;

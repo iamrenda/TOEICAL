@@ -4,46 +4,51 @@ import axios from "axios";
 import { getItemAsync } from "expo-secure-store";
 
 const api = axios.create({
-    baseURL: `${Links.BASE_URL_API}`,
-    headers: {
-        "Content-Type": "application/json",
-    },
+    baseURL: Links.BASE_URL_API,
+    headers: { "Content-Type": "application/json" },
 });
 
-api.interceptors.request.use(
-    async (config) => {
-        const accessToken = useAuthStore.getState().accessToken;
+api.interceptors.request.use(async (config) => {
+    const accessToken = useAuthStore.getState().accessToken;
 
-        if (accessToken) {
-            config.headers["Authorization"] = `Bearer ${accessToken}`;
-        }
+    if (accessToken) {
+        config.headers.Authorization = `Bearer ${accessToken}`;
+    }
 
-        return config;
-    },
-    async (e) => {
-        const status = e.response?.status ?? 500;
+    return config;
+});
 
-        if (status === 401) {
-            const refreshToken = await getItemAsync("refreshToken");
+// 401 Response handler
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
 
-            if (refreshToken) {
-                try {
-                    const res = await axios.post(`${Links.BASE_URL_API}/auth/token`, { token: refreshToken });
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            try {
+                const refreshToken = await getItemAsync("refreshToken");
+
+                if (refreshToken) {
+                    const res = await axios.post(`${Links.BASE_URL_AUTH}/token`, {
+                        token: refreshToken,
+                    });
+
                     const newAccessToken = res.data.accessToken;
 
                     useAuthStore.setState({ accessToken: newAccessToken });
 
-                    return axios(e.config);
-                } catch (refreshError) {
-                    useAuthStore.setState({ accessToken: null, isLoggedIn: false });
-                    return Promise.reject(refreshError);
+                    originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                    return api(originalRequest);
                 }
-            } else {
+            } catch (refreshError) {
                 useAuthStore.setState({ accessToken: null, isLoggedIn: false });
+                return Promise.reject(refreshError);
             }
         }
 
-        return Promise.reject(e);
+        return Promise.reject(error);
     },
 );
 

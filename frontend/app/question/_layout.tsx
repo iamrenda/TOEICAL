@@ -1,4 +1,4 @@
-import HeaderBackIconButton from "@/components/util/headerBackIconButton";
+import { HeaderBackIconButton } from "@/components/util/headerBackIconButton";
 import { Stack } from "expo-router";
 
 const QuestionLayout = () => {

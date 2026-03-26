@@ -1,20 +1,20 @@
-export * from "./auth/authFooter";
-export * from "./auth/authErrorText";
-export * from "./auth/authHeader";
-export * from "./auth/authTextInput";
+export { AuthFooter } from "./auth/authFooter";
+export { AuthErrorText } from "./auth/authErrorText";
+export { AuthHeader } from "./auth/authHeader";
+export { AuthTextInput } from "./auth/authTextInput";
 
-export * from "./home/gamemodeList";
-export * from "./home/statusList";
+export { GamemodeList } from "./home/gamemodeList";
+export { StatusList } from "./home/statusList";
 
-export * from "./modal/questionNumberPickerModal";
+export { QuestionNumberPickerModal } from "./modal/questionNumberPickerModal";
 
-export * from "./question/explanationText";
-export * from "./question/questionIdLabel";
-export * from "./question/questionOption";
+export { ExplanationText } from "./question/explanationText";
+export { QuestionIdLabel } from "./question/questionIdLabel";
+export { QuestionOption } from "./question/questionOption";
 
-export * from "./questionOverview/questionOverviewFilter";
-export * from "./questionOverview/questionOverviewItem";
+export { QuestionOverviewFilter } from "./questionOverview/questionOverviewFilter";
+export { QuestionOverviewItem } from "./questionOverview/questionOverviewItem";
 
-export * from "./util/customButton";
-export * from "./util/footer";
-export * from "./util/headerBackIconButton";
+export { CustomButton } from "./util/customButton";
+export { Footer } from "./util/footer";
+export { HeaderBackIconButton } from "./util/headerBackIconButton";

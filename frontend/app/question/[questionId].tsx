@@ -1,13 +1,9 @@
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Question } from "@/types/question";
 import Variables from "@/constants/Variables";
-import Footer from "@/components/util/footer";
-import OptionComponent from "@/components/question/questionOption";
-import CustomButton from "@/components/util/customButton";
-import QuestionIdLabel from "@/components/question/questionIdLabel";
 import useQuestionStore from "@/store/useQuestion";
+import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Footer, QuestionOption, CustomButton, QuestionIdLabel } from "@/components";
 
 const optionLetter = ["A", "B", "C", "D"];
 
@@ -42,7 +38,7 @@ const QuestionScreen = () => {
             {question.options
                 .sort((a, b) => a.option_id - b.option_id)
                 .map((option, index) => (
-                    <OptionComponent
+                    <QuestionOption
                         key={option.option_id}
                         isCorrect={option.option_id === question.correct_option_id}
                         option={option}

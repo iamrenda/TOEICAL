@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { LoginErrorType, loginErrorMessages } from "@/types/error";
 import { router } from "expo-router";
-import { AuthHeader, FormInput, CustomButton, AuthFooter, ErrorText } from "@/components";
+import { AuthHeader, AuthTextInput, CustomButton, AuthFooter, AuthErrorText } from "@/components";
 
 interface Inputs {
     email: string;
@@ -60,14 +60,14 @@ const Login = () => {
                         <AuthHeader />
 
                         <View>
-                            <FormInput
+                            <AuthTextInput
                                 control={control}
                                 name="email"
                                 label="Email"
                                 rules={{ required: "This is required" }}
                                 style={styles.formInput}
                             />
-                            <FormInput
+                            <AuthTextInput
                                 control={control}
                                 name="password"
                                 label="Password"
@@ -76,7 +76,7 @@ const Login = () => {
                                 style={styles.formInput}
                             />
 
-                            {errors.root && <ErrorText message={errors.root.message} />}
+                            {errors.root && <AuthErrorText message={errors.root.message} />}
                             <CustomButton
                                 text="ログイン"
                                 onPress={handleSubmit(onSubmit)}

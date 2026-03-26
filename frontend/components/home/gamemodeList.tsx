@@ -29,7 +29,7 @@ const gamemodes: GameModeDetails[] = [
         hideTabs: true,
     },
     {
-        href: "/(tabs)/battle",
+        href: "/(tabs)/quiz",
         icon: "gamepad",
         title: "対戦バトル",
         subTitle: "ほかのユーザーと競い合おう！",

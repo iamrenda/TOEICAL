@@ -5,11 +5,11 @@ interface Props {
     message?: string;
 }
 
-const ErrorText = ({ message }: Props) => {
+const AuthErrorText = ({ message }: Props) => {
     return <Text style={styles.errorText}>{message}</Text>;
 };
 
-export { ErrorText };
+export { AuthErrorText };
 
 const styles = StyleSheet.create({
     errorText: {

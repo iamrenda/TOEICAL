@@ -1,10 +1,9 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { Question } from "@/types/question";
-import QuestionIdLabel from "@/components/question/questionIdLabel";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Variables from "@/constants/Variables";
-import ExplanationText from "@/components/question/explanationText";
+import { QuestionIdLabel, ExplanationText } from "@/components";
 
 const ExplanationModal = () => {
     const question: Question = {

@@ -11,7 +11,7 @@ const filters: { label: string; icon: string | null; iconFilled?: string; value:
     { label: "お気に入り", icon: "star-o", iconFilled: "star", value: "starred" },
 ];
 
-const OverviewQuestionFilter = () => {
+const QuestionOverviewFilter = () => {
     const { selectedFilter, setSelectedFilter } = useQuestionOverviewStore();
 
     return (
@@ -42,7 +42,7 @@ const OverviewQuestionFilter = () => {
     );
 };
 
-export { OverviewQuestionFilter };
+export { QuestionOverviewFilter };
 
 const styles = StyleSheet.create({
     filterContainer: {

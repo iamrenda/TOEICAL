@@ -1,6 +1,6 @@
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import React from "react";
-import { QuestionOverviewItem, OverviewQuestionFilter } from "@/components";
+import { QuestionOverviewItem, QuestionOverviewFilter } from "@/components";
 import Variables from "@/constants/Variables";
 import useQuestionOverviewStore from "@/store/useQuestionOverview";
 
@@ -11,9 +11,13 @@ const ReviewScreen = () => {
         fetchQuestions();
     }, []);
 
+    if (isLoading) {
+        return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: "center", alignItems: "center" }} />;
+    }
+
     return (
         <View style={styles.container}>
-            <OverviewQuestionFilter />
+            <QuestionOverviewFilter />
 
             {isLoading ? (
                 <ActivityIndicator size="large" style={{ marginTop: 36 }} />

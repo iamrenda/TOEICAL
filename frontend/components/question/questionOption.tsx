@@ -1,7 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { Option } from "@/types/question";
 import Variables from "@/constants/Variables";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Option } from "@/types/question";
 
 const QuestionOption = ({
     option,
