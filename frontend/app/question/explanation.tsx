@@ -1,53 +1,20 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { Question } from "@/types/question";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Variables from "@/constants/Variables";
 import { QuestionIdLabel, ExplanationText } from "@/components";
+import useQuestionStore from "@/store/useQuestion";
 
 const ExplanationModal = () => {
-    const question: Question = {
-        id: 3,
-        question:
-            "——– you experience any problems with the building’s equipment, you should contact the property manager.",
-        correct_option_id: 12,
-        translated_question: "建物の設備に何らかの不具合があった場合、不動産管理人に連絡してください。",
-        type_description:
-            "選択肢を見ると、前置詞句、前置詞句、副詞、接続詞の【接続詞・前置詞・副詞問題】であることがわかります。",
-        is_starred: true,
-        options: [
-            {
-                option: "Because of",
-                option_id: 9,
-                translated_option: "Because of（前置詞：～の理由で）",
-            },
-            {
-                option: "If",
-                option_id: 12,
-                translated_option: "If（もし～ならば）",
-            },
-            {
-                option: "Immediately",
-                option_id: 11,
-                translated_option: "Immediately（副詞；すぐに）",
-            },
-            {
-                option: "In case of",
-                option_id: 10,
-                translated_option: "In case of（前置詞；～の場合に備えて）",
-            },
-        ],
-        detailed_descriptions: [
-            '——– <strong><span style="color:#cf2e2e" class="color">you experience</span></strong> any problems with the building’s equipment, <strong><span style="color:#cf2e2e" class="color">you should contact </span></strong>the property manager.',
-            "この問題のように、主語と動詞を確認して接続詞が入ることがわかり、選択肢の中に接続詞が１つだけならば文全体の意味を考える必要はありません。接続詞の候補が２つ以上ある場合は、全体の意味をとる必要があります。",
-            "この問題は文の主語・動詞の確認のみで判断できるので全文の意味を考える必要のない<strong>「部分読み問題」</strong>となります。<strong></strong>",
-            "空所の後ろの形を見ます。you experienceで主語+動詞の形で、カンマ以降もyou should contactで主語+動詞の形になっています。したがって空所には接続詞が入ることがわかります。選択肢の中で接続詞は(D) If（もし～ならば）だけなので(D)を選びます。",
-        ],
-        translated_vocabs: ["equipment（機器、装置）", "property（不動産、物件）"],
-    };
+    const { question, selectedOptionId } = useQuestionStore();
+
+    if (!question) {
+        return null;
+    }
 
     const correctOption = question.options.find((o) => o.option_id === question.correct_option_id);
-    const wasCorrect = false; // DUMMY
+    const selectedOption = question.options.find((o) => o.option_id === selectedOptionId);
+    const wasCorrect = selectedOptionId === question.correct_option_id;
 
     const joinedDescription = question.detailed_descriptions.join("<br/><br/>");
 
@@ -73,7 +40,7 @@ const ExplanationModal = () => {
                     <Text
                         style={[styles.optionText, wasCorrect ? styles.correctOptionText : styles.incorrectOptionText]}
                     >
-                        Conclude
+                        {selectedOption ? selectedOption.option : "未選択"}
                     </Text>
                 </View>
             </View>

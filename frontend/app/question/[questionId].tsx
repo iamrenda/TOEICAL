@@ -9,15 +9,18 @@ const optionLetter = ["A", "B", "C", "D"];
 
 const QuestionScreen = () => {
     const { questionId } = useLocalSearchParams();
-    const { question, fetchQuestion, isLoading } = useQuestionStore();
+    const { isLoading, selectedOptionId, question, fetchQuestion, submitAnswer } = useQuestionStore();
 
-    const [selectedOptionId, setSelectedOptionId] = React.useState<number | null>(null);
     const [isSubmitted, setIsSubmitted] = React.useState(false);
 
     const router = useRouter();
 
     const onSubmit = () => {
         setIsSubmitted(true);
+
+        if (questionId && selectedOptionId) {
+            submitAnswer(Number(questionId), selectedOptionId);
+        }
     };
 
     React.useEffect(() => {
@@ -44,7 +47,9 @@ const QuestionScreen = () => {
                         option={option}
                         letter={optionLetter[index]}
                         isSelected={selectedOptionId === option.option_id}
-                        onPress={() => setSelectedOptionId(option.option_id)}
+                        onPress={() =>
+                            !isSubmitted && useQuestionStore.setState({ selectedOptionId: option.option_id })
+                        }
                         isSubmitted={isSubmitted}
                     />
                 ))}

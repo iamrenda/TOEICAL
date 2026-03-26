@@ -4,13 +4,16 @@ import api from "@/api/api";
 
 interface QuestionState {
     question: Question | null;
+    selectedOptionId: number | null;
     isLoading: boolean;
 
     fetchQuestion: (questionId: number) => Promise<void>;
+    submitAnswer: (questionId: number, selectedOptionId: number) => Promise<void>;
 }
 
-const useQuestionStore = create<QuestionState>((set) => ({
+const useQuestionStore = create<QuestionState>((set, get) => ({
     question: null,
+    selectedOptionId: null,
     isLoading: false,
 
     fetchQuestion: async (questionId: number) => {
@@ -23,6 +26,18 @@ const useQuestionStore = create<QuestionState>((set) => ({
             console.log("Error fetching question:", e);
         } finally {
             set({ isLoading: false });
+        }
+    },
+
+    submitAnswer: async (questionId: number, selectedOptionId: number) => {
+        const wasCorrect = selectedOptionId === (get().question?.correct_option_id ?? -1);
+
+        try {
+            await api.post(`/question/history/${questionId}`, {
+                wasCorrect,
+            });
+        } catch (e) {
+            console.log("Error submitting answer:", e);
         }
     },
 }));

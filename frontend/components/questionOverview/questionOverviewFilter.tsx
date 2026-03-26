@@ -46,6 +46,7 @@ export { QuestionOverviewFilter };
 
 const styles = StyleSheet.create({
     filterContainer: {
+        backgroundColor: Variables.white,
         flexDirection: "row",
         alignItems: "center",
         gap: 12,

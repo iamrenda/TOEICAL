@@ -1,11 +1,14 @@
-import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import React from "react";
-import { QuestionOverviewItem, QuestionOverviewFilter } from "@/components";
 import Variables from "@/constants/Variables";
 import useQuestionOverviewStore from "@/store/useQuestionOverview";
+import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
+import { QuestionOverviewItem, QuestionOverviewFilter } from "@/components";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ReviewScreen = () => {
     const { fetchQuestions, questions, isLoading } = useQuestionOverviewStore();
+
+    const insets = useSafeAreaInsets();
 
     React.useEffect(() => {
         fetchQuestions();
@@ -16,19 +19,23 @@ const ReviewScreen = () => {
     }
 
     return (
-        <View style={styles.container}>
-            <QuestionOverviewFilter />
+        <View style={{ flex: 1, backgroundColor: "red" }}>
+            <View style={{ height: insets.top, backgroundColor: Variables.white }} />
 
-            {isLoading ? (
-                <ActivityIndicator size="large" style={{ marginTop: 36 }} />
-            ) : (
-                <FlatList
-                    data={questions}
-                    renderItem={({ item }) => <QuestionOverviewItem overview={item} />}
-                    keyExtractor={(item) => item.id.toString()}
-                    contentContainerStyle={styles.contentContainer}
-                />
-            )}
+            <View style={styles.container}>
+                <QuestionOverviewFilter />
+
+                {isLoading ? (
+                    <ActivityIndicator size="large" style={{ marginTop: 36 }} />
+                ) : (
+                    <FlatList
+                        data={questions}
+                        renderItem={({ item }) => <QuestionOverviewItem overview={item} />}
+                        keyExtractor={(item) => item.id.toString()}
+                        contentContainerStyle={styles.contentContainer}
+                    />
+                )}
+            </View>
         </View>
     );
 };
@@ -41,6 +48,7 @@ const styles = StyleSheet.create({
         backgroundColor: Variables.background,
     },
     contentContainer: {
+        paddingTop: 16,
         paddingHorizontal: 24,
         paddingBottom: 96,
     },
