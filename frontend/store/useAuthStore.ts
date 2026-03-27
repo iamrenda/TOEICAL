@@ -1,10 +1,12 @@
 import Links from "@/constants/Links";
 import useUserStore from "./useUserStore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { isAxiosError } from "axios";
 import { create } from "zustand";
 import { UserLoginResponse } from "@/types/auth";
 import { LoginErrorType, SignUpErrorType } from "@/types/error";
 import { setItemAsync, deleteItemAsync, getItemAsync } from "expo-secure-store";
+import { UserStorageData } from "@/types/user";
 
 interface SignUpResponse {
     success: boolean;
@@ -51,6 +53,13 @@ const useAuthStore = create<AuthState>((set) => ({
             const accessToken = await getItemAsync("accessToken");
 
             if (accessToken) {
+                const storageData = await AsyncStorage.getItem("user-data");
+
+                if (storageData) {
+                    const userData: UserStorageData = JSON.parse(storageData);
+                    useUserStore.setState({ username: userData.username });
+                }
+
                 set({ accessToken, isLoggedIn: true });
             }
         } catch (e) {
@@ -96,10 +105,15 @@ const useAuthStore = create<AuthState>((set) => ({
 
             const { username, accessToken, refreshToken } = res.data;
 
-            set({ isLoggedIn: true, accessToken });
             await setItemAsync("accessToken", accessToken);
             await setItemAsync("refreshToken", refreshToken);
+
+            const userData: UserStorageData = { username };
+
+            await AsyncStorage.setItem("user-data", JSON.stringify(userData));
+
             useUserStore.setState({ username });
+            set({ isLoggedIn: true, accessToken });
 
             return { success: true };
         } catch (e) {
