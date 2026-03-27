@@ -1,7 +1,7 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 import React from "react";
 import Variables from "@/constants/Variables";
 import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
+import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
 
 interface Props {
     text: string;

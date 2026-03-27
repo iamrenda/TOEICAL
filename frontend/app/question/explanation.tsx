@@ -1,9 +1,9 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { FontAwesome6 } from "@expo/vector-icons";
 import Variables from "@/constants/Variables";
-import { QuestionIdLabel, ExplanationText } from "@/components";
 import useQuestionStore from "@/store/useQuestion";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { FontAwesome6 } from "@expo/vector-icons";
+import { QuestionIdLabel, ExplanationText } from "@/components";
 
 const ExplanationModal = () => {
     const { question, selectedOptionId } = useQuestionStore();

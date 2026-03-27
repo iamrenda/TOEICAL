@@ -1,6 +1,6 @@
+import Variables from "@/constants/Variables";
 import { StyleSheet, Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
-import Variables from "@/constants/Variables";
 
 const AuthHeader = () => {
     return (

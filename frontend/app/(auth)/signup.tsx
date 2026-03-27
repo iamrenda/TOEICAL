@@ -1,9 +1,9 @@
-import { ScrollView, StyleSheet, View, KeyboardAvoidingView } from "react-native";
-import { useForm, SubmitHandler } from "react-hook-form";
 import Variables from "@/constants/Variables";
 import useAuthStore from "@/store/useAuthStore";
-import { SafeAreaView } from "react-native-safe-area-context";
 import showAlert from "@/util/alert";
+import { ScrollView, StyleSheet, View, KeyboardAvoidingView } from "react-native";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { signUpErrorMessages, SignUpErrorType } from "@/types/error";
 import { AuthTextInput, CustomButton, AuthFooter, AuthHeader, AuthErrorText } from "@/components";
 

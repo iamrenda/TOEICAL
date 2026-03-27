@@ -1,6 +1,6 @@
-import { StyleSheet, Text } from "react-native";
 import React from "react";
 import Variables from "@/constants/Variables";
+import { StyleSheet, Text } from "react-native";
 
 interface Props {
     id: number;

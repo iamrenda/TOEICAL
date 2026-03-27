@@ -1,5 +1,5 @@
-import { StyleSheet, Text } from "react-native";
 import Variables from "@/constants/Variables";
+import { StyleSheet, Text } from "react-native";
 
 interface Props {
     message?: string;

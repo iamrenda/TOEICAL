@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
-import { Href, Link } from "expo-router";
 import React from "react";
 import Variables from "@/constants/Variables";
+import { StyleSheet, Text, View } from "react-native";
+import { Href, Link } from "expo-router";
 
 interface Props {
     text: string;

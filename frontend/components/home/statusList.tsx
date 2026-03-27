@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
 import React from "react";
 import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
 import Variables from "@/constants/Variables";
+import { StyleSheet, Text, View } from "react-native";
 
 interface Status {
     color: string;

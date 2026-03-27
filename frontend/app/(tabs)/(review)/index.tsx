@@ -3,7 +3,7 @@ import Variables from "@/constants/Variables";
 import useQuestionOverviewStore from "@/store/useQuestionOverview";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { QuestionOverviewItem, QuestionOverviewFilter } from "@/components";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ReviewScreen = () => {
     const { fetchQuestions, questions, isLoading } = useQuestionOverviewStore();

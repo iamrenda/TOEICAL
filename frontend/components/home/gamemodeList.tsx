@@ -1,9 +1,9 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Href, Link } from "expo-router";
 import React from "react";
 import Variables from "@/constants/Variables";
 import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
 import useSettingsStore from "@/store/useSettingsStore";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Href, Link } from "expo-router";
 
 interface GameModeDetails {
     href: Href;

@@ -1,6 +1,6 @@
+import React from "react";
 import useAuthStore from "@/store/useAuthStore";
 import { SplashScreen, Stack } from "expo-router";
-import React from "react";
 
 const RootLayout = () => {
     const { isLoggedIn, isLoading, initialize } = useAuthStore();

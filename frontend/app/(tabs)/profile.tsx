@@ -1,5 +1,5 @@
 import useAuthStore from "@/store/useAuthStore";
-import { Button, StyleSheet, View } from "react-native";
+import { Button, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Profile = () => {

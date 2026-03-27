@@ -1,9 +1,9 @@
-import { StyleSheet, View } from "react-native";
 import React from "react";
 import Variables from "@/constants/Variables";
+import { StyleSheet, View } from "react-native";
 
 interface Props {
-    style: any;
+    style?: any;
     children: React.ReactNode;
 }
 

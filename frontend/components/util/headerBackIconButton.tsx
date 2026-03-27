@@ -4,12 +4,13 @@ import { Pressable } from "react-native";
 
 interface Props {
     iconName: string;
+    onPress?: () => void;
 }
 
-const HeaderBackIconButton = ({ iconName }: Props) => {
+const HeaderBackIconButton = ({ iconName, onPress }: Props) => {
     return (
         <Link href=".." asChild>
-            <Pressable>
+            <Pressable onPress={onPress}>
                 <FontAwesome6 name={iconName} size={24} color="black" />
             </Pressable>
         </Link>

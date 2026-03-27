@@ -1,10 +1,10 @@
 import Links from "@/constants/Links";
+import useUserStore from "./useUserStore";
 import axios, { isAxiosError } from "axios";
 import { create } from "zustand";
 import { UserLoginResponse } from "@/types/auth";
 import { LoginErrorType, SignUpErrorType } from "@/types/error";
 import { setItemAsync, deleteItemAsync, getItemAsync } from "expo-secure-store";
-import useUserStore from "./useUserStore";
 
 interface SignUpResponse {
     success: boolean;

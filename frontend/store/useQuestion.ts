@@ -1,6 +1,6 @@
+import api from "@/api/api";
 import { create } from "zustand";
 import { Question } from "@/types/question";
-import api from "@/api/api";
 
 interface QuestionState {
     question: Question | null;

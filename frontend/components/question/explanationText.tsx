@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { WebView } from "react-native-webview";
 import Variables from "@/constants/Variables";
 
@@ -7,7 +7,7 @@ interface Props {
 }
 
 function ExplanationText({ htmlContent }: Props) {
-    const [height, setHeight] = useState(0);
+    const [height, setHeight] = React.useState(0);
 
     const html = `
     <html>
