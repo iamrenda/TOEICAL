@@ -4,7 +4,7 @@ export const QuestionIdSchema = z.object({
     questionId: z.coerce.number().min(1),
 });
 
-export const StarredQuestionSchema = z.object({
+export const OverviewQuestionSchema = z.object({
     sortBy: z.string(),
     limit: z.coerce.number(),
     page: z.coerce.number().min(1),
@@ -20,8 +20,19 @@ export const StarredQuestionSchema = z.object({
     }),
 });
 
+export const NextQuestionSchema = OverviewQuestionSchema.pick({ sortBy: true, starred: true });
+
 export const RandomQuestionSchema = z.object({
-    isStarred: z.stringbool(),
+    isStarred: z.string().transform((val, ctx) => {
+        if (val.toLowerCase() === "true") return true;
+        if (val.toLowerCase() === "false") return false;
+        ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "isStarred must be 'true' or 'false'",
+        });
+
+        return z.NEVER;
+    }),
     count: z.coerce.number().min(1),
 });
 
