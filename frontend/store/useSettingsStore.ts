@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
 interface SettingsState {
-    isTabsHidden: boolean;
+    isVisible: boolean;
     setTabsVisibility: (status: boolean) => void;
 }
 
 const useSettingsStore = create<SettingsState>((set) => ({
-    isTabsHidden: false,
-    setTabsVisibility: (status) => set(() => ({ isTabsHidden: status })),
+    isVisible: true,
+    setTabsVisibility: (status) => set(() => ({ isVisible: status })),
 }));
 
 export default useSettingsStore;

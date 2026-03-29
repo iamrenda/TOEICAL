@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { isAxiosError } from "axios";
 import { create } from "zustand";
 import { UserLoginResponse } from "@/types/auth";
-import { LoginErrorType, SignUpErrorType } from "@/types/error";
+import { loginErrorCodeTypeMapping, LoginErrorType, signUpErrorCodeTypeMapping, SignUpErrorType } from "@/types/error";
 import { setItemAsync, deleteItemAsync, getItemAsync } from "expo-secure-store";
 import { UserStorageData } from "@/types/user";
 
@@ -29,17 +29,6 @@ interface AuthState {
     login: (email: string, password: string) => Promise<LoginResponse>;
     logout: () => Promise<void>;
 }
-
-const loginErrorMessages: Record<number, LoginErrorType> = {
-    401: LoginErrorType.INVALID_CREDENTIALS,
-    429: LoginErrorType.TOO_MANY_ATTEMPTS,
-    500: LoginErrorType.SERVER_ERROR,
-};
-
-const signUpErrorMessages: Record<number, SignUpErrorType> = {
-    409: SignUpErrorType.USER_ALREADY_EXISTS,
-    500: SignUpErrorType.SERVER_ERROR,
-};
 
 const useAuthStore = create<AuthState>((set) => ({
     accessToken: null,
@@ -83,7 +72,7 @@ const useAuthStore = create<AuthState>((set) => ({
         } catch (e) {
             if (isAxiosError(e)) {
                 const status = e.response?.status;
-                const errorType = signUpErrorMessages[status || 500];
+                const errorType = signUpErrorCodeTypeMapping[status || 500];
 
                 return { success: false, errorType };
             }
@@ -119,7 +108,7 @@ const useAuthStore = create<AuthState>((set) => ({
         } catch (e) {
             if (isAxiosError(e)) {
                 const status = e.response?.status;
-                const errorType = loginErrorMessages[status || 500];
+                const errorType = loginErrorCodeTypeMapping[status || 500];
 
                 return { success: false, errorType };
             }

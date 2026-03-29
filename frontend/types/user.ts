@@ -1,5 +1,3 @@
-interface UserStorageData {
+export interface UserStorageData {
     username: string;
 }
-
-export type { UserStorageData };

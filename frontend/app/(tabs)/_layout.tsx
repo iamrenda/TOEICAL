@@ -7,7 +7,7 @@ import { ActivityIndicator, View } from "react-native";
 
 function TabLayout() {
     const { isLoading, isLoggedIn } = useAuthStore();
-    const { isTabsHidden } = useSettingsStore();
+    const { isVisible } = useSettingsStore();
 
     if (isLoading) {
         return (
@@ -22,7 +22,7 @@ function TabLayout() {
     }
 
     return (
-        <NativeTabs tintColor={Variables.primary600} hidden={isTabsHidden}>
+        <NativeTabs tintColor={Variables.primary600} hidden={!isVisible}>
             <NativeTabs.Trigger name="(home)">
                 <NativeTabs.Trigger.Label>ホーム</NativeTabs.Trigger.Label>
                 <NativeTabs.Trigger.Icon sf="house.fill" md="home" />

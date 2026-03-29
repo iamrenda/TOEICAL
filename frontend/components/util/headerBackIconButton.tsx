@@ -1,5 +1,5 @@
 import { FontAwesome6 } from "@expo/vector-icons";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import { Pressable } from "react-native";
 
 interface Props {
@@ -8,12 +8,19 @@ interface Props {
 }
 
 const HeaderBackIconButton = ({ iconName, onPress }: Props) => {
+    const router = useRouter();
+
+    const handlePress = () => {
+        if (onPress) {
+            onPress();
+        }
+        router.back();
+    };
+
     return (
-        <Link href=".." asChild>
-            <Pressable onPress={onPress}>
-                <FontAwesome6 name={iconName} size={24} color="black" />
-            </Pressable>
-        </Link>
+        <Pressable onPress={handlePress}>
+            <FontAwesome6 name={iconName} size={24} color="black" />
+        </Pressable>
     );
 };
 

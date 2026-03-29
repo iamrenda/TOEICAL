@@ -32,8 +32,7 @@ const QuestionOverviewItem = ({ overview }: Props) => {
     const statusLabel = was_last_attempt_correct === null ? "未回答" : was_last_attempt_correct ? "正解" : "不正解";
 
     const starQuestion = async () => {
-        // UI update for instant feedback
-        setIsStarred(!isStarred);
+        setIsStarred(!isStarred); // UI update for instant feedback
         await toggleStarQuestion(id, isStarred);
     };
 

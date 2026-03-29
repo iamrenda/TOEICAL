@@ -18,7 +18,9 @@ const HomeLayout = () => {
                 options={{
                     title: "",
                     animation: "slide_from_bottom",
-                    headerLeft: () => <HeaderBackIconButton onPress={() => setTabsVisibility(true)} iconName="close" />,
+                    headerLeft: () => (
+                        <HeaderBackIconButton onPress={() => setTabsVisibility(true)} iconName="xmark" />
+                    ),
                     headerShadowVisible: false,
                 }}
             />

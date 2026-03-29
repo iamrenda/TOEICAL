@@ -3,8 +3,8 @@ import { Picker } from "@react-native-picker/picker";
 
 interface Props {
     visible: boolean;
-    onClose: () => void;
     value: number;
+    onClose: () => void;
     setValue: (value: number) => void;
 }
 

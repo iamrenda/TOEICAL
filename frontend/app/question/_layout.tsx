@@ -1,4 +1,5 @@
 import { HeaderBackIconButton } from "@/components/util/headerBackIconButton";
+import useQuestionStore from "@/store/useQuestion";
 import { Stack } from "expo-router";
 
 const QuestionLayout = () => {
@@ -17,7 +18,12 @@ const QuestionLayout = () => {
                 options={{
                     presentation: "modal",
                     headerTitle: "解説",
-                    headerLeft: () => <HeaderBackIconButton iconName="xmark" />,
+                    headerLeft: () => (
+                        <HeaderBackIconButton
+                            iconName="xmark"
+                            onPress={() => useQuestionStore.setState({ selectedOptionId: null })}
+                        />
+                    ),
                 }}
             />
         </Stack>

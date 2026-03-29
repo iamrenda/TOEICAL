@@ -4,6 +4,7 @@ import { Overview, OverviewFilters } from "@/types/question";
 
 interface QuestionOverviewState {
     questions: Overview[];
+    selectedQuestionIndex: number | null;
     selectedFilter: OverviewFilters;
     isLoading: boolean;
 
@@ -14,6 +15,7 @@ interface QuestionOverviewState {
 
 const useQuestionOverviewStore = create<QuestionOverviewState>((set, get) => ({
     questions: [],
+    selectedQuestionIndex: null,
     selectedFilter: "all",
     isLoading: false,
 

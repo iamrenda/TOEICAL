@@ -9,7 +9,8 @@ const optionLetter = ["A", "B", "C", "D"];
 
 const QuestionScreen = () => {
     const { questionId } = useLocalSearchParams();
-    const { isLoading, selectedOptionId, question, fetchQuestion, submitAnswer } = useQuestionStore();
+    const { isLoading, selectedOptionId, question, fetchQuestion, fetchNextQuestion, submitAnswer } =
+        useQuestionStore();
 
     const [isSubmitted, setIsSubmitted] = React.useState(false);
 
@@ -20,6 +21,20 @@ const QuestionScreen = () => {
 
         if (questionId && selectedOptionId) {
             submitAnswer(Number(questionId), selectedOptionId);
+        }
+    };
+
+    const onNextQuestion = async () => {
+        setIsSubmitted(false);
+        const res = await fetchNextQuestion(Number(questionId));
+
+        if (res.success) {
+            const nextQuestionId = useQuestionStore.getState().question?.id;
+            if (nextQuestionId) {
+                router.replace(`/question/${nextQuestionId}`);
+            }
+        } else {
+            router.replace("..");
         }
     };
 
@@ -63,7 +78,7 @@ const QuestionScreen = () => {
                             onPress={() => router.push("/question/explanation")}
                             flex={3}
                         />
-                        <CustomButton text="次の問題" variant="primary" onPress={() => {}} flex={7} />
+                        <CustomButton text="次の問題" variant="primary" onPress={onNextQuestion} flex={7} />
                     </View>
                 ) : (
                     <CustomButton

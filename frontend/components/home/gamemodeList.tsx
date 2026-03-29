@@ -10,7 +10,7 @@ interface GameModeDetails {
     icon: string;
     title: string;
     subTitle: string;
-    hideTabs: boolean;
+    isTabVisible: boolean;
 }
 
 const gamemodes: GameModeDetails[] = [
@@ -19,21 +19,21 @@ const gamemodes: GameModeDetails[] = [
         icon: "book-open",
         title: "リフレッシュ",
         subTitle: "間違えた問題を振り返ろう！",
-        hideTabs: false,
+        isTabVisible: true,
     },
     {
         href: "/(tabs)/(home)/soloQuizSettings",
         icon: "pen-to-square",
         title: "ソロクイズ",
         subTitle: "問題を自分で取り組んでみよう！",
-        hideTabs: true,
+        isTabVisible: false,
     },
     {
         href: "/(tabs)/quiz",
         icon: "gamepad",
         title: "対戦バトル",
         subTitle: "ほかのユーザーと競い合おう！",
-        hideTabs: false,
+        isTabVisible: false,
     },
 ];
 
@@ -42,12 +42,7 @@ const GamemodeItem = ({ gamemode }: { gamemode: GameModeDetails }) => {
 
     return (
         <Link href={gamemode.href} push asChild>
-            <Pressable
-                style={styles.button}
-                onPress={() => {
-                    gamemode.hideTabs && setTabsVisibility(gamemode.hideTabs);
-                }}
-            >
+            <Pressable style={styles.button} onPress={() => setTabsVisibility(gamemode.isTabVisible)}>
                 <FontAwesome6 name={gamemode.icon} size={16} color={Variables.primary600} style={styles.buttonIcon} />
                 <View>
                     <Text style={styles.buttonTitle}>{gamemode.title}</Text>
