@@ -4,19 +4,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { isAxiosError } from "axios";
 import { create } from "zustand";
 import { UserLoginResponse } from "@/types/auth";
-import { loginErrorCodeTypeMapping, LoginErrorType, signUpErrorCodeTypeMapping, SignUpErrorType } from "@/types/error";
+import { ErrorCodeMapping, ErrorType } from "@/types/error";
 import { setItemAsync, deleteItemAsync, getItemAsync } from "expo-secure-store";
 import { UserStorageData } from "@/types/user";
-
-interface SignUpResponse {
-    success: boolean;
-    errorType?: SignUpErrorType;
-}
-
-interface LoginResponse {
-    success: boolean;
-    errorType?: LoginErrorType;
-}
+import { ZustandResponse } from "@/types/store";
 
 interface AuthState {
     accessToken: string | null;
@@ -24,9 +15,9 @@ interface AuthState {
     isLoggedIn: boolean;
 
     setLoading: (isLoading: boolean) => void;
-    initialize: () => Promise<void>;
-    signUp: (username: string, email: string, password: string) => Promise<SignUpResponse>;
-    login: (email: string, password: string) => Promise<LoginResponse>;
+    initialize: () => Promise<ZustandResponse>;
+    signUp: (username: string, email: string, password: string) => Promise<ZustandResponse>;
+    login: (email: string, password: string) => Promise<ZustandResponse>;
     logout: () => Promise<void>;
 }
 
@@ -50,9 +41,20 @@ const useAuthStore = create<AuthState>((set) => ({
                 }
 
                 set({ accessToken, isLoggedIn: true });
+                return { success: true };
             }
+
+            set({ isLoggedIn: false, accessToken: null });
+            return { success: false, errorType: ErrorType.VALIDATION };
         } catch (e) {
-            console.log("Error initializing auth store:", e);
+            if (isAxiosError(e)) {
+                const status = e.response?.status;
+                const errorType = ErrorCodeMapping[status || 500];
+
+                return { success: false, errorType };
+            }
+
+            return { success: false, errorType: ErrorType.NETWORK };
         } finally {
             set({ isLoading: false });
         }
@@ -72,12 +74,12 @@ const useAuthStore = create<AuthState>((set) => ({
         } catch (e) {
             if (isAxiosError(e)) {
                 const status = e.response?.status;
-                const errorType = signUpErrorCodeTypeMapping[status || 500];
+                const errorType = ErrorCodeMapping[status || 500];
 
                 return { success: false, errorType };
             }
 
-            return { success: false, errorType: SignUpErrorType.NETWORK_ERROR };
+            return { success: false, errorType: ErrorType.NETWORK };
         } finally {
             set({ isLoading: false });
         }
@@ -108,12 +110,12 @@ const useAuthStore = create<AuthState>((set) => ({
         } catch (e) {
             if (isAxiosError(e)) {
                 const status = e.response?.status;
-                const errorType = loginErrorCodeTypeMapping[status || 500];
+                const errorType = ErrorCodeMapping[status || 500];
 
                 return { success: false, errorType };
             }
 
-            return { success: false, errorType: LoginErrorType.NETWORK_ERROR };
+            return { success: false, errorType: ErrorType.NETWORK };
         } finally {
             set({ isLoading: false });
         }
@@ -126,7 +128,6 @@ const useAuthStore = create<AuthState>((set) => ({
             await deleteItemAsync("accessToken");
             await deleteItemAsync("refreshToken");
         } catch (error) {
-            // TODO: Logout error handling
             console.error("Logout error:", error);
         } finally {
             set({ isLoading: false });

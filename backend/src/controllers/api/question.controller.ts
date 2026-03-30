@@ -1,6 +1,5 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import DB from "../../db/api.ts";
-import handleError from "../../util/handleError.ts";
 import type { Question } from "../../types/Question.ts";
 import {
     HistorySaveSchema,
@@ -10,6 +9,7 @@ import {
     NextQuestionSchema,
 } from "../../schemas/question.schema.ts";
 import type { ValidatedRequest } from "express-zod-safe";
+import ApiError from "../../types/ApiError.ts";
 
 type QuestionOverview = {
     id: number;
@@ -51,6 +51,7 @@ const getQuestionDataById = async (questionId: number, userId?: number) => {
 export const getQuestionOverviews = async (
     req: ValidatedRequest<{ query: typeof OverviewQuestionSchema }>,
     res: Response,
+    next: NextFunction,
 ) => {
     const { user } = req;
     const { sortBy, limit, page, starred } = req.query;
@@ -58,7 +59,7 @@ export const getQuestionOverviews = async (
     const sortByArr = sortBy.split(".");
 
     if (sortByArr.length != 2) {
-        return res.status(400).json({ reason: "Invalid sortBy format. Expected format: field.order (e.g. id.asc)" });
+        return next(new ApiError(400, "Invalid sortBy format. Expected format: field.order (e.g. id.asc)"));
     }
 
     const offset = (page - 1) * limit;
@@ -114,13 +115,14 @@ export const getQuestionOverviews = async (
 
         return res.status(200).json({ data });
     } catch (e) {
-        handleError(e, res);
+        next(e);
     }
 };
 
 export const getRandomQuestions = async (
     req: ValidatedRequest<{ query: typeof RandomQuestionSchema }>,
     res: Response,
+    next: NextFunction,
 ) => {
     const { user } = req;
     const { isStarred, count } = req.query;
@@ -187,11 +189,11 @@ export const getRandomQuestions = async (
 
         return res.status(200).json({ data });
     } catch (e) {
-        handleError(e, res);
+        next(e);
     }
 };
 
-export const getQuestionCount = async (req: Request, res: Response) => {
+export const getQuestionCount = async (req: Request, res: Response, next: NextFunction) => {
     const { user } = req;
 
     try {
@@ -235,7 +237,7 @@ export const getQuestionCount = async (req: Request, res: Response) => {
 
         return res.status(200).json({ data });
     } catch (e) {
-        handleError(e, res);
+        next(e);
     }
 };
 
@@ -245,6 +247,7 @@ export const saveAnswerHistory = async (
         params: typeof QuestionIdSchema;
     }>,
     res: Response,
+    next: NextFunction,
 ) => {
     const { user } = req;
     const { questionId } = req.params;
@@ -256,13 +259,18 @@ export const saveAnswerHistory = async (
             questionId,
             wasCorrect,
         ]);
+
         return res.sendStatus(201);
     } catch (e) {
-        handleError(e, res);
+        next(e);
     }
 };
 
-export const getQuestionById = async (req: ValidatedRequest<{ params: typeof QuestionIdSchema }>, res: Response) => {
+export const getQuestionById = async (
+    req: ValidatedRequest<{ params: typeof QuestionIdSchema }>,
+    res: Response,
+    next: NextFunction,
+) => {
     const { user } = req;
     const { questionId } = req.params;
 
@@ -270,18 +278,19 @@ export const getQuestionById = async (req: ValidatedRequest<{ params: typeof Que
         const data = await getQuestionDataById(questionId, user?.id);
 
         if (data.length === 0) {
-            return res.status(404).json({ reason: `Question ID: ${questionId} not found` });
+            return next(new ApiError(404, `Question ID: ${questionId} not found`));
         }
 
         return res.status(200).json({ data: data[0] });
     } catch (e) {
-        handleError(e, res);
+        next(e);
     }
 };
 
 export const getNextQuestionById = async (
     req: ValidatedRequest<{ params: typeof QuestionIdSchema; query: typeof NextQuestionSchema }>,
     res: Response,
+    next: NextFunction,
 ) => {
     const { user } = req;
     const { questionId } = req.params;
@@ -306,7 +315,7 @@ export const getNextQuestionById = async (
             );
 
             if (nextQuestionId.length === 0) {
-                return res.status(404).json({ reason: "No next starred question found" });
+                return next(new ApiError(404, "No next starred question found"));
             }
 
             const data = await getQuestionDataById(Number(nextQuestionId[0]?.question_id), user?.id);
@@ -319,11 +328,15 @@ export const getNextQuestionById = async (
             return res.status(200).json({ data: data[0] });
         }
     } catch (e) {
-        handleError(e, res);
+        next(e);
     }
 };
 
-export const starQuestion = async (req: ValidatedRequest<{ params: typeof QuestionIdSchema }>, res: Response) => {
+export const starQuestion = async (
+    req: ValidatedRequest<{ params: typeof QuestionIdSchema }>,
+    res: Response,
+    next: NextFunction,
+) => {
     const { questionId } = req.params;
     const { user } = req;
 
@@ -334,11 +347,15 @@ export const starQuestion = async (req: ValidatedRequest<{ params: typeof Questi
         );
         return res.sendStatus(201);
     } catch (e) {
-        handleError(e, res);
+        next(e);
     }
 };
 
-export const unstarQuestion = async (req: ValidatedRequest<{ params: typeof QuestionIdSchema }>, res: Response) => {
+export const unstarQuestion = async (
+    req: ValidatedRequest<{ params: typeof QuestionIdSchema }>,
+    res: Response,
+    next: NextFunction,
+) => {
     const { questionId } = req.params;
     const { user } = req;
 
@@ -349,6 +366,6 @@ export const unstarQuestion = async (req: ValidatedRequest<{ params: typeof Ques
         ]);
         return res.sendStatus(200);
     } catch (e) {
-        handleError(e, res);
+        next(e);
     }
 };

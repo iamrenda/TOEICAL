@@ -1,11 +1,15 @@
 import Links from "@/constants/Links";
 import useAuthStore from "@/store/useAuthStore";
+import { ApiError } from "@/types/api";
 import axios from "axios";
 import { getItemAsync } from "expo-secure-store";
+
+const TIMEOUT_IN_MS = 5000;
 
 const api = axios.create({
     baseURL: Links.BASE_URL_API,
     headers: { "Content-Type": "application/json" },
+    timeout: TIMEOUT_IN_MS,
 });
 
 api.interceptors.request.use(async (config) => {
@@ -22,6 +26,14 @@ api.interceptors.request.use(async (config) => {
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
+        if (!error.response) {
+            return Promise.reject({
+                type: "NETWORK",
+                code: 0,
+                message: "Network error. Please check your connection.",
+            } as ApiError);
+        }
+
         const originalRequest = error.config;
 
         if (error.response?.status === 401 && !originalRequest._retry) {
@@ -42,13 +54,21 @@ api.interceptors.response.use(
                     originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
                     return api(originalRequest);
                 }
-            } catch (refreshError) {
+            } catch (e) {
                 useAuthStore.setState({ accessToken: null, isLoggedIn: false });
-                return Promise.reject(refreshError);
+                return Promise.reject({
+                    type: "AUTH",
+                    code: 401,
+                    message: "Session expired. Please log in again.",
+                } as ApiError);
             }
         }
 
-        return Promise.reject(error);
+        return Promise.reject({
+            type: "SERVER",
+            code: error.response?.status || 0,
+            message: error.response?.data?.message || error.message || "An unexpected error occurred.",
+        });
     },
 );
 

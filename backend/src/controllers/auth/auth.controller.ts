@@ -1,12 +1,11 @@
-import type { Response } from "express";
-import type { ValidatedRequest } from "express-zod-safe";
-import type { UserLoginSchema, UserSignupSchema, UserTokenSchema } from "../../schemas/users.schema.ts";
-import type { UserTokenPayload, UserEntity } from "../../types/User.ts";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import DB from "../../db/api.ts";
-import handleError from "../../util/handleError.ts";
+import type { NextFunction, Response } from "express";
+import type { ValidatedRequest } from "express-zod-safe";
+import type { UserLoginSchema, UserSignupSchema, UserTokenSchema } from "../../schemas/users.schema.ts";
+import type { UserTokenPayload, UserEntity } from "../../types/User.ts";
 
 dotenv.config();
 
@@ -31,7 +30,11 @@ const verifyToken = (refreshToken: string): UserTokenPayload => {
     }
 };
 
-export const userSignup = async (req: ValidatedRequest<{ body: typeof UserSignupSchema }>, res: Response) => {
+export const userSignup = async (
+    req: ValidatedRequest<{ body: typeof UserSignupSchema }>,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const hashPassword = await bcrypt.hash(req.body.password, 10); // 10 is the amount of salt
         const user = { username: req.body.username, email: req.body.email, password: hashPassword };
@@ -44,11 +47,15 @@ export const userSignup = async (req: ValidatedRequest<{ body: typeof UserSignup
 
         return res.sendStatus(201);
     } catch (e) {
-        handleError(e, res);
+        next(e);
     }
 };
 
-export const userLogin = async (req: ValidatedRequest<{ body: typeof UserLoginSchema }>, res: Response) => {
+export const userLogin = async (
+    req: ValidatedRequest<{ body: typeof UserLoginSchema }>,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
         const [user] = await DB().query<UserEntity>("SELECT * FROM users WHERE email = $1;", [req.body.email]);
 
@@ -69,11 +76,15 @@ export const userLogin = async (req: ValidatedRequest<{ body: typeof UserLoginSc
 
         return res.status(200).json({ username: user.username, accessToken, refreshToken });
     } catch (e) {
-        return res.status(500).json({ errorType: "SERVER_ERROR", message: "Internal server error" });
+        next(e);
     }
 };
 
-export const fetchAccessToken = (req: ValidatedRequest<{ body: typeof UserTokenSchema }>, res: Response) => {
+export const fetchAccessToken = (
+    req: ValidatedRequest<{ body: typeof UserTokenSchema }>,
+    res: Response,
+    next: NextFunction,
+) => {
     const refreshToken = req.body.token;
 
     if (!refreshToken) {
@@ -90,6 +101,6 @@ export const fetchAccessToken = (req: ValidatedRequest<{ body: typeof UserTokenS
 
         return res.status(200).json({ accessToken });
     } catch (e) {
-        return res.status(403).json({ errorType: "INVALID_CREDENTIALS", message: "Invalid token" });
+        next(e);
     }
 };
