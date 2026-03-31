@@ -2,17 +2,17 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import DB from "../../db/api.ts";
+import ApiError from "../../util/ApiError.ts";
 import type { NextFunction, Response } from "express";
 import type { ValidatedRequest } from "express-zod-safe";
 import type { UserLoginSchema, UserSignupSchema, UserTokenSchema } from "../../schemas/users.schema.ts";
 import type { UserTokenPayload, UserEntity } from "../../types/User.ts";
-import ApiError from "../../util/ApiError.ts";
 
 dotenv.config();
 
 const refreshTokens: string[] = [];
 
-const ACCESS_TOKEN_EXPIRY = "1h";
+const ACCESS_TOKEN_EXPIRY = "1m";
 const REFRESH_TOKEN_EXPIRY = "7d";
 
 const generateAccessToken = (user: UserTokenPayload) => {

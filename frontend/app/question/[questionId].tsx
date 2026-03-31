@@ -4,6 +4,9 @@ import useQuestionStore from "@/store/useQuestion";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Footer, QuestionOption, CustomButton, QuestionIdLabel } from "@/components";
+import { ErrorType } from "@/types/Error";
+import showErrorAlert from "@/util/showErrorAlert";
+import { ErrorMessages } from "@/constants/ErrorMessages";
 
 const optionLetter = ["A", "B", "C", "D"];
 
@@ -33,9 +36,17 @@ const QuestionScreen = () => {
             if (nextQuestionId) {
                 router.replace(`/question/${nextQuestionId}`);
             }
-        } else {
-            router.replace("..");
+
+            return;
         }
+
+        const { errorType } = res;
+
+        if (errorType) {
+            showErrorAlert({ message: ErrorMessages[errorType] });
+        }
+
+        router.replace("/(tabs)/(home)");
     };
 
     React.useEffect(() => {

@@ -1,6 +1,6 @@
 import Variables from "@/constants/Variables";
 import useAuthStore from "@/store/useAuthStore";
-import showAlert from "@/util/alert";
+import showErrorAlert from "@/util/showErrorAlert";
 import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -44,11 +44,14 @@ const Login = () => {
 
             case ErrorType.NETWORK:
             case ErrorType.SERVER:
-                showAlert("ログインエラー", ErrorMessages[errorType]);
+                showErrorAlert({ title: "ログインエラー", message: ErrorMessages[errorType] });
                 break;
 
             default:
-                showAlert("ログインエラー", "不明なエラーが発生しました。もう一度お試しください。");
+                showErrorAlert({
+                    title: "ログインエラー",
+                    message: "不明なエラーが発生しました。もう一度お試しください。",
+                });
         }
     };
 

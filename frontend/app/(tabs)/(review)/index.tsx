@@ -4,6 +4,9 @@ import useQuestionOverviewStore from "@/store/useQuestionOverviewStore";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { QuestionOverviewItem, QuestionOverviewFilter } from "@/components";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import showErrorAlert from "@/util/showErrorAlert";
+import { ErrorMessages } from "@/constants/ErrorMessages";
+import { router } from "expo-router";
 
 const ReviewScreen = () => {
     const { fetchQuestions, questions, isLoading } = useQuestionOverviewStore();
@@ -11,7 +14,18 @@ const ReviewScreen = () => {
     const insets = useSafeAreaInsets();
 
     React.useEffect(() => {
-        fetchQuestions();
+        const fetchData = async () => {
+            const res = await fetchQuestions();
+
+            if (!res.success) {
+                if (res.errorType) {
+                    showErrorAlert({ message: ErrorMessages[res.errorType] });
+                    router.replace("/(tabs)/(home)");
+                }
+            }
+        };
+
+        fetchData();
     }, []);
 
     if (isLoading) {

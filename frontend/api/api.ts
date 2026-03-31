@@ -2,6 +2,10 @@ import Links from "@/constants/Links";
 import useAuthStore from "@/store/useAuthStore";
 import axios from "axios";
 import { getItemAsync } from "expo-secure-store";
+import { router } from "expo-router";
+import { ZustandResponse } from "@/types/Zustand";
+import { ErrorType } from "@/types/Error";
+import { AxiosResponse } from "@/types/Axios";
 
 const TIMEOUT_IN_MS = 5000;
 
@@ -27,10 +31,9 @@ api.interceptors.response.use(
     async (error) => {
         if (!error.response) {
             return Promise.reject({
-                type: "NETWORK",
-                code: 0,
-                message: "Network error. Please check your connection.",
-            } as ApiError);
+                success: false,
+                errorType: ErrorType.NETWORK,
+            } as ZustandResponse);
         }
 
         const originalRequest = error.config;
@@ -42,11 +45,21 @@ api.interceptors.response.use(
                 const refreshToken = await getItemAsync("refreshToken");
 
                 if (refreshToken) {
-                    const res = await axios.post(`${Links.BASE_URL_AUTH}/token`, {
-                        token: refreshToken,
-                    });
+                    const res = await axios.post<AxiosResponse<{ accessToken: string }>>(
+                        `${Links.BASE_URL_AUTH}/token`,
+                        {
+                            token: refreshToken,
+                        },
+                    );
 
-                    const newAccessToken = res.data.accessToken;
+                    const newAccessToken = res.data.data?.accessToken;
+
+                    if (!newAccessToken) {
+                        return Promise.reject({
+                            success: false,
+                            errorType: ErrorType.AUTH,
+                        } as ZustandResponse);
+                    }
 
                     useAuthStore.setState({ accessToken: newAccessToken });
 
@@ -55,19 +68,19 @@ api.interceptors.response.use(
                 }
             } catch (e) {
                 useAuthStore.setState({ accessToken: null, isLoggedIn: false });
+                router.replace("/(auth)/login");
+
                 return Promise.reject({
-                    type: "AUTH",
-                    code: 401,
-                    message: "Session expired. Please log in again.",
-                } as ApiError);
+                    success: false,
+                    errorType: ErrorType.AUTH,
+                } as ZustandResponse);
             }
         }
 
         return Promise.reject({
-            type: "SERVER",
-            code: error.response?.status || 0,
-            message: error.response?.data?.message || error.message || "An unexpected error occurred.",
-        });
+            success: false,
+            errorType: ErrorType.SERVER,
+        } as ZustandResponse);
     },
 );
 

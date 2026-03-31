@@ -1,6 +1,6 @@
 import Variables from "@/constants/Variables";
 import useAuthStore from "@/store/useAuthStore";
-import showAlert from "@/util/alert";
+import showErrorAlert from "@/util/showErrorAlert";
 import { ScrollView, StyleSheet, View, KeyboardAvoidingView } from "react-native";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -31,7 +31,10 @@ const Signup = () => {
         clearErrors();
 
         if (res.success) {
-            showAlert("サインアップ成功", "アカウントが作成されました。ログインしてください。");
+            showErrorAlert({
+                title: "サインアップ成功",
+                message: "アカウントが作成されました。ログインしてください。",
+            });
             return;
         }
 
@@ -44,11 +47,14 @@ const Signup = () => {
 
             case ErrorType.NETWORK:
             case ErrorType.SERVER:
-                showAlert("サインアップエラー", ErrorMessages[errorType]);
+                showErrorAlert({ title: "サインアップエラー", message: ErrorMessages[errorType] });
                 break;
 
             default:
-                showAlert("サインアップエラー", "不明なエラーが発生しました。もう一度お試しください。");
+                showErrorAlert({
+                    title: "サインアップエラー",
+                    message: "不明なエラーが発生しました。もう一度お試しください。",
+                });
         }
     };
 
