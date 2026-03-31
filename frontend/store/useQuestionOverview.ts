@@ -1,6 +1,8 @@
 import api from "@/api/api";
 import { create } from "zustand";
 import { Overview, OverviewFilters } from "@/types/question";
+import handleError from "@/util/handleError";
+import { ZustandResponse } from "@/types/zustand";
 
 interface QuestionOverviewState {
     questions: Overview[];
@@ -8,7 +10,7 @@ interface QuestionOverviewState {
     selectedFilter: OverviewFilters;
     isLoading: boolean;
 
-    fetchQuestions: () => Promise<void>;
+    fetchQuestions: () => Promise<ZustandResponse>;
     setSelectedFilter: (filter: OverviewFilters) => void;
     toggleStarQuestion: (id: number, isStarred: boolean) => Promise<void>;
 }
@@ -27,8 +29,10 @@ const useQuestionOverviewStore = create<QuestionOverviewState>((set, get) => ({
                 `/question/overview?sortBy=id.asc&limit=100&page=1&starred=${useQuestionOverviewStore.getState().selectedFilter === "starred"}`,
             );
             set({ questions: res.data.data });
+
+            return { success: true };
         } catch (e) {
-            console.log("Error fetching questions:", e);
+            return handleError(e);
         } finally {
             set({ isLoading: false });
         }

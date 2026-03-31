@@ -1,6 +1,6 @@
 import { Pool } from "pg";
 import dotenv from "dotenv";
-import ApiError from "../types/ApiError.ts";
+import ApiError from "../util/ApiError.ts";
 
 dotenv.config();
 

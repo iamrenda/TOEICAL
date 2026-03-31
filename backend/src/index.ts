@@ -3,7 +3,7 @@ import cors from "cors";
 import authRouter from "./routes/auth/auth.routes.ts";
 import apiRouter from "./routes/api/api.routes.ts";
 import dotenv from "dotenv";
-import ApiError from "./types/ApiError.ts";
+import ApiError from "./util/ApiError.ts";
 import { errorHandler } from "./middleware/errorHandler.ts";
 
 dotenv.config();

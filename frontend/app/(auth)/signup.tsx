@@ -4,8 +4,8 @@ import showAlert from "@/util/alert";
 import { ScrollView, StyleSheet, View, KeyboardAvoidingView } from "react-native";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { signUpErrorMessages, SignUpErrorType } from "@/types/error";
 import { AuthTextInput, CustomButton, AuthFooter, AuthHeader, AuthErrorText } from "@/components";
+import { ErrorMessageMapping, ErrorType } from "@/types/error";
 
 interface Inputs {
     username: string;
@@ -37,13 +37,13 @@ const Signup = () => {
         const { errorType } = res;
 
         switch (errorType) {
-            case SignUpErrorType.USER_ALREADY_EXISTS:
-                setError("root", { message: signUpErrorMessages[errorType] });
+            case ErrorType.VALIDATION:
+                setError("root", { message: ErrorMessageMapping[errorType] });
                 break;
 
-            case SignUpErrorType.NETWORK_ERROR:
-            case SignUpErrorType.SERVER_ERROR:
-                showAlert("サインアップエラー", signUpErrorMessages[errorType]);
+            case ErrorType.NETWORK:
+            case ErrorType.SERVER:
+                showAlert("サインアップエラー", ErrorMessageMapping[errorType]);
                 break;
 
             default:

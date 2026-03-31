@@ -6,27 +6,44 @@ import type { NextFunction, Response } from "express";
 import type { ValidatedRequest } from "express-zod-safe";
 import type { UserLoginSchema, UserSignupSchema, UserTokenSchema } from "../../schemas/users.schema.ts";
 import type { UserTokenPayload, UserEntity } from "../../types/User.ts";
+import ApiError from "../../util/ApiError.ts";
 
 dotenv.config();
 
 const refreshTokens: string[] = [];
 
+const ACCESS_TOKEN_EXPIRY = "1h";
+const REFRESH_TOKEN_EXPIRY = "7d";
+
 const generateAccessToken = (user: UserTokenPayload) => {
-    return jwt.sign({ id: user.id, username: user.username, email: user.email }, process.env.ACCESS_TOKEN_SECRET!, {
-        expiresIn: "1h",
-    });
+    try {
+        return jwt.sign({ id: user.id, username: user.username, email: user.email }, process.env.ACCESS_TOKEN_SECRET!, {
+            expiresIn: ACCESS_TOKEN_EXPIRY,
+        });
+    } catch (e) {
+        throw new ApiError(500, "Failed to generate access token");
+    }
 };
 
 const generateRefreshToken = (user: UserEntity) => {
-    return jwt.sign({ id: user.id, username: user.username, email: user.email }, process.env.REFRESH_TOKEN_SECRET!);
+    try {
+        return jwt.sign(
+            { id: user.id, username: user.username, email: user.email },
+            process.env.REFRESH_TOKEN_SECRET!,
+            {
+                expiresIn: REFRESH_TOKEN_EXPIRY,
+            },
+        );
+    } catch (e) {
+        throw new ApiError(500, "Failed to generate refresh token");
+    }
 };
 
 const verifyToken = (refreshToken: string): UserTokenPayload => {
     try {
         return jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as UserTokenPayload;
     } catch (e) {
-        console.log(e);
-        throw new Error("invalid token");
+        throw new ApiError(403, "Invalid refresh token");
     }
 };
 
@@ -45,7 +62,7 @@ export const userSignup = async (
             user.password,
         ]);
 
-        return res.sendStatus(201);
+        return res.status(201).json({ status: "success", code: 201, message: "User created successfully" });
     } catch (e) {
         next(e);
     }
@@ -60,13 +77,13 @@ export const userLogin = async (
         const [user] = await DB().query<UserEntity>("SELECT * FROM users WHERE email = $1;", [req.body.email]);
 
         if (!user) {
-            return res.status(401).json({ errorType: "INVALID_CREDENTIALS", message: "Invalid email or password" });
+            throw new ApiError(400, "Invalid email or password");
         }
 
         const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password);
 
         if (!isPasswordCorrect || !user) {
-            return res.status(401).json({ errorType: "INVALID_CREDENTIALS", message: "Invalid email or password" });
+            throw new ApiError(400, "Invalid email or password");
         }
 
         const accessToken = generateAccessToken(user);
@@ -74,7 +91,12 @@ export const userLogin = async (
 
         refreshTokens.push(refreshToken);
 
-        return res.status(200).json({ username: user.username, accessToken, refreshToken });
+        return res.status(200).json({
+            status: "success",
+            code: 200,
+            message: "Login successful",
+            data: { username: user.username, accessToken, refreshToken },
+        });
     } catch (e) {
         next(e);
     }
@@ -85,21 +107,26 @@ export const fetchAccessToken = (
     res: Response,
     next: NextFunction,
 ) => {
-    const refreshToken = req.body.token;
-
-    if (!refreshToken) {
-        return res.status(401).json({ errorType: "INVALID_CREDENTIALS", message: "No token provided" });
-    }
-
-    if (!refreshTokens.includes(refreshToken)) {
-        return res.status(403).json({ errorType: "INVALID_CREDENTIALS", message: "Invalid token" });
-    }
-
     try {
+        const refreshToken = req.body.token;
+
+        if (!refreshToken) {
+            throw new ApiError(400, "No token provided");
+        }
+
+        if (!refreshTokens.includes(refreshToken)) {
+            throw new ApiError(403, "Invalid refresh token");
+        }
+
         const user = verifyToken(refreshToken);
         const accessToken = generateAccessToken(user);
 
-        return res.status(200).json({ accessToken });
+        return res.status(200).json({
+            status: "success",
+            code: 200,
+            message: "Access token generated successfully",
+            data: { accessToken },
+        });
     } catch (e) {
         next(e);
     }

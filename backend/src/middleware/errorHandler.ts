@@ -1,5 +1,5 @@
 import { type NextFunction, type Request, type Response } from "express";
-import type ApiError from "../types/ApiError.ts";
+import type ApiError from "../util/ApiError.ts";
 
 export const errorHandler = (err: ApiError, req: Request, res: Response, next: NextFunction) => {
     err.statusCode = err.statusCode || 500;
@@ -8,7 +8,7 @@ export const errorHandler = (err: ApiError, req: Request, res: Response, next: N
     const response = {
         status: "error",
         code: err.statusCode,
-        error: err.message,
+        message: err.message,
     };
 
     return res.status(err.statusCode).json(response);

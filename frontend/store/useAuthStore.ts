@@ -1,13 +1,14 @@
 import Links from "@/constants/Links";
 import useUserStore from "./useUserStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios, { isAxiosError } from "axios";
+import axios from "axios";
 import { create } from "zustand";
 import { UserLoginResponse } from "@/types/auth";
-import { ErrorCodeMapping, ErrorType } from "@/types/error";
+import { ErrorType } from "@/types/error";
 import { setItemAsync, deleteItemAsync, getItemAsync } from "expo-secure-store";
 import { UserStorageData } from "@/types/user";
-import { ZustandResponse } from "@/types/store";
+import { ZustandResponse } from "@/types/zustand";
+import handleError from "@/util/handleError";
 
 interface AuthState {
     accessToken: string | null;
@@ -47,14 +48,7 @@ const useAuthStore = create<AuthState>((set) => ({
             set({ isLoggedIn: false, accessToken: null });
             return { success: false, errorType: ErrorType.VALIDATION };
         } catch (e) {
-            if (isAxiosError(e)) {
-                const status = e.response?.status;
-                const errorType = ErrorCodeMapping[status || 500];
-
-                return { success: false, errorType };
-            }
-
-            return { success: false, errorType: ErrorType.NETWORK };
+            return handleError(e);
         } finally {
             set({ isLoading: false });
         }
@@ -72,14 +66,7 @@ const useAuthStore = create<AuthState>((set) => ({
 
             return { success: true };
         } catch (e) {
-            if (isAxiosError(e)) {
-                const status = e.response?.status;
-                const errorType = ErrorCodeMapping[status || 500];
-
-                return { success: false, errorType };
-            }
-
-            return { success: false, errorType: ErrorType.NETWORK };
+            return handleError(e);
         } finally {
             set({ isLoading: false });
         }
@@ -108,14 +95,7 @@ const useAuthStore = create<AuthState>((set) => ({
 
             return { success: true };
         } catch (e) {
-            if (isAxiosError(e)) {
-                const status = e.response?.status;
-                const errorType = ErrorCodeMapping[status || 500];
-
-                return { success: false, errorType };
-            }
-
-            return { success: false, errorType: ErrorType.NETWORK };
+            return handleError(e);
         } finally {
             set({ isLoading: false });
         }

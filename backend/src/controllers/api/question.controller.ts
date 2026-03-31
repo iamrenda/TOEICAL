@@ -9,7 +9,7 @@ import {
     NextQuestionSchema,
 } from "../../schemas/question.schema.ts";
 import type { ValidatedRequest } from "express-zod-safe";
-import ApiError from "../../types/ApiError.ts";
+import ApiError from "../../util/ApiError.ts";
 
 type QuestionOverview = {
     id: number;
@@ -53,19 +53,20 @@ export const getQuestionOverviews = async (
     res: Response,
     next: NextFunction,
 ) => {
-    const { user } = req;
-    const { sortBy, limit, page, starred } = req.query;
+    try {
+        const { user } = req;
+        const { sortBy, limit, page, starred } = req.query;
 
-    const sortByArr = sortBy.split(".");
+        const sortByArr = sortBy.split(".");
 
-    if (sortByArr.length != 2) {
-        return next(new ApiError(400, "Invalid sortBy format. Expected format: field.order (e.g. id.asc)"));
-    }
+        if (sortByArr.length != 2) {
+            throw new ApiError(400, "Invalid sortBy format. Expected format: field.order (e.g. id.asc)");
+        }
 
-    const offset = (page - 1) * limit;
+        const offset = (page - 1) * limit;
 
-    const query = starred
-        ? `
+        const query = starred
+            ? `
             SELECT
                 q.id,
                 q.question,
@@ -87,7 +88,7 @@ export const getQuestionOverviews = async (
             ORDER BY q.${sortByArr[0]} ${sortByArr[1]}
             LIMIT $2 OFFSET $3;
     `
-        : `
+            : `
             SELECT 
                 q.id,
                 q.question,
@@ -110,10 +111,11 @@ export const getQuestionOverviews = async (
             LIMIT $2 OFFSET $3;
     `;
 
-    try {
         const data = await DB().query<QuestionOverview>(query, [user?.id, limit, offset]);
 
-        return res.status(200).json({ data });
+        return res
+            .status(200)
+            .json({ status: "success", code: 200, message: "Question overviews retrieved successfully", data });
     } catch (e) {
         next(e);
     }
@@ -124,10 +126,10 @@ export const getRandomQuestions = async (
     res: Response,
     next: NextFunction,
 ) => {
-    const { user } = req;
-    const { isStarred, count } = req.query;
-
     try {
+        const { user } = req;
+        const { isStarred, count } = req.query;
+
         const query = isStarred
             ? `
                 SELECT
@@ -187,16 +189,18 @@ export const getRandomQuestions = async (
         const queryParameters = [user?.id, count];
         const data = await DB().query<Question>(query, queryParameters);
 
-        return res.status(200).json({ data });
+        return res
+            .status(200)
+            .json({ status: "success", code: 200, message: "Random questions retrieved successfully", data });
     } catch (e) {
         next(e);
     }
 };
 
 export const getQuestionCount = async (req: Request, res: Response, next: NextFunction) => {
-    const { user } = req;
-
     try {
+        const { user } = req;
+
         const allQuestionCount = await DB().query<{
             question_count: string;
         }>("SELECT COUNT(id) AS question_count FROM question");
@@ -235,7 +239,9 @@ export const getQuestionCount = async (req: Request, res: Response, next: NextFu
             last_answered_wrong: Number(lastWrongAttemptCount[0]?.wrong_last_attempt_count),
         };
 
-        return res.status(200).json({ data });
+        return res
+            .status(200)
+            .json({ status: "success", code: 200, message: "Question count retrieved successfully", data });
     } catch (e) {
         next(e);
     }
@@ -249,18 +255,18 @@ export const saveAnswerHistory = async (
     res: Response,
     next: NextFunction,
 ) => {
-    const { user } = req;
-    const { questionId } = req.params;
-    const { wasCorrect } = req.body;
-
     try {
+        const { user } = req;
+        const { questionId } = req.params;
+        const { wasCorrect } = req.body;
+
         await DB().query("INSERT INTO answer_history (user_id, question_id, was_correct) VALUES ($1, $2, $3);", [
             user?.id,
             questionId,
             wasCorrect,
         ]);
 
-        return res.sendStatus(201);
+        return res.status(201).json({ status: "success", code: 201, message: "Answer history saved successfully" });
     } catch (e) {
         next(e);
     }
@@ -271,17 +277,19 @@ export const getQuestionById = async (
     res: Response,
     next: NextFunction,
 ) => {
-    const { user } = req;
-    const { questionId } = req.params;
-
     try {
+        const { user } = req;
+        const { questionId } = req.params;
+
         const data = await getQuestionDataById(questionId, user?.id);
 
         if (data.length === 0) {
-            return next(new ApiError(404, `Question ID: ${questionId} not found`));
+            throw new ApiError(404, `Question ID: ${questionId} not found`);
         }
 
-        return res.status(200).json({ data: data[0] });
+        return res
+            .status(200)
+            .json({ status: "success", code: 200, message: "Question retrieved successfully", data: data[0] });
     } catch (e) {
         next(e);
     }
@@ -292,17 +300,17 @@ export const getNextQuestionById = async (
     res: Response,
     next: NextFunction,
 ) => {
-    const { user } = req;
-    const { questionId } = req.params;
-    const { sortBy, starred } = req.query;
-
-    const sortByArr = sortBy.split(".");
-
-    if (sortByArr.length != 2) {
-        return res.status(400).json({ reason: "Invalid sortBy format. Expected format: field.order (e.g. id.asc)" });
-    }
-
     try {
+        const { user } = req;
+        const { questionId } = req.params;
+        const { sortBy, starred } = req.query;
+
+        const sortByArr = sortBy.split(".");
+
+        if (sortByArr.length != 2) {
+            throw new ApiError(400, "Invalid sortBy format. Expected format: field.order (e.g. id.asc)");
+        }
+
         if (starred) {
             const nextQuestionId = await DB().query<{ question_id: string }>(
                 `SELECT question_id
@@ -315,17 +323,24 @@ export const getNextQuestionById = async (
             );
 
             if (nextQuestionId.length === 0) {
-                return next(new ApiError(404, "No next starred question found"));
+                throw new ApiError(404, "No next starred question found");
             }
 
             const data = await getQuestionDataById(Number(nextQuestionId[0]?.question_id), user?.id);
 
-            return res.status(200).json({ data: data[0] });
+            return res.status(200).json({
+                status: "success",
+                code: 200,
+                message: "Next starred question retrieved successfully",
+                data: data[0],
+            });
         } else {
             const nextQuestionId = questionId + 1;
             const data = await getQuestionDataById(nextQuestionId, user?.id);
 
-            return res.status(200).json({ data: data[0] });
+            return res
+                .status(200)
+                .json({ status: "success", code: 200, message: "Next question retrieved successfully", data: data[0] });
         }
     } catch (e) {
         next(e);
@@ -337,15 +352,16 @@ export const starQuestion = async (
     res: Response,
     next: NextFunction,
 ) => {
-    const { questionId } = req.params;
-    const { user } = req;
-
     try {
+        const { questionId } = req.params;
+        const { user } = req;
+
         await DB().query(
             "INSERT INTO starred_question (user_id, question_id) VALUES ($1, $2) ON CONFLICT (user_id, question_id) DO NOTHING;",
             [user?.id, questionId],
         );
-        return res.sendStatus(201);
+
+        return res.status(201).json({ status: "success", code: 201, message: "Question starred successfully" });
     } catch (e) {
         next(e);
     }
@@ -356,15 +372,16 @@ export const unstarQuestion = async (
     res: Response,
     next: NextFunction,
 ) => {
-    const { questionId } = req.params;
-    const { user } = req;
-
     try {
+        const { questionId } = req.params;
+        const { user } = req;
+
         await DB().query("DELETE FROM starred_question WHERE user_id = $1 AND question_id = $2;", [
             user?.id,
             questionId,
         ]);
-        return res.sendStatus(200);
+
+        return res.status(200).json({ status: "success", code: 200, message: "Question unstarred successfully" });
     } catch (e) {
         next(e);
     }

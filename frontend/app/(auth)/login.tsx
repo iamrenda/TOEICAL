@@ -4,9 +4,9 @@ import showAlert from "@/util/alert";
 import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { LoginErrorType, loginErrorMessages } from "@/types/error";
 import { router } from "expo-router";
 import { AuthHeader, AuthTextInput, CustomButton, AuthFooter, AuthErrorText } from "@/components";
+import { ErrorMessageMapping, ErrorType } from "@/types/error";
 
 interface Inputs {
     email: string;
@@ -37,14 +37,13 @@ const Login = () => {
         const { errorType } = res;
 
         switch (errorType) {
-            case LoginErrorType.INVALID_CREDENTIALS:
-                setError("root", { message: loginErrorMessages[errorType] });
+            case ErrorType.VALIDATION:
+                setError("root", { message: ErrorMessageMapping[errorType] });
                 break;
 
-            case LoginErrorType.TOO_MANY_ATTEMPTS:
-            case LoginErrorType.NETWORK_ERROR:
-            case LoginErrorType.SERVER_ERROR:
-                showAlert("ログインエラー", loginErrorMessages[errorType]);
+            case ErrorType.NETWORK:
+            case ErrorType.SERVER:
+                showAlert("ログインエラー", ErrorMessageMapping[errorType]);
                 break;
 
             default:

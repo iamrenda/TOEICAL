@@ -1,6 +1,5 @@
 import Links from "@/constants/Links";
 import useAuthStore from "@/store/useAuthStore";
-import { ApiError } from "@/types/api";
 import axios from "axios";
 import { getItemAsync } from "expo-secure-store";
 
