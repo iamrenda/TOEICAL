@@ -1,4 +1,4 @@
-import { ErrorType } from "./error";
+import { ErrorType } from "./Error";
 
 export interface ZustandResponse {
     success: boolean;

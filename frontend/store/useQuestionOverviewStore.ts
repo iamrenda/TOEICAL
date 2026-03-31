@@ -1,8 +1,8 @@
 import api from "@/api/api";
 import { create } from "zustand";
-import { Overview, OverviewFilters } from "@/types/question";
+import { Overview, OverviewFilters } from "@/types/Question";
 import handleError from "@/util/handleError";
-import { ZustandResponse } from "@/types/zustand";
+import { ZustandResponse } from "@/types/Zustand";
 
 interface QuestionOverviewState {
     questions: Overview[];

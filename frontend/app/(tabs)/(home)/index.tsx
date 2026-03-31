@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
-import { GamemodeList, Header, StatusList } from "@/components";
 import Variables from "@/constants/Variables";
 import useUserStore from "@/store/useUserStore";
+import { StyleSheet, Text, View } from "react-native";
+import { GamemodeList, Header, StatusList } from "@/components";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Index = () => {

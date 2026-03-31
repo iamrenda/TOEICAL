@@ -2,13 +2,18 @@ import Links from "@/constants/Links";
 import useUserStore from "./useUserStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import { create } from "zustand";
-import { UserLoginResponse } from "@/types/auth";
-import { ErrorType } from "@/types/error";
-import { setItemAsync, deleteItemAsync, getItemAsync } from "expo-secure-store";
-import { UserStorageData } from "@/types/user";
-import { ZustandResponse } from "@/types/zustand";
 import handleError from "@/util/handleError";
+import { create } from "zustand";
+import { ErrorType } from "@/types/Error";
+import { setItemAsync, deleteItemAsync, getItemAsync } from "expo-secure-store";
+import { UserStorageData } from "@/types/User";
+import { ZustandResponse } from "@/types/Zustand";
+
+interface UserLoginResponse {
+    username: string;
+    accessToken: string;
+    refreshToken: string;
+}
 
 interface AuthState {
     accessToken: string | null;

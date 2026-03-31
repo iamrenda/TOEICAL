@@ -1,6 +1,6 @@
 import React from "react";
 import Variables from "@/constants/Variables";
-import useQuestionOverviewStore from "@/store/useQuestionOverview";
+import useQuestionOverviewStore from "@/store/useQuestionOverviewStore";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { QuestionOverviewItem, QuestionOverviewFilter } from "@/components";
 import { useSafeAreaInsets } from "react-native-safe-area-context";

@@ -6,7 +6,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { router } from "expo-router";
 import { AuthHeader, AuthTextInput, CustomButton, AuthFooter, AuthErrorText } from "@/components";
-import { ErrorMessageMapping, ErrorType } from "@/types/error";
+import { ErrorType } from "@/types/Error";
+import { ErrorMessages } from "@/constants/ErrorMessages";
 
 interface Inputs {
     email: string;
@@ -38,12 +39,12 @@ const Login = () => {
 
         switch (errorType) {
             case ErrorType.VALIDATION:
-                setError("root", { message: ErrorMessageMapping[errorType] });
+                setError("root", { message: ErrorMessages[errorType] });
                 break;
 
             case ErrorType.NETWORK:
             case ErrorType.SERVER:
-                showAlert("ログインエラー", ErrorMessageMapping[errorType]);
+                showAlert("ログインエラー", ErrorMessages[errorType]);
                 break;
 
             default:

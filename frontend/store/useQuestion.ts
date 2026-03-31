@@ -1,9 +1,10 @@
 import api from "@/api/api";
+import useQuestionOverviewStore from "./useQuestionOverviewStore";
 import { create } from "zustand";
-import { Question } from "@/types/question";
-import useQuestionOverviewStore from "./useQuestionOverview";
-import { AxiosResponse } from "@/types/axios";
-import { ZustandResponse } from "@/types/zustand";
+import { Question } from "@/types/Question";
+import { AxiosResponse } from "@/types/Axios";
+import { ZustandResponse } from "@/types/Zustand";
+
 import handleError from "@/util/handleError";
 
 interface QuestionState {

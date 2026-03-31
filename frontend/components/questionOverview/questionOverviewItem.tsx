@@ -3,9 +3,9 @@ import Variables from "@/constants/Variables";
 import FontAwesome from "@expo/vector-icons/build/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
 import getRelativeTime from "@/util/getRelativeTime";
-import useQuestionOverviewStore from "@/store/useQuestionOverview";
+import useQuestionOverviewStore from "@/store/useQuestionOverviewStore";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Overview } from "@/types/question";
+import { Overview } from "@/types/Question";
 import { Link } from "expo-router";
 import { QuestionIdLabel } from "../question/questionIdLabel";
 

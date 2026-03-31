@@ -1,5 +1,5 @@
-import { ErrorCodeMapping, ErrorType } from "@/types/error";
-import { ZustandResponse } from "@/types/zustand";
+import { ErrorCodeMapping, ErrorType } from "@/types/Error";
+import { ZustandResponse } from "@/types/Zustand";
 import { isAxiosError } from "axios";
 
 const handleError = (e: unknown): ZustandResponse => {

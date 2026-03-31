@@ -1,7 +1,7 @@
 import React from "react";
 import Variables from "@/constants/Variables";
 import FontAwesome from "@expo/vector-icons/build/FontAwesome";
-import useQuestionOverviewStore from "@/store/useQuestionOverview";
+import useQuestionOverviewStore from "@/store/useQuestionOverviewStore";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type Filter = "all" | "starred";
