@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { Overview, OverviewFilters } from "@/types/Question";
 import handleError from "@/util/handleError";
 import { ZustandResponse } from "@/types/Zustand";
+import { AxiosResponse } from "@/types/Axios";
 
 interface QuestionOverviewState {
     questions: Overview[];
@@ -25,7 +26,7 @@ const useQuestionOverviewStore = create<QuestionOverviewState>((set, get) => ({
         set({ isLoading: true });
 
         try {
-            const res = await api.get(
+            const res = await api.get<AxiosResponse<Overview[]>>(
                 `/question/overview?sortBy=id.asc&limit=100&page=1&starred=${useQuestionOverviewStore.getState().selectedFilter === "starred"}`,
             );
             set({ questions: res.data.data });
@@ -46,9 +47,9 @@ const useQuestionOverviewStore = create<QuestionOverviewState>((set, get) => ({
     toggleStarQuestion: async (id, isStarred) => {
         try {
             if (isStarred) {
-                await api.delete(`/question/starred/${id}`);
+                await api.delete<AxiosResponse<void>>(`/question/starred/${id}`);
             } else {
-                await api.post(`/question/starred/${id}`);
+                await api.post<AxiosResponse<void>>(`/question/starred/${id}`);
             }
         } catch (e) {
             console.log("Error toggling star:", e);

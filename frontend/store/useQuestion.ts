@@ -26,7 +26,7 @@ const useQuestionStore = create<QuestionState>((set, get) => ({
         set({ isLoading: true });
 
         try {
-            const res = await api.get<AxiosResponse>(`/question/${questionId}`);
+            const res = await api.get<AxiosResponse<Question>>(`/question/${questionId}`);
             set({ question: res.data.data });
 
             return { success: true };
@@ -43,7 +43,7 @@ const useQuestionStore = create<QuestionState>((set, get) => ({
         const isStarredFilter = useQuestionOverviewStore.getState().selectedFilter === "starred";
 
         try {
-            const res = await api.get<AxiosResponse>(
+            const res = await api.get<AxiosResponse<Question>>(
                 `/question/${currentQuestionId}/next?sortBy=id.asc&starred=${isStarredFilter}`,
             );
             set({ question: res.data.data, selectedOptionId: null });
@@ -60,7 +60,7 @@ const useQuestionStore = create<QuestionState>((set, get) => ({
         const wasCorrect = selectedOptionId === (get().question?.correct_option_id ?? -1);
 
         try {
-            await api.post<AxiosResponse>(`/question/history/${questionId}`, {
+            await api.post<AxiosResponse<void>>(`/question/history/${questionId}`, {
                 wasCorrect,
             });
 

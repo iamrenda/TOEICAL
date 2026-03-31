@@ -1,6 +1,6 @@
-export interface AxiosResponse {
+export interface AxiosResponse<T> {
     status: "success" | "error";
     code: number;
     message: string;
-    data?: any;
+    data?: T;
 }

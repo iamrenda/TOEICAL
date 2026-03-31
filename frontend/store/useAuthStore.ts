@@ -8,6 +8,7 @@ import { ErrorType } from "@/types/Error";
 import { setItemAsync, deleteItemAsync, getItemAsync } from "expo-secure-store";
 import { UserStorageData } from "@/types/User";
 import { ZustandResponse } from "@/types/Zustand";
+import { AxiosResponse } from "@/types/Axios";
 
 interface UserLoginResponse {
     username: string;
@@ -63,7 +64,7 @@ const useAuthStore = create<AuthState>((set) => ({
         set({ isLoading: true });
 
         try {
-            await axios.post(`${Links.BASE_URL_AUTH}/signup`, {
+            await axios.post<AxiosResponse<void>>(`${Links.BASE_URL_AUTH}/signup`, {
                 username,
                 email,
                 password,
@@ -81,12 +82,12 @@ const useAuthStore = create<AuthState>((set) => ({
         set({ isLoading: true });
 
         try {
-            const res = await axios.post<UserLoginResponse>(`${Links.BASE_URL_AUTH}/login`, {
+            const res = await axios.post<AxiosResponse<UserLoginResponse>>(`${Links.BASE_URL_AUTH}/login`, {
                 email,
                 password,
             });
 
-            const { username, accessToken, refreshToken } = res.data;
+            const { username, accessToken, refreshToken } = res.data.data!;
 
             await setItemAsync("accessToken", accessToken);
             await setItemAsync("refreshToken", refreshToken);
