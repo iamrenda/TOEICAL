@@ -9,7 +9,7 @@ import { ErrorMessages } from "@/constants/ErrorMessages";
 import { router } from "expo-router";
 
 const ReadingScreen = () => {
-    const { fetchQuestions, questions, isLoading } = useQuestionOverviewStore();
+    const { questions, isLoading, fetchQuestions } = useQuestionOverviewStore();
 
     const insets = useSafeAreaInsets();
 
@@ -47,6 +47,8 @@ const ReadingScreen = () => {
                         renderItem={({ item }) => <QuestionOverviewItem overview={item} />}
                         keyExtractor={(item) => item.id.toString()}
                         contentContainerStyle={styles.contentContainer}
+                        onEndReached={() => fetchQuestions(true)}
+                        onEndReachedThreshold={0.8}
                     />
                 )}
             </View>
