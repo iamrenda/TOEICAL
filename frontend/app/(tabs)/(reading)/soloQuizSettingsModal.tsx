@@ -1,8 +1,9 @@
-import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import React from "react";
-import { FontAwesome6 } from "@expo/vector-icons";
 import Variables from "@/constants/Variables";
-import { QuestionNumberPickerModal, Footer, CustomButton } from "@/components";
+import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { FontAwesome6 } from "@expo/vector-icons";
+import { QuizQuestionSelectionModal, Footer, CustomButton } from "@/components";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const problemTypes = [
     { id: 1, title: "ランダム", subtitle: "こちらが決めちゃいますよ！", icon: "dice" },
@@ -11,7 +12,7 @@ const problemTypes = [
     { id: 4, title: "間違えた問題のみ", subtitle: "過去のミスを復習する", icon: "circle-exclamation" },
 ];
 
-const SoloQuizSettingsStack = () => {
+const SoloQuizSettingsModal = () => {
     const [questionCount, setQuestionCount] = React.useState(20);
     const [isPickerVisible, setIsPickerVisible] = React.useState(false);
     const [selectedProblemType, setSelectedProblemType] = React.useState(1);
@@ -33,7 +34,7 @@ const SoloQuizSettingsStack = () => {
                         <FontAwesome6 name="angle-down" size={16} />
                     </Pressable>
 
-                    <QuestionNumberPickerModal
+                    <QuizQuestionSelectionModal
                         visible={isPickerVisible}
                         onClose={() => setIsPickerVisible(false)}
                         value={questionCount}
@@ -89,7 +90,7 @@ const SoloQuizSettingsStack = () => {
     );
 };
 
-export default SoloQuizSettingsStack;
+export default SoloQuizSettingsModal;
 
 const styles = StyleSheet.create({
     container: {

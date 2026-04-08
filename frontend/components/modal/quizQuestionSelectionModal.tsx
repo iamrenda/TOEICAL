@@ -8,7 +8,7 @@ interface Props {
     setValue: (value: number) => void;
 }
 
-const QuestionNumberPickerModal = ({ visible, onClose, value, setValue }: Props) => {
+const QuizQuestionSelectionModal = ({ visible, onClose, value, setValue }: Props) => {
     return (
         <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
             <View style={styles.overlay}>
@@ -37,7 +37,7 @@ const QuestionNumberPickerModal = ({ visible, onClose, value, setValue }: Props)
     );
 };
 
-export { QuestionNumberPickerModal };
+export { QuizQuestionSelectionModal };
 
 const styles = StyleSheet.create({
     overlay: {

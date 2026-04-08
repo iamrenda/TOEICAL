@@ -6,7 +6,7 @@ export { AuthTextInput } from "./auth/authTextInput";
 export { GamemodeList } from "./home/gamemodeList";
 export { StatusList } from "./home/statusList";
 
-export { QuestionNumberPickerModal } from "./modal/questionNumberPickerModal";
+export { QuizQuestionSelectionModal } from "./modal/quizQuestionSelectionModal";
 
 export { ExplanationText } from "./question/explanationText";
 export { QuestionIdLabel } from "./question/questionIdLabel";

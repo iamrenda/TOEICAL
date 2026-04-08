@@ -10,7 +10,6 @@ interface GameModeDetails {
     icon: string;
     title: string;
     subTitle: string;
-    isTabVisible: boolean;
 }
 
 const gamemodes: GameModeDetails[] = [
@@ -19,30 +18,25 @@ const gamemodes: GameModeDetails[] = [
         icon: "book-open",
         title: "リーディング",
         subTitle: "TOEICの問題を解いて実力をつけよう！",
-        isTabVisible: true,
     },
     {
         href: "/(tabs)/writing",
         icon: "pencil",
         title: "ライティング",
         subTitle: "一日一回英文を書いてみよう！",
-        isTabVisible: false,
     },
     {
         href: "/(tabs)/speaking",
         icon: "microphone",
         title: "スピーキング",
         subTitle: "即興で英語を話してみよう！",
-        isTabVisible: false,
     },
 ];
 
 const GamemodeItem = ({ gamemode }: { gamemode: GameModeDetails }) => {
-    const { setTabsVisibility } = useSettingsStore();
-
     return (
         <Link href={gamemode.href} push asChild>
-            <Pressable style={styles.button} onPress={() => setTabsVisibility(gamemode.isTabVisible)}>
+            <Pressable style={styles.button}>
                 <FontAwesome6 name={gamemode.icon} size={16} color={Variables.primary600} style={styles.buttonIcon} />
                 <View>
                     <Text style={styles.buttonTitle}>{gamemode.title}</Text>

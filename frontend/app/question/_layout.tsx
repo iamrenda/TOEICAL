@@ -1,5 +1,5 @@
 import useQuestionStore from "@/store/useQuestion";
-import { HeaderBackIconButton } from "@/components/util/headerBackIconButton";
+import { HeaderBackIconButton } from "@/components";
 import { Stack } from "expo-router";
 
 const QuestionLayout = () => {
