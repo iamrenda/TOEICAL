@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 
-const ReviewLayout = () => {
+const ReadingLayout = () => {
     return (
         <Stack>
             <Stack.Screen
@@ -13,4 +13,4 @@ const ReviewLayout = () => {
     );
 };
 
-export default ReviewLayout;
+export default ReadingLayout;

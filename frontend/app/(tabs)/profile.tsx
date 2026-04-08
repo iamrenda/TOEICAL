@@ -2,7 +2,7 @@ import useAuthStore from "@/store/useAuthStore";
 import { Button, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const Profile = () => {
+const ProfileScreen = () => {
     const { logout } = useAuthStore();
 
     return (
@@ -12,6 +12,6 @@ const Profile = () => {
     );
 };
 
-export default Profile;
+export default ProfileScreen;
 
 const styles = StyleSheet.create({});

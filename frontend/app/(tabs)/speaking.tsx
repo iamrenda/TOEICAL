@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 
-const speaking = () => {
+const SpeakingScreen = () => {
     return (
         <View>
             <Text>speaking</Text>
@@ -8,4 +8,4 @@ const speaking = () => {
     );
 };
 
-export default speaking;
+export default SpeakingScreen;

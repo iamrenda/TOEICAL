@@ -8,7 +8,7 @@ import showErrorAlert from "@/util/showErrorAlert";
 import { ErrorMessages } from "@/constants/ErrorMessages";
 import { router } from "expo-router";
 
-const ReviewScreen = () => {
+const ReadingScreen = () => {
     const { fetchQuestions, questions, isLoading } = useQuestionOverviewStore();
 
     const insets = useSafeAreaInsets();
@@ -54,7 +54,7 @@ const ReviewScreen = () => {
     );
 };
 
-export default ReviewScreen;
+export default ReadingScreen;
 
 const styles = StyleSheet.create({
     container: {

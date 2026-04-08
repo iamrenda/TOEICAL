@@ -15,24 +15,24 @@ interface GameModeDetails {
 
 const gamemodes: GameModeDetails[] = [
     {
-        href: "/(tabs)/(review)",
+        href: "/(tabs)/(reading)",
         icon: "book-open",
-        title: "リフレッシュ",
-        subTitle: "間違えた問題を振り返ろう！",
+        title: "リーディング",
+        subTitle: "TOEICの問題を解いて実力をつけよう！",
         isTabVisible: true,
     },
     {
-        href: "/(tabs)/(home)/soloQuizSettings",
-        icon: "pen-to-square",
-        title: "ソロクイズ",
-        subTitle: "問題を自分で取り組んでみよう！",
+        href: "/(tabs)/writing",
+        icon: "pencil",
+        title: "ライティング",
+        subTitle: "一日一回英文を書いてみよう！",
         isTabVisible: false,
     },
     {
-        href: "/(tabs)/quiz",
-        icon: "gamepad",
-        title: "対戦バトル",
-        subTitle: "ほかのユーザーと競い合おう！",
+        href: "/(tabs)/speaking",
+        icon: "microphone",
+        title: "スピーキング",
+        subTitle: "即興で英語を話してみよう！",
         isTabVisible: false,
     },
 ];
