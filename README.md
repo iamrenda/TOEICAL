@@ -2,6 +2,8 @@
 
 TOEICから始める英語学習アプリ
 
+https://github.com/user-attachments/assets/cc30c16e-f18d-4935-9f29-b5be75c36497
+
 ## 機能
 
 - リフレッシュモード: TOEICの問題をランダムに出題し、解答後に正解と解説を表示します。
