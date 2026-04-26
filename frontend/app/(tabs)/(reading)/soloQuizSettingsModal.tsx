@@ -3,7 +3,11 @@ import Variables from "@/constants/Variables";
 import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { QuizQuestionSelectionModal, Footer, CustomButton } from "@/components";
-import { SafeAreaView } from "react-native-safe-area-context";
+import useSoloQuizStore from "@/store/useSoloQuizStore";
+import { useRouter } from "expo-router";
+import showErrorAlert from "@/util/showErrorAlert";
+import { ErrorMessages } from "@/constants/ErrorMessages";
+import api from "@/api/api";
 
 const problemTypes = [
     { id: 1, title: "ランダム", subtitle: "こちらが決めちゃいますよ！", icon: "dice" },
@@ -16,6 +20,61 @@ const SoloQuizSettingsModal = () => {
     const [questionCount, setQuestionCount] = React.useState(20);
     const [isPickerVisible, setIsPickerVisible] = React.useState(false);
     const [selectedProblemType, setSelectedProblemType] = React.useState(1);
+    const [counts, setCounts] = React.useState({ all: 0, answered: 0, starred: 0, last_answered_wrong: 0 });
+    const [maxCount, setMaxCount] = React.useState(0);
+    const router = useRouter();
+
+    React.useEffect(() => {
+        const fetchCounts = async () => {
+            try {
+                const res = await api.get("/question/count");
+                if (res.data && res.data.data) {
+                    setCounts(res.data.data);
+                }
+            } catch (e) {
+                console.log("Error fetching counts", e);
+            }
+        };
+        fetchCounts();
+    }, []);
+
+    React.useEffect(() => {
+        if (selectedProblemType === 1) setMaxCount(counts.all);
+        else if (selectedProblemType === 2) setMaxCount(counts.starred);
+        else if (selectedProblemType === 3) setMaxCount(Math.max(0, counts.all - counts.answered));
+        else if (selectedProblemType === 4) setMaxCount(counts.last_answered_wrong);
+    }, [selectedProblemType, counts]);
+
+    React.useEffect(() => {
+        const limit = Math.min(30, maxCount);
+        if (questionCount > limit && limit > 0) {
+            setQuestionCount(limit);
+        } else if (limit === 0) {
+            setQuestionCount(0);
+        } else if (questionCount === 0 && limit > 0) {
+            setQuestionCount(Math.min(20, limit));
+        }
+    }, [maxCount]);
+
+    const onStartSession = async () => {
+        const typeMap: Record<number, string> = { 1: "random", 2: "starred", 3: "unanswered", 4: "wrong" };
+        const type = typeMap[selectedProblemType];
+
+        const res = await useSoloQuizStore.getState().fetchQuizQuestions(type, questionCount);
+
+        if (res.success) {
+            const firstQuestion = useSoloQuizStore.getState().questions[0];
+            if (firstQuestion) {
+                router.replace(`/question/${firstQuestion.id}?isQuiz=true`);
+            } else {
+                showErrorAlert({ message: "条件に一致する問題がありません。" });
+            }
+        } else {
+            if (res.errorType) {
+                showErrorAlert({ message: ErrorMessages[res.errorType] });
+            }
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -39,6 +98,7 @@ const SoloQuizSettingsModal = () => {
                         onClose={() => setIsPickerVisible(false)}
                         value={questionCount}
                         setValue={setQuestionCount}
+                        maxCount={maxCount}
                     />
                 </View>
             </View>
@@ -81,8 +141,9 @@ const SoloQuizSettingsModal = () => {
                     text="クイズ開始"
                     variant="primary"
                     iconName="angle-right"
-                    isSelected={true}
-                    onPress={() => console.log("Start Session")}
+                    isSelected={maxCount > 0}
+                    isDisabled={maxCount === 0}
+                    onPress={onStartSession}
                     flex={1}
                 />
             </Footer>

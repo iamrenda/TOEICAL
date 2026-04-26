@@ -12,7 +12,7 @@ dotenv.config();
 
 const refreshTokens: string[] = [];
 
-const ACCESS_TOKEN_EXPIRY = "1m";
+const ACCESS_TOKEN_EXPIRY = "1h";
 const REFRESH_TOKEN_EXPIRY = "7d";
 
 const generateAccessToken = (user: UserTokenPayload) => {

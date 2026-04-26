@@ -23,16 +23,7 @@ export const OverviewQuestionSchema = z.object({
 export const NextQuestionSchema = OverviewQuestionSchema.pick({ sortBy: true, starred: true });
 
 export const RandomQuestionSchema = z.object({
-    isStarred: z.string().transform((val, ctx) => {
-        if (val.toLowerCase() === "true") return true;
-        if (val.toLowerCase() === "false") return false;
-        ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "isStarred must be 'true' or 'false'",
-        });
-
-        return z.NEVER;
-    }),
+    type: z.enum(["random", "starred", "unanswered", "wrong"]),
     count: z.coerce.number().min(1),
 });
 

@@ -12,7 +12,7 @@ const FloatingButton = ({ onPress }: Props) => {
     const insets = useSafeAreaInsets();
 
     return (
-        <Pressable style={[styles.button, { bottom: insets.bottom + 8 }]} onPress={onPress}>
+        <Pressable style={[styles.button, { bottom: insets.bottom + 48 }]} onPress={onPress}>
             <FontAwesome6 name="play" size={18} color="#fff" />
         </Pressable>
     );
@@ -26,9 +26,9 @@ const styles = StyleSheet.create({
         margin: 16,
         right: 16,
         backgroundColor: Variables.primary600,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
+        width: 64,
+        height: 64,
+        borderRadius: 32,
         justifyContent: "center",
         alignItems: "center",
         shadowColor: "#000",

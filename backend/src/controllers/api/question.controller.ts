@@ -128,26 +128,12 @@ export const getRandomQuestions = async (
 ) => {
     try {
         const { user } = req;
-        const { isStarred, count } = req.query;
+        const { type, count } = req.query;
 
-        const query = isStarred
-            ? `
-                SELECT
-                    q.*,
-                    TRUE AS is_starred,
-                    json_agg(DISTINCT jsonb_build_object(
-                        'option_id', o.id,
-                        'option', o.option,
-                        'translated_option', o.translated_option
-                    )) AS options,
-                    json_agg(DISTINCT dd.description) AS detailed_descriptions,
-                    json_agg(DISTINCT tv.translated_options_text) AS translated_vocabs
-                FROM question AS q
-                JOIN starred_question sq ON sq.question_id = q.id
-                    AND sq.user_id = $1
-                LEFT JOIN option AS o ON q.id = o.question_id
-                LEFT JOIN detailed_description AS dd ON q.id = dd.question_id
-                LEFT JOIN translated_vocab AS tv ON q.id = tv.question_id
+        let condition = "";
+
+        if (type === "starred") {
+            condition = `
                 WHERE q.id IN (
                     SELECT question_id
                     FROM starred_question
@@ -155,36 +141,71 @@ export const getRandomQuestions = async (
                     ORDER BY RANDOM()
                     LIMIT $2
                 )
-                GROUP BY q.id;
-            `
-            : `
-                SELECT
-                    q.*,
-                    EXISTS (
-                        SELECT 1
-                        FROM starred_question sq
-                        WHERE sq.question_id = q.id
-                        AND sq.user_id = $1
-                    ) AS is_starred,
-                    json_agg(DISTINCT jsonb_build_object(
-                        'option_id', o.id,
-                        'option', o.option,
-                        'translated_option', o.translated_option
-                    )) AS options,
-                    json_agg(DISTINCT dd.description) AS detailed_descriptions,
-                    json_agg(DISTINCT tv.translated_options_text) AS translated_vocabs
-                FROM question AS q
-                LEFT JOIN option AS o ON q.id = o.question_id
-                LEFT JOIN detailed_description AS dd ON q.id = dd.question_id
-                LEFT JOIN translated_vocab AS tv ON q.id = tv.question_id
+            `;
+        } else if (type === "unanswered") {
+            condition = `
+                WHERE q.id IN (
+                    SELECT id
+                    FROM question
+                    WHERE id NOT IN (
+                        SELECT question_id
+                        FROM answer_history
+                        WHERE user_id = $1
+                    )
+                    ORDER BY RANDOM()
+                    LIMIT $2
+                )
+            `;
+        } else if (type === "wrong") {
+            condition = `
+                WHERE q.id IN (
+                    SELECT t.question_id
+                    FROM (
+                        SELECT question_id, was_correct,
+                               ROW_NUMBER() OVER (PARTITION BY question_id ORDER BY answered_at DESC) as rn
+                        FROM answer_history
+                        WHERE user_id = $1
+                    ) t
+                    WHERE t.rn = 1 AND t.was_correct = false
+                    ORDER BY RANDOM()
+                    LIMIT $2
+                )
+            `;
+        } else {
+            // random
+            condition = `
                 WHERE q.id IN (
                     SELECT id
                     FROM question
                     ORDER BY RANDOM()
                     LIMIT $2
                 )
-                GROUP BY q.id;
             `;
+        }
+
+        const query = `
+            SELECT
+                q.*,
+                EXISTS (
+                    SELECT 1
+                    FROM starred_question sq
+                    WHERE sq.question_id = q.id
+                    AND sq.user_id = $1
+                ) AS is_starred,
+                json_agg(DISTINCT jsonb_build_object(
+                    'option_id', o.id,
+                    'option', o.option,
+                    'translated_option', o.translated_option
+                )) AS options,
+                json_agg(DISTINCT dd.description) AS detailed_descriptions,
+                json_agg(DISTINCT tv.translated_options_text) AS translated_vocabs
+            FROM question AS q
+            LEFT JOIN option AS o ON q.id = o.question_id
+            LEFT JOIN detailed_description AS dd ON q.id = dd.question_id
+            LEFT JOIN translated_vocab AS tv ON q.id = tv.question_id
+            ${condition}
+            GROUP BY q.id;
+        `;
 
         const queryParameters = [user?.id, count];
         const data = await DB().query<Question>(query, queryParameters);

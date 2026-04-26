@@ -10,7 +10,6 @@ const QuestionLayout = () => {
                 options={{
                     headerTitle: "",
                     headerShadowVisible: false,
-                    headerLeft: () => <HeaderBackIconButton iconName="angle-left" />,
                 }}
             />
             <Stack.Screen
@@ -26,6 +25,7 @@ const QuestionLayout = () => {
                     ),
                 }}
             />
+            <Stack.Screen name="summary" options={{ headerShown: false }} />
         </Stack>
     );
 };

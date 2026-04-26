@@ -6,9 +6,13 @@ interface Props {
     value: number;
     onClose: () => void;
     setValue: (value: number) => void;
+    maxCount: number;
 }
 
-const QuizQuestionSelectionModal = ({ visible, onClose, value, setValue }: Props) => {
+const QuizQuestionSelectionModal = ({ visible, onClose, value, setValue, maxCount }: Props) => {
+    const max = Math.max(1, Math.min(30, maxCount)); // At least 1 item to avoid empty picker
+    const items = Array.from({ length: max }, (_, i) => i + 1);
+
     return (
         <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
             <View style={styles.overlay}>
@@ -27,9 +31,9 @@ const QuizQuestionSelectionModal = ({ visible, onClose, value, setValue }: Props
                         style={styles.picker}
                         itemStyle={styles.pickerItem}
                     >
-                        <Picker.Item label="10問" value={10} />
-                        <Picker.Item label="20問" value={20} />
-                        <Picker.Item label="30問" value={30} />
+                        {items.map((i) => (
+                            <Picker.Item key={i} label={`${i}問`} value={i} />
+                        ))}
                     </Picker>
                 </View>
             </View>
