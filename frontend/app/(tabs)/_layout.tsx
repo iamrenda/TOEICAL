@@ -28,14 +28,14 @@ function TabLayout() {
             }}
         >
             <Tabs.Screen
-                name="(home)"
+                name="index"
                 options={{
                     title: "Home",
                     tabBarIcon: ({ color, size }) => <SymbolView name="house.fill" tintColor={color} size={size} />,
                 }}
             />
             <Tabs.Screen
-                name="(reading)"
+                name="reading"
                 options={{
                     title: "Reading",
                     tabBarIcon: ({ color, size }) => (

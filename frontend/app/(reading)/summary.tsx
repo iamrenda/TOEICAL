@@ -13,7 +13,7 @@ const SummaryScreen = () => {
 
     const onGoHome = () => {
         resetQuiz();
-        router.replace("/(tabs)/(reading)");
+        router.replace("/(tabs)/reading");
     };
 
     const scorePercentage = questions.length > 0 ? (correctAnswersCount / questions.length) * 100 : 0;

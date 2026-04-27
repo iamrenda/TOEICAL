@@ -66,9 +66,9 @@ const QuestionScreen = () => {
             if (currentIndex + 1 < quizQuestions.length) {
                 nextQuestion();
                 const nextId = quizQuestions[currentIndex + 1].id;
-                router.replace(`/question/${nextId}?isQuiz=true`);
+                router.replace(`/(reading)/${nextId}?isQuiz=true`);
             } else {
-                router.replace("/question/summary");
+                router.replace("/(reading)/summary");
             }
             return;
         }
@@ -78,7 +78,7 @@ const QuestionScreen = () => {
         if (res.success) {
             const nextQuestionId = useQuestionStore.getState().question?.id;
             if (nextQuestionId) {
-                router.replace(`/question/${nextQuestionId}`);
+                router.replace(`/(reading)/${nextQuestionId}`);
             }
 
             return;
@@ -90,7 +90,7 @@ const QuestionScreen = () => {
             showErrorAlert({ message: ErrorMessages[errorType] });
         }
 
-        router.replace("/(tabs)/(home)");
+        router.replace("/(reading)/");
     };
 
     React.useEffect(() => {
@@ -183,7 +183,7 @@ const QuestionScreen = () => {
                         <CustomButton
                             text="解説"
                             variant="secondary"
-                            onPress={() => router.push("/question/explanation")}
+                            onPress={() => router.push("/(reading)/explanation")}
                             flex={3}
                         />
                         <CustomButton text="次の問題" variant="primary" onPress={onNextQuestion} flex={7} />

@@ -13,7 +13,7 @@ interface GameModeDetails {
 
 const gamemodes: GameModeDetails[] = [
     {
-        href: "/(tabs)/(reading)",
+        href: "/(tabs)/reading",
         icon: "book-open",
         title: "リーディング",
         subTitle: "TOEICの問題を解いて実力をつけよう！",

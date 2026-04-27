@@ -9,7 +9,6 @@ const ReadingLayout = () => {
                 name="index"
                 options={{
                     headerShown: false,
-                    animation: "fade",
                 }}
             />
             <Stack.Screen
@@ -38,6 +37,7 @@ const ReadingLayout = () => {
                 options={{
                     title: "",
                     presentation: "modal",
+                    headerShadowVisible: false,
                     headerLeft: () => <HeaderBackIconButton iconName="angle-left" />,
                 }}
             />

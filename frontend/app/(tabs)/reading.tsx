@@ -21,7 +21,7 @@ const ReadingScreen = () => {
             if (!res.success) {
                 if (res.errorType) {
                     showErrorAlert({ message: ErrorMessages[res.errorType] });
-                    router.replace("/(tabs)/(home)");
+                    router.replace("/(tabs)/reading");
                 }
             }
         };
@@ -56,7 +56,7 @@ const ReadingScreen = () => {
 
             <FloatingButton
                 onPress={() => {
-                    router.push("./soloQuizSettingsModal");
+                    router.push("/(reading)/soloQuizSettingsModal");
                 }}
             />
         </View>

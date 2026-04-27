@@ -37,7 +37,7 @@ const QuestionOverviewItem = ({ overview }: Props) => {
     };
 
     return (
-        <Link href={`/question/${id.toString()}`} asChild>
+        <Link href={`/(reading)/${id.toString()}`} asChild>
             <Pressable>
                 <View style={styles.container}>
                     <View style={styles.questionIdContainer}>
