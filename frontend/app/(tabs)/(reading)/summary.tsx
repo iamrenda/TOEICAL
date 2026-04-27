@@ -13,7 +13,7 @@ const SummaryScreen = () => {
 
     const onGoHome = () => {
         resetQuiz();
-        router.replace("/(tabs)/(home)");
+        router.replace("/(tabs)/(reading)");
     };
 
     const scorePercentage = questions.length > 0 ? (correctAnswersCount / questions.length) * 100 : 0;
@@ -28,12 +28,8 @@ const SummaryScreen = () => {
             <Text style={styles.scoreText}>
                 {correctAnswersCount} / {questions.length} 正解
             </Text>
-            <Text style={styles.percentageText}>
-                正答率: {scorePercentage.toFixed(0)}%
-            </Text>
-            <Text style={styles.timeText}>
-                平均解答時間: {averageTime.toFixed(1)}秒/問
-            </Text>
+            <Text style={styles.percentageText}>正答率: {scorePercentage.toFixed(0)}%</Text>
+            <Text style={styles.timeText}>平均解答時間: {averageTime.toFixed(1)}秒/問</Text>
 
             <Footer>
                 <CustomButton text="ホームに戻る" variant="primary" onPress={onGoHome} flex={1} />

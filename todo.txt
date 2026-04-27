@@ -1,2 +1,3 @@
-- fix explanation page for quiz
 - better design for summary page
+
+- haptic api for better UX???
