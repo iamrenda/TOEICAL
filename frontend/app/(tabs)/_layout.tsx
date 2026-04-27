@@ -1,7 +1,7 @@
 import Variables from "@/constants/Variables";
 import useAuthStore from "@/store/useAuthStore";
-import { Redirect } from "expo-router";
-import { Label, Icon, NativeTabs } from "expo-router/unstable-native-tabs";
+import { SymbolView } from "expo-symbols";
+import { Redirect, Tabs } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 
 function TabLayout() {
@@ -20,28 +20,53 @@ function TabLayout() {
     }
 
     return (
-        <NativeTabs tintColor={Variables.primary600} backBehavior="history">
-            <NativeTabs.Trigger name="(home)">
-                <Label>Home</Label>
-                <Icon sf="house.fill" />
-            </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="(reading)">
-                <Label>Reading</Label>
-                <Icon sf="list.clipboard.fill" />
-            </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="writing">
-                <Label>Writing</Label>
-                <Icon sf="pencil.line" />
-            </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="speaking">
-                <Label>Speaking</Label>
-                <Icon sf="mic.fill" />
-            </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="profile">
-                <Label>Profile</Label>
-                <Icon sf="person.circle.fill" />
-            </NativeTabs.Trigger>
-        </NativeTabs>
+        <Tabs
+            backBehavior="history"
+            screenOptions={{
+                headerShown: false,
+                tabBarActiveTintColor: Variables.primary600,
+            }}
+        >
+            <Tabs.Screen
+                name="(home)"
+                options={{
+                    title: "Home",
+                    tabBarIcon: ({ color, size }) => <SymbolView name="house.fill" tintColor={color} size={size} />,
+                }}
+            />
+            <Tabs.Screen
+                name="(reading)"
+                options={{
+                    title: "Reading",
+                    tabBarIcon: ({ color, size }) => (
+                        <SymbolView name="list.clipboard.fill" tintColor={color} size={size} />
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="writing"
+                options={{
+                    title: "Writing",
+                    tabBarIcon: ({ color, size }) => <SymbolView name="pencil.line" tintColor={color} size={size} />,
+                }}
+            />
+            <Tabs.Screen
+                name="speaking"
+                options={{
+                    title: "Speaking",
+                    tabBarIcon: ({ color, size }) => <SymbolView name="mic.fill" tintColor={color} size={size} />,
+                }}
+            />
+            <Tabs.Screen
+                name="profile"
+                options={{
+                    title: "Profile",
+                    tabBarIcon: ({ color, size }) => (
+                        <SymbolView name="person.circle.fill" tintColor={color} size={size} />
+                    ),
+                }}
+            />
+        </Tabs>
     );
 }
 
