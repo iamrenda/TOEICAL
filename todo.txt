@@ -1,3 +1,5 @@
-- better design for summary page
+- fix: explanation page for solo quiz
+- feat: better design for summary page
 
-- haptic api for better UX???
+- fix: summary -> home animation fix
+- feat: haptic api for better UX???

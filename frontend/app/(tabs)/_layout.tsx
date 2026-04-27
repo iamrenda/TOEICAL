@@ -25,7 +25,7 @@ function TabLayout() {
                 <Label>Home</Label>
                 <Icon sf="house.fill" />
             </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="reading">
+            <NativeTabs.Trigger name="(reading)">
                 <Label>Reading</Label>
                 <Icon sf="list.clipboard.fill" />
             </NativeTabs.Trigger>

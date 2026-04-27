@@ -65,7 +65,7 @@ const SoloQuizSettingsModal = () => {
         if (res.success) {
             const firstQuestion = useSoloQuizStore.getState().questions[0];
             if (firstQuestion) {
-                router.replace(`./${firstQuestion.id}?isQuiz=true`);
+                router.replace(`/(reading)/${firstQuestion.id}?isQuiz=true`);
             } else {
                 showErrorAlert({ message: "条件に一致する問題がありません。" });
             }

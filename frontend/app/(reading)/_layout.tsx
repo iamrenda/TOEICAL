@@ -6,12 +6,6 @@ const ReadingLayout = () => {
     return (
         <Stack>
             <Stack.Screen
-                name="index"
-                options={{
-                    headerShown: false,
-                }}
-            />
-            <Stack.Screen
                 name="[questionId]"
                 options={{
                     headerTitle: "",
@@ -32,15 +26,6 @@ const ReadingLayout = () => {
                 }}
             />
             <Stack.Screen name="summary" options={{ headerShown: false }} />
-            <Stack.Screen
-                name="soloQuizSettingsModal"
-                options={{
-                    title: "",
-                    presentation: "modal",
-                    headerShadowVisible: false,
-                    headerLeft: () => <HeaderBackIconButton iconName="angle-left" />,
-                }}
-            />
         </Stack>
     );
 };
