@@ -1,6 +1,6 @@
-import useSettingsStore from "@/store/useSettingsStore";
-import { HeaderBackIconButton } from "@/components/";
-import { router, Stack } from "expo-router";
+import { HeaderBackIconButton } from "@/components";
+import useQuestionStore from "@/store/useQuestion";
+import { Stack } from "expo-router";
 
 const ReadingLayout = () => {
     return (
@@ -9,23 +9,36 @@ const ReadingLayout = () => {
                 name="index"
                 options={{
                     headerShown: false,
+                    animation: "fade",
                 }}
             />
+            <Stack.Screen
+                name="[questionId]"
+                options={{
+                    headerTitle: "",
+                    headerShadowVisible: false,
+                }}
+            />
+            <Stack.Screen
+                name="explanation"
+                options={{
+                    presentation: "modal",
+                    headerTitle: "解説",
+                    headerLeft: () => (
+                        <HeaderBackIconButton
+                            iconName="xmark"
+                            onPress={() => useQuestionStore.setState({ selectedOptionId: null })}
+                        />
+                    ),
+                }}
+            />
+            <Stack.Screen name="summary" options={{ headerShown: false }} />
             <Stack.Screen
                 name="soloQuizSettingsModal"
                 options={{
                     title: "",
-                    headerShadowVisible: false,
-                    animation: "slide_from_bottom",
-                    headerLeft: () => (
-                        <HeaderBackIconButton
-                            iconName="angle-left"
-                            onPress={() => {
-                                router.back();
-                                useSettingsStore.setState({ isVisible: true });
-                            }}
-                        />
-                    ),
+                    presentation: "modal",
+                    headerLeft: () => <HeaderBackIconButton iconName="angle-left" />,
                 }}
             />
         </Stack>

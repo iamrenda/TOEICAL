@@ -148,7 +148,6 @@ const QuestionScreen = () => {
                 />
             ) : (
                 <Stack.Screen
-                    name="[questionId]"
                     options={{
                         headerTitle: "",
                         headerShadowVisible: false,

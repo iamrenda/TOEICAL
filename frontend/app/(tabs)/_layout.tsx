@@ -20,7 +20,7 @@ function TabLayout() {
     }
 
     return (
-        <NativeTabs tintColor={Variables.primary600}>
+        <NativeTabs tintColor={Variables.primary600} backBehavior="history">
             <NativeTabs.Trigger name="(home)">
                 <Label>Home</Label>
                 <Icon sf="house.fill" />

@@ -65,7 +65,7 @@ const SoloQuizSettingsModal = () => {
         if (res.success) {
             const firstQuestion = useSoloQuizStore.getState().questions[0];
             if (firstQuestion) {
-                router.replace(`/question/${firstQuestion.id}?isQuiz=true`);
+                router.replace(`./${firstQuestion.id}?isQuiz=true`);
             } else {
                 showErrorAlert({ message: "条件に一致する問題がありません。" });
             }
@@ -78,9 +78,10 @@ const SoloQuizSettingsModal = () => {
 
     return (
         <View style={styles.container}>
-            <FontAwesome6 name="pen-to-square" size={24} style={styles.titleIcon} color={Variables.primary600} />
-            <Text style={styles.titleText}>TOEICAL</Text>
-            <Text style={styles.subtitleText}>Part 5 セッションの設定</Text>
+            <View style={styles.titleContainer}>
+                <FontAwesome6 name="pen-to-square" size={24} style={styles.titleIcon} color={Variables.primary600} />
+                <Text style={styles.titleText}>TOEIC Part 5 クイズ</Text>
+            </View>
 
             <View style={styles.questionCountSettingsContainer}>
                 <View style={styles.questionSettingsTitleContainer}>
@@ -161,21 +162,20 @@ const styles = StyleSheet.create({
         backgroundColor: Variables.white,
     },
 
+    titleContainer: {
+        alignItems: "center",
+        gap: 12,
+        marginBottom: 32,
+    },
     titleIcon: {
         backgroundColor: Variables.primary100,
         padding: 12,
-        marginBottom: 12,
         borderRadius: Variables.borderRadiusPrimary,
     },
     titleText: {
         fontSize: 24,
         fontWeight: "800",
         color: Variables.textPrimary,
-    },
-    subtitleText: {
-        fontSize: 18,
-        color: Variables.textSecondary,
-        marginBottom: 32,
     },
 
     questionCountSettingsContainer: {

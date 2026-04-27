@@ -3,7 +3,6 @@ import Variables from "@/constants/Variables";
 import useQuestionOverviewStore from "@/store/useQuestionOverviewStore";
 import showErrorAlert from "@/util/showErrorAlert";
 import FloatingButton from "@/components/questionOverview/floatingButton";
-import useSettingsStore from "@/store/useSettingsStore";
 import { ActivityIndicator, FlatList, StyleSheet, View } from "react-native";
 import { QuestionOverviewItem, QuestionOverviewFilter } from "@/components";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -57,8 +56,7 @@ const ReadingScreen = () => {
 
             <FloatingButton
                 onPress={() => {
-                    router.push("/(tabs)/(reading)/soloQuizSettingsModal");
-                    useSettingsStore.setState({ isVisible: false });
+                    router.push("./soloQuizSettingsModal");
                 }}
             />
         </View>
