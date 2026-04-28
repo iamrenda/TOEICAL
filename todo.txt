@@ -1,5 +1,12 @@
-- fix: explanation page for solo quiz
 - feat: better design for summary page
-
 - fix: summary -> home animation fix
-- feat: haptic api for better UX???
+
+LIST
+== client ==
+ - username lookup
+ - UI animations (haptic api??)
+
+== Server ==
+ - store refresh tokens in DB
+ - add type safeties to api endpoints
+ - add indexes to optimize SQL

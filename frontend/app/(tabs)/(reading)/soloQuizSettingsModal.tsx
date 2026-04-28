@@ -3,7 +3,7 @@ import Variables from "@/constants/Variables";
 import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { QuizQuestionSelectionModal, Footer, CustomButton } from "@/components";
-import useSoloQuizStore from "@/store/useSoloQuizStore";
+import useQuizStore from "@/store/useQuizStore";
 import { useRouter } from "expo-router";
 import showErrorAlert from "@/util/showErrorAlert";
 import { ErrorMessages } from "@/constants/ErrorMessages";
@@ -60,12 +60,12 @@ const SoloQuizSettingsModal = () => {
         const typeMap: Record<number, string> = { 1: "random", 2: "starred", 3: "unanswered", 4: "wrong" };
         const type = typeMap[selectedProblemType];
 
-        const res = await useSoloQuizStore.getState().fetchQuizQuestions(type, questionCount);
+        const res = await useQuizStore.getState().fetchQuizQuestions(type, questionCount);
 
         if (res.success) {
-            const firstQuestion = useSoloQuizStore.getState().questions[0];
+            const firstQuestion = useQuizStore.getState().quizQuestions[0];
             if (firstQuestion) {
-                router.replace(`/(reading)/${firstQuestion.id}?isQuiz=true`);
+                router.replace(`/(reading)/${firstQuestion.id}`);
             } else {
                 showErrorAlert({ message: "条件に一致する問題がありません。" });
             }

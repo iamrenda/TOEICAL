@@ -1,12 +1,13 @@
 import React from "react";
 import Variables from "@/constants/Variables";
-import useQuestionStore from "@/store/useQuestion";
+import useQuizStore from "@/store/useQuizStore";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { QuestionIdLabel, ExplanationText } from "@/components";
 
 const ExplanationModal = () => {
-    const { question, selectedOptionId } = useQuestionStore();
+    const { getCurrentQuestion, selectedOptionId } = useQuizStore();
+    const question = getCurrentQuestion();
 
     if (!question) {
         return null;

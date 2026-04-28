@@ -1,6 +1,6 @@
 import React from "react";
 import Variables from "@/constants/Variables";
-import useSoloQuizStore from "@/store/useSoloQuizStore";
+import useQuizStore from "@/store/useQuizStore";
 import { StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import { Footer, CustomButton } from "@/components";
@@ -8,11 +8,11 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const SummaryScreen = () => {
-    const { questions, correctAnswersCount, times, resetQuiz } = useSoloQuizStore();
+    const { quizQuestions: questions, correctAnswersCount, times, reset } = useQuizStore();
     const router = useRouter();
 
     const onGoHome = () => {
-        resetQuiz();
+        reset();
         router.replace("/(tabs)/reading");
     };
 

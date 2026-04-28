@@ -1,5 +1,5 @@
 import { HeaderBackIconButton } from "@/components";
-import useQuestionStore from "@/store/useQuestion";
+import useQuizStore from "@/store/useQuizStore";
 import { Stack } from "expo-router";
 
 const ReadingLayout = () => {
@@ -20,7 +20,7 @@ const ReadingLayout = () => {
                     headerLeft: () => (
                         <HeaderBackIconButton
                             iconName="xmark"
-                            onPress={() => useQuestionStore.setState({ selectedOptionId: null })}
+                            onPress={() => useQuizStore.setState({ selectedOptionId: null })}
                         />
                     ),
                 }}

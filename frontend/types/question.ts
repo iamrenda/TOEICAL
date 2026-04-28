@@ -19,6 +19,8 @@ export interface Question {
     translated_vocabs: string[];
 }
 
+export type QuestionExplanation = Omit<Question, "options" | "correct_option_id">;
+
 export interface Overview {
     id: number;
     question: string;

@@ -1,7 +1,6 @@
 import React from "react";
 import Variables from "@/constants/Variables";
-import useQuestionStore from "@/store/useQuestion";
-import useSoloQuizStore from "@/store/useSoloQuizStore";
+import useQuizStore from "@/store/useQuizStore";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Footer, QuestionOption, CustomButton, QuestionIdLabel, HeaderBackIconButton } from "@/components";
@@ -11,31 +10,28 @@ import { ErrorMessages } from "@/constants/ErrorMessages";
 const optionLetter = ["A", "B", "C", "D"];
 
 const QuestionScreen = () => {
-    const { questionId, isQuiz } = useLocalSearchParams();
+    const { questionId } = useLocalSearchParams();
     const {
-        isLoading: isStoreLoading,
-        selectedOptionId: storeSelectedOptionId,
-        question: storeQuestion,
+        isLoading,
+        isQuizMode,
+        selectedOptionId,
+        selectOption,
         fetchQuestion,
         fetchNextQuestion,
         submitAnswer,
-    } = useQuestionStore();
-
-    const {
-        questions: quizQuestions,
-        currentIndex,
-        answerQuestion,
+        quizQuestions,
+        quizCurrentIndex,
+        answerQuizQuestion,
         submitQuizAnswer,
-        nextQuestion,
-    } = useSoloQuizStore();
-    const isQuizMode = isQuiz === "true";
+        nextQuizQuestion,
+        getCurrentQuestion,
+        addTime,
+    } = useQuizStore();
 
-    const question = isQuizMode ? quizQuestions[currentIndex] : storeQuestion;
-    const isLoading = isQuizMode ? quizQuestions.length === 0 : isStoreLoading;
+    const question = getCurrentQuestion();
+    const isReady = isQuizMode ? quizQuestions.length > 0 : !isLoading && !!question;
 
     const [isSubmitted, setIsSubmitted] = React.useState(false);
-    const [localSelectedOptionId, setLocalSelectedOptionId] = React.useState<number | null>(null);
-    const selectedOptionId = isQuizMode ? localSelectedOptionId : storeSelectedOptionId;
     const [startTime, setStartTime] = React.useState(Date.now());
 
     const router = useRouter();
@@ -43,14 +39,14 @@ const QuestionScreen = () => {
     const onSubmit = () => {
         if (!isSubmitted && isQuizMode && questionId && selectedOptionId) {
             const timeTaken = (Date.now() - startTime) / 1000;
-            useSoloQuizStore.getState().addTime(timeTaken);
+            addTime(timeTaken);
         }
         setIsSubmitted(true);
 
         if (questionId && selectedOptionId) {
             if (isQuizMode && question) {
                 const isCorrect = selectedOptionId === question.correct_option_id;
-                answerQuestion(isCorrect);
+                answerQuizQuestion(isCorrect);
                 submitQuizAnswer(Number(questionId), isCorrect);
             } else {
                 submitAnswer(Number(questionId), selectedOptionId);
@@ -60,13 +56,12 @@ const QuestionScreen = () => {
 
     const onNextQuestion = async () => {
         setIsSubmitted(false);
-        setLocalSelectedOptionId(null);
 
         if (isQuizMode) {
-            if (currentIndex + 1 < quizQuestions.length) {
-                nextQuestion();
-                const nextId = quizQuestions[currentIndex + 1].id;
-                router.replace(`/(reading)/${nextId}?isQuiz=true`);
+            if (quizCurrentIndex + 1 < quizQuestions.length) {
+                nextQuizQuestion();
+                const nextId = quizQuestions[quizCurrentIndex + 1].id;
+                router.replace(`/(reading)/${nextId}`);
             } else {
                 router.replace("/(reading)/summary");
             }
@@ -76,7 +71,7 @@ const QuestionScreen = () => {
         const res = await fetchNextQuestion(Number(questionId));
 
         if (res.success) {
-            const nextQuestionId = useQuestionStore.getState().question?.id;
+            const nextQuestionId = useQuizStore.getState().currentQuestion?.id;
             if (nextQuestionId) {
                 router.replace(`/(reading)/${nextQuestionId}`);
             }
@@ -101,11 +96,11 @@ const QuestionScreen = () => {
         }
     }, [questionId, isQuizMode]);
 
-    if (isLoading || !question) {
+    if (!isReady || !question) {
         return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: "center", alignItems: "center" }} />;
     }
 
-    const progress = isQuizMode && quizQuestions.length > 0 ? ((currentIndex + 1) / quizQuestions.length) * 100 : 0;
+    const progress = isQuizMode && quizQuestions.length > 0 ? ((quizCurrentIndex + 1) / quizQuestions.length) * 100 : 0;
 
     return (
         <View style={styles.container}>
@@ -138,7 +133,7 @@ const QuestionScreen = () => {
                                         alignSelf: "flex-end",
                                     }}
                                 >
-                                    {`問題 ${currentIndex + 1} / ${quizQuestions.length}`}
+                                    {`問題 ${quizCurrentIndex + 1} / ${quizQuestions.length}`}
                                 </Text>
                             </View>
                         ),
@@ -167,12 +162,7 @@ const QuestionScreen = () => {
                         option={option}
                         letter={optionLetter[index]}
                         isSelected={selectedOptionId === option.option_id}
-                        onPress={() =>
-                            !isSubmitted &&
-                            (isQuizMode
-                                ? setLocalSelectedOptionId(option.option_id)
-                                : useQuestionStore.setState({ selectedOptionId: option.option_id }))
-                        }
+                        onPress={() => !isSubmitted && selectOption(option.option_id)}
                         isSubmitted={isSubmitted}
                     />
                 ))}
