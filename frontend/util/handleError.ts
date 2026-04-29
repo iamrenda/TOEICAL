@@ -5,7 +5,7 @@ import { ErrorType } from "@/types/Error";
 /**
  * Checks if the given error is an ErrorResponse (Handled error)
  */
-const isErrorResponse = (e: unknown): e is ErrorResponse => {
+const isCustomResponse = (e: unknown): e is ErrorResponse => {
     return typeof e === "object" && e !== null && "isCustomError" in e && (e as any).isCustomError === true;
 };
 
@@ -14,7 +14,7 @@ const isErrorResponse = (e: unknown): e is ErrorResponse => {
  * Logs error and returns normalized ErrorResponse for UI display
  */
 const handleError = (error: unknown): ZustandResponse => {
-    if (isErrorResponse(error)) {
+    if (isCustomResponse(error)) {
         const e = error;
 
         console.log("[Handled Error]", {

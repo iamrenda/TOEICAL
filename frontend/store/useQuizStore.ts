@@ -17,6 +17,8 @@ interface QuizState {
     quizCurrentIndex: number;
     correctAnswersCount: number;
     times: number[];
+    quizAnswers: number[];
+    explanationQuestionIndex: number | null;
 
     // Shared
     isLoading: boolean;
@@ -53,7 +55,12 @@ interface QuizState {
     /**
      * Mark current question as answered and increment score if correct
      */
-    answerQuizQuestion: (isCorrect: boolean) => void;
+    answerQuizQuestion: (isCorrect: boolean, selectedOptionId: number) => void;
+
+    /**
+     * Set the index of the question to view in the explanation modal from the summary
+     */
+    setExplanationQuestionIndex: (index: number | null) => void;
 
     /**
      * Record time spent on current question
@@ -94,6 +101,8 @@ const useQuizStore = create<QuizState>((set, get) => ({
     quizCurrentIndex: 0,
     correctAnswersCount: 0,
     times: [],
+    quizAnswers: [],
+    explanationQuestionIndex: null,
     isLoading: false,
     isQuizMode: false,
 
@@ -163,6 +172,8 @@ const useQuizStore = create<QuizState>((set, get) => ({
             quizCurrentIndex: 0,
             correctAnswersCount: 0,
             times: [],
+            quizAnswers: [],
+            explanationQuestionIndex: null,
             selectedOptionId: null,
             isQuizMode: true,
         });
@@ -186,10 +197,11 @@ const useQuizStore = create<QuizState>((set, get) => ({
         }
     },
 
-    answerQuizQuestion: (isCorrect: boolean) => {
-        if (isCorrect) {
-            set((state) => ({ correctAnswersCount: state.correctAnswersCount + 1 }));
-        }
+    answerQuizQuestion: (isCorrect: boolean, selectedOptionId: number) => {
+        set((state) => ({
+            correctAnswersCount: isCorrect ? state.correctAnswersCount + 1 : state.correctAnswersCount,
+            quizAnswers: [...state.quizAnswers, selectedOptionId],
+        }));
     },
 
     addTime: (time: number) => {
@@ -225,9 +237,15 @@ const useQuizStore = create<QuizState>((set, get) => ({
             quizCurrentIndex: 0,
             correctAnswersCount: 0,
             times: [],
+            quizAnswers: [],
+            explanationQuestionIndex: null,
             isLoading: false,
             isQuizMode: false,
         });
+    },
+
+    setExplanationQuestionIndex: (index: number | null) => {
+        set({ explanationQuestionIndex: index });
     },
 
     getCurrentQuestion: () => {

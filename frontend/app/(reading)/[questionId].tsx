@@ -46,7 +46,7 @@ const QuestionScreen = () => {
         if (questionId && selectedOptionId) {
             if (isQuizMode && question) {
                 const isCorrect = selectedOptionId === question.correct_option_id;
-                answerQuizQuestion(isCorrect);
+                answerQuizQuestion(isCorrect, selectedOptionId);
                 submitQuizAnswer(Number(questionId), isCorrect);
             } else {
                 submitAnswer(Number(questionId), selectedOptionId);
@@ -114,11 +114,12 @@ const QuestionScreen = () => {
 
     return (
         <View style={styles.container}>
+            {/* Quiz Progress Header */}
             {isQuizMode ? (
                 <Stack.Screen
                     options={{
                         headerTitle: () => (
-                            <View style={{ alignItems: "center", width: "100%" }}>
+                            <View style={{ alignItems: "center", width: "100%", paddingTop: 8 }}>
                                 <View style={{ flexDirection: "row", alignItems: "center", gap: 12, width: "100%" }}>
                                     <HeaderBackIconButton iconName="xmark" onPress={onQuizQuit} shouldGoBack={false} />
                                     <View
@@ -151,6 +152,7 @@ const QuestionScreen = () => {
                             </View>
                         ),
                         headerBackVisible: false,
+                        headerShadowVisible: false,
                         headerTitleAlign: "center",
                     }}
                 />
@@ -166,6 +168,7 @@ const QuestionScreen = () => {
             <QuestionIdLabel id={Number(questionId)} style={{ alignSelf: "flex-start", marginBottom: 12 }} />
             <Text style={styles.questionText}>{question.question}</Text>
 
+            {/* Quiz Options */}
             {question.options
                 .sort((a, b) => a.option_id - b.option_id)
                 .map((option, index) => (

@@ -6,8 +6,18 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { QuestionIdLabel, ExplanationText } from "@/components";
 
 const ExplanationModal = () => {
-    const { getCurrentQuestion, selectedOptionId } = useQuizStore();
-    const question = getCurrentQuestion();
+    const { getCurrentQuestion, selectedOptionId: globalSelectedOptionId, isQuizMode, quizQuestions, explanationQuestionIndex, quizAnswers } = useQuizStore();
+    
+    let question;
+    let selectedOptionId;
+
+    if (explanationQuestionIndex !== null && isQuizMode) {
+        question = quizQuestions[explanationQuestionIndex];
+        selectedOptionId = quizAnswers[explanationQuestionIndex];
+    } else {
+        question = getCurrentQuestion();
+        selectedOptionId = globalSelectedOptionId;
+    }
 
     if (!question) {
         return null;

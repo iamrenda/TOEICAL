@@ -15,6 +15,8 @@ export { QuestionOption } from "./question/questionOption";
 export { QuestionOverviewFilter } from "./questionOverview/questionOverviewFilter";
 export { QuestionOverviewItem } from "./questionOverview/questionOverviewItem";
 
+export { CircularProgressChart } from "./charts/CircularProgressChart";
+
 export { CustomButton } from "./util/customButton";
 export { Footer } from "./util/footer";
 export { Header } from "./util/header";
