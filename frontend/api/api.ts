@@ -1,11 +1,9 @@
 import Links from "@/constants/Links";
 import useAuthStore from "@/store/useAuthStore";
-import axios from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { getItemAsync } from "expo-secure-store";
-import { router } from "expo-router";
-import { ZustandResponse } from "@/types/Zustand";
-import { ErrorType } from "@/types/Error";
-import { AxiosResponse } from "@/types/Axios";
+import normalizeError from "@/util/normalizeError";
+import handleErrorSideEffects from "@/util/handleErrorSideEffects";
 
 const TIMEOUT_IN_MS = 5000;
 
@@ -28,59 +26,54 @@ api.interceptors.request.use(async (config) => {
 // 401 Response handler
 api.interceptors.response.use(
     (response) => response,
-    async (error) => {
+    async (error: AxiosError) => {
+        const originalRequest = error.config as any;
+
+        // Network error (no response received)
         if (!error.response) {
-            return Promise.reject({
-                success: false,
-                errorType: ErrorType.NETWORK,
-            } as ZustandResponse);
+            const errorResponse = normalizeError(error);
+            await handleErrorSideEffects(errorResponse);
+            return Promise.reject(errorResponse);
         }
 
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
+        // Handle Unauthorized - Attempt token refresh
+        if (error.response.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
 
             try {
                 const refreshToken = await getItemAsync("refreshToken");
 
-                if (refreshToken) {
-                    const res = await axios.post<AxiosResponse<{ accessToken: string }>>(
-                        `${Links.BASE_URL_AUTH}/token`,
-                        {
-                            token: refreshToken,
-                        },
-                    );
-
-                    const newAccessToken = res.data.data?.accessToken;
-
-                    if (!newAccessToken) {
-                        return Promise.reject({
-                            success: false,
-                            errorType: ErrorType.AUTH,
-                        } as ZustandResponse);
-                    }
-
-                    useAuthStore.setState({ accessToken: newAccessToken });
-
-                    originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-                    return api(originalRequest);
+                if (!refreshToken) {
+                    throw new Error("No refresh token available");
                 }
-            } catch (e) {
-                useAuthStore.setState({ accessToken: null, isLoggedIn: false });
-                router.replace("/(auth)/login");
 
-                return Promise.reject({
-                    success: false,
-                    errorType: ErrorType.AUTH,
-                } as ZustandResponse);
+                // Refresh the token
+                const res = await axios.post<AxiosResponse<{ accessToken: string }>>(`${Links.BASE_URL_AUTH}/token`, {
+                    token: refreshToken,
+                });
+
+                const newAccessToken = res.data.data?.accessToken;
+
+                if (!newAccessToken) {
+                    throw new Error("No access token in refresh response");
+                }
+
+                useAuthStore.setState({ accessToken: newAccessToken });
+
+                // Retry original request with new token
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                return api(originalRequest);
+            } catch (refreshError) {
+                // Token refresh failed, normalize and handle the error
+                const errorResponse = normalizeError(refreshError);
+                await handleErrorSideEffects(errorResponse);
+                return Promise.reject(errorResponse);
             }
         }
 
-        return Promise.reject({
-            success: false,
-            errorType: ErrorType.SERVER,
-        } as ZustandResponse);
+        const errorResponse = normalizeError(error);
+        await handleErrorSideEffects(errorResponse);
+        return Promise.reject(errorResponse);
     },
 );
 

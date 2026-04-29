@@ -1,17 +1,19 @@
 export enum ErrorType {
     NETWORK = "NETWORK",
-    AUTH = "AUTH",
-    SERVER = "SERVER",
-    VALIDATION = "VALIDATION",
+    AUTH = "AUTH", // 401
+    FORBIDDEN = "FORBIDDEN", // 403
+    NOT_FOUND = "NOT_FOUND", // 404
+    VALIDATION = "VALIDATION", // 400
+    SERVER = "SERVER", // 5xx
+    UNKNOWN = "UNKNOWN",
 }
 
 export const ErrorCodeMapping: Record<number, ErrorType> = {
-    0: ErrorType.NETWORK,
-    400: ErrorType.VALIDATION, // Bad Request (Wrong password, missing fields, etc.)
-    401: ErrorType.AUTH, // Unauthorized (Invalid or expired access token)
-    403: ErrorType.AUTH, // Forbidden (Expired refresh token)
-    404: ErrorType.SERVER,
-    409: ErrorType.VALIDATION, // Conflict (e.g., email already exists during sign-up)
-    422: ErrorType.VALIDATION, // Unprocessable Entity (Validation errors)
+    400: ErrorType.VALIDATION,
+    401: ErrorType.AUTH,
+    403: ErrorType.FORBIDDEN,
+    404: ErrorType.NOT_FOUND,
     500: ErrorType.SERVER,
+    502: ErrorType.SERVER,
+    503: ErrorType.SERVER,
 };

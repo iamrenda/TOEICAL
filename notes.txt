@@ -1,0 +1,4 @@
+ -- Data flow --
+API Intercepter (Normalize response or error @api.ts)
+    -> Stores (Error handled @handleError.ts)
+    -> UI level (Error handled repectively)

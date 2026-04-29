@@ -1,11 +1,11 @@
 import api from "@/api/api";
+import handleError from "@/util/handleError";
+import useQuestionOverviewStore from "./useQuestionOverviewStore";
 import { create } from "zustand";
 import { Question } from "@/types/Question";
 import { AxiosResponse } from "@/types/Axios";
 import { ZustandResponse } from "@/types/Zustand";
-import handleError from "@/util/handleError";
 import { ErrorType } from "@/types/Error";
-import useQuestionOverviewStore from "./useQuestionOverviewStore";
 
 interface QuizState {
     // Single Question Mode
@@ -129,6 +129,7 @@ const useQuizStore = create<QuizState>((set, get) => ({
                 selectedOptionId: null,
                 isQuizMode: false,
             });
+
             return { success: true };
         } catch (e) {
             return handleError(e);

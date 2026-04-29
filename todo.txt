@@ -1,7 +1,3 @@
-- fix: starred last question from list
-- feat: better design for summary page
-- fix: summary -> home animation fix
-
 LIST
 == client ==
  - username lookup

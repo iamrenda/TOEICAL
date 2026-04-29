@@ -43,7 +43,7 @@ const verifyToken = (refreshToken: string): UserTokenPayload => {
     try {
         return jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as UserTokenPayload;
     } catch (e) {
-        throw new ApiError(403, "Invalid refresh token");
+        throw new ApiError(401, "Invalid refresh token");
     }
 };
 
@@ -115,7 +115,7 @@ export const fetchAccessToken = (
         }
 
         if (!refreshTokens.includes(refreshToken)) {
-            throw new ApiError(403, "Invalid refresh token");
+            throw new ApiError(401, "Invalid refresh token");
         }
 
         const user = verifyToken(refreshToken);

@@ -6,6 +6,7 @@ import { Stack, useLocalSearchParams, router, useNavigation } from "expo-router"
 import { Footer, QuestionOption, CustomButton, QuestionIdLabel, HeaderBackIconButton } from "@/components";
 import showErrorAlert from "@/util/showErrorAlert";
 import { ErrorMessages } from "@/constants/ErrorMessages";
+import { ErrorType } from "@/types/Error";
 
 const optionLetter = ["A", "B", "C", "D"];
 
@@ -75,12 +76,13 @@ const QuestionScreen = () => {
                 router.replace(`/(reading)/${nextQuestionId}`);
             }
 
+            router.back();
             return;
         }
 
         const { errorType } = res;
 
-        if (errorType) {
+        if (errorType && errorType !== ErrorType.NOT_FOUND) {
             showErrorAlert({ message: ErrorMessages[errorType] });
         }
 

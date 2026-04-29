@@ -1,22 +1,34 @@
-import { ErrorCodeMapping, ErrorType } from "@/types/Error";
+import { ErrorResponse } from "@/types/ErrorResponse";
 import { ZustandResponse } from "@/types/Zustand";
-import { isAxiosError } from "axios";
+import { ErrorType } from "@/types/Error";
 
-const handleError = (e: unknown): ZustandResponse => {
-    console.log("Error:", e);
+/**
+ * Checks if the given error is an ErrorResponse (Handled error)
+ */
+const isErrorResponse = (e: unknown): e is ErrorResponse => {
+    return typeof e === "object" && e !== null && "isCustomError" in e && (e as any).isCustomError === true;
+};
 
-    if (isAxiosError(e)) {
-        const status = e.response?.status;
-        const errorType = ErrorCodeMapping[status || 500];
+/**
+ * Main error handler used for stores
+ * Logs error and returns normalized ErrorResponse for UI display
+ */
+const handleError = (error: unknown): ZustandResponse => {
+    if (isErrorResponse(error)) {
+        const e = error;
 
-        return { success: false, errorType };
+        console.log("[Handled Error]", {
+            errorType: e.errorType,
+            message: e.message,
+            originalError: e.originalError,
+        });
+
+        return { success: false, errorType: e.errorType };
     }
 
-    if (e instanceof Error) {
-        return { success: false, errorType: ErrorType.SERVER };
-    }
+    console.log("[Unhandled Error]", error);
 
-    return { success: false, errorType: ErrorType.NETWORK };
+    return { success: false, errorType: ErrorType.UNKNOWN };
 };
 
 export default handleError;
