@@ -4,17 +4,21 @@ import { useRouter } from "expo-router";
 
 interface Props {
     iconName: string;
+    shouldGoBack?: boolean;
     onPress?: () => void;
 }
 
-const HeaderBackIconButton = ({ iconName, onPress }: Props) => {
+const HeaderBackIconButton = ({ iconName, shouldGoBack = true, onPress }: Props) => {
     const router = useRouter();
 
     const handlePress = () => {
         if (onPress) {
             onPress();
         }
-        router.back();
+
+        if (shouldGoBack) {
+            router.back();
+        }
     };
 
     return (

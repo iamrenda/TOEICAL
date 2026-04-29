@@ -1,7 +1,7 @@
 import React from "react";
 import Variables from "@/constants/Variables";
 import useQuizStore from "@/store/useQuizStore";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { Footer, QuestionOption, CustomButton, QuestionIdLabel, HeaderBackIconButton } from "@/components";
 import showErrorAlert from "@/util/showErrorAlert";
@@ -88,6 +88,13 @@ const QuestionScreen = () => {
         router.replace("/(reading)/");
     };
 
+    const onQuizQuit = () => {
+        Alert.alert("クイズを終了しますか？", "現在の進行状況は保存されません。", [
+            { text: "閉じる", style: "cancel" },
+            { text: "終了する", style: "destructive", onPress: () => router.replace("/(tabs)/reading") },
+        ]);
+    };
+
     React.useEffect(() => {
         if (isQuizMode) {
             setStartTime(Date.now());
@@ -108,23 +115,26 @@ const QuestionScreen = () => {
                 <Stack.Screen
                     options={{
                         headerTitle: () => (
-                            <View style={{ alignItems: "center", gap: 8, width: "95%" }}>
-                                <View
-                                    style={{
-                                        width: "100%",
-                                        height: 8,
-                                        backgroundColor: Variables.gray200,
-                                        borderRadius: 4,
-                                        overflow: "hidden",
-                                    }}
-                                >
+                            <View style={{ alignItems: "center", width: "100%" }}>
+                                <View style={{ flexDirection: "row", alignItems: "center", gap: 12, width: "100%" }}>
+                                    <HeaderBackIconButton iconName="xmark" onPress={onQuizQuit} shouldGoBack={false} />
                                     <View
                                         style={{
-                                            height: "100%",
-                                            backgroundColor: Variables.primary600,
-                                            width: `${progress}%`,
+                                            flex: 1,
+                                            height: 8,
+                                            backgroundColor: Variables.gray200,
+                                            borderRadius: 4,
+                                            overflow: "hidden",
                                         }}
-                                    />
+                                    >
+                                        <View
+                                            style={{
+                                                height: "100%",
+                                                backgroundColor: Variables.primary600,
+                                                width: `${progress}%`,
+                                            }}
+                                        />
+                                    </View>
                                 </View>
                                 <Text
                                     style={{
