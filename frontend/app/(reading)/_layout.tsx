@@ -5,13 +5,13 @@ import { Stack } from "expo-router";
 const ReadingLayout = () => {
     return (
         <Stack>
-            <Stack.Screen
+            {/* <Stack.Screen
                 name="[questionId]"
                 options={{
                     headerTitle: "",
                     headerShadowVisible: false,
                 }}
-            />
+            /> */}
             <Stack.Screen
                 name="explanation"
                 options={{

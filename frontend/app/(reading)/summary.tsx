@@ -2,18 +2,17 @@ import React from "react";
 import Variables from "@/constants/Variables";
 import useQuizStore from "@/store/useQuizStore";
 import { StyleSheet, Text, View } from "react-native";
-import { useRouter } from "expo-router";
 import { Footer, CustomButton } from "@/components";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
 
 const SummaryScreen = () => {
     const { quizQuestions: questions, correctAnswersCount, times, reset } = useQuizStore();
-    const router = useRouter();
 
     const onGoHome = () => {
+        router.back();
         reset();
-        router.replace("/(tabs)/reading");
     };
 
     const scorePercentage = questions.length > 0 ? (correctAnswersCount / questions.length) * 100 : 0;

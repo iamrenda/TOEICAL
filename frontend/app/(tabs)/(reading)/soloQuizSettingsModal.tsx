@@ -63,9 +63,12 @@ const SoloQuizSettingsModal = () => {
         const res = await useQuizStore.getState().fetchQuizQuestions(type, questionCount);
 
         if (res.success) {
+            useQuizStore.setState({ isQuizMode: true });
+
             const firstQuestion = useQuizStore.getState().quizQuestions[0];
             if (firstQuestion) {
-                router.replace(`/(reading)/${firstQuestion.id}`);
+                router.back();
+                router.push(`/(reading)/${firstQuestion.id}`);
             } else {
                 showErrorAlert({ message: "条件に一致する問題がありません。" });
             }

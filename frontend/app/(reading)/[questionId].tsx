@@ -2,7 +2,7 @@ import React from "react";
 import Variables from "@/constants/Variables";
 import useQuizStore from "@/store/useQuizStore";
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, router, useNavigation } from "expo-router";
 import { Footer, QuestionOption, CustomButton, QuestionIdLabel, HeaderBackIconButton } from "@/components";
 import showErrorAlert from "@/util/showErrorAlert";
 import { ErrorMessages } from "@/constants/ErrorMessages";
@@ -13,7 +13,7 @@ const QuestionScreen = () => {
     const { questionId } = useLocalSearchParams();
     const {
         isLoading,
-        isQuizMode,
+        isQuizMode = false,
         selectedOptionId,
         selectOption,
         fetchQuestion,
@@ -30,11 +30,10 @@ const QuestionScreen = () => {
 
     const question = getCurrentQuestion();
     const isReady = isQuizMode ? quizQuestions.length > 0 : !isLoading && !!question;
+    const navigation = useNavigation();
 
     const [isSubmitted, setIsSubmitted] = React.useState(false);
     const [startTime, setStartTime] = React.useState(Date.now());
-
-    const router = useRouter();
 
     const onSubmit = () => {
         if (!isSubmitted && isQuizMode && questionId && selectedOptionId) {
@@ -85,21 +84,23 @@ const QuestionScreen = () => {
             showErrorAlert({ message: ErrorMessages[errorType] });
         }
 
-        router.replace("/(reading)/");
+        router.back();
     };
 
     const onQuizQuit = () => {
         Alert.alert("クイズを終了しますか？", "現在の進行状況は保存されません。", [
             { text: "閉じる", style: "cancel" },
-            { text: "終了する", style: "destructive", onPress: () => router.replace("/(tabs)/reading") },
+            { text: "終了する", style: "destructive", onPress: () => router.back() },
         ]);
     };
 
     React.useEffect(() => {
         if (isQuizMode) {
             setStartTime(Date.now());
+            navigation.getParent()?.setOptions({ gestureEnabled: false });
         } else if (questionId) {
             fetchQuestion(Number(questionId));
+            navigation.getParent()?.setOptions({ gestureEnabled: true });
         }
     }, [questionId, isQuizMode]);
 

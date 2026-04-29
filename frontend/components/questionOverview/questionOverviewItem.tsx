@@ -6,8 +6,9 @@ import getRelativeTime from "@/util/getRelativeTime";
 import useQuestionOverviewStore from "@/store/useQuestionOverviewStore";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Overview } from "@/types/Question";
-import { Link } from "expo-router";
+import { router } from "expo-router";
 import { QuestionIdLabel } from "../question/questionIdLabel";
+import useQuizStore from "@/store/useQuizStore";
 
 interface Props {
     overview: Overview;
@@ -31,41 +32,44 @@ const QuestionOverviewItem = ({ overview }: Props) => {
 
     const statusLabel = was_last_attempt_correct === null ? "未回答" : was_last_attempt_correct ? "正解" : "不正解";
 
+    const onPress = () => {
+        router.push(`/(reading)/${id.toString()}`);
+        useQuizStore.setState({ isQuizMode: false });
+    };
+
     const starQuestion = async () => {
         setIsStarred(!isStarred); // UI update for instant feedback
         await toggleStarQuestion(id, isStarred);
     };
 
     return (
-        <Link href={`/(reading)/${id.toString()}`} asChild>
-            <Pressable>
-                <View style={styles.container}>
-                    <View style={styles.questionIdContainer}>
-                        <QuestionIdLabel id={id} />
-                        <FontAwesome
-                            name={isStarred ? "star" : "star-o"}
-                            color={isStarred ? Variables.yellow500 : Variables.textTertiary}
-                            size={20}
-                            onPress={starQuestion}
-                        />
-                    </View>
-                    <Text style={styles.questionText} numberOfLines={2}>
-                        {question}
-                    </Text>
-
-                    <View style={styles.questionStatusContainer}>
-                        <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
-                        <Text style={styles.answeredAtText}>
-                            {last_answered_at ? `(${getRelativeTime(diffInDays)})` : ""}
-                        </Text>
-                        <Pressable style={styles.reviewButtonContainer}>
-                            <Text style={styles.reviewButtonText}>復習する</Text>
-                            <FontAwesome6 name="angle-right" size={16} color={Variables.primary600} />
-                        </Pressable>
-                    </View>
+        <Pressable onPress={onPress}>
+            <View style={styles.container}>
+                <View style={styles.questionIdContainer}>
+                    <QuestionIdLabel id={id} />
+                    <FontAwesome
+                        name={isStarred ? "star" : "star-o"}
+                        color={isStarred ? Variables.yellow500 : Variables.textTertiary}
+                        size={20}
+                        onPress={starQuestion}
+                    />
                 </View>
-            </Pressable>
-        </Link>
+                <Text style={styles.questionText} numberOfLines={2}>
+                    {question}
+                </Text>
+
+                <View style={styles.questionStatusContainer}>
+                    <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
+                    <Text style={styles.answeredAtText}>
+                        {last_answered_at ? `(${getRelativeTime(diffInDays)})` : ""}
+                    </Text>
+                    <Pressable style={styles.reviewButtonContainer}>
+                        <Text style={styles.reviewButtonText}>復習する</Text>
+                        <FontAwesome6 name="angle-right" size={16} color={Variables.primary600} />
+                    </Pressable>
+                </View>
+            </View>
+        </Pressable>
     );
 };
 
