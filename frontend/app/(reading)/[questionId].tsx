@@ -75,8 +75,6 @@ const QuestionScreen = () => {
             if (nextQuestionId) {
                 router.replace(`/(reading)/${nextQuestionId}`);
             }
-
-            router.back();
             return;
         }
 
