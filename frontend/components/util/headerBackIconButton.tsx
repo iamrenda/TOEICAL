@@ -1,16 +1,15 @@
 import { StyleSheet, Pressable, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { router } from "expo-router";
 
 interface Props {
     iconName: string;
     shouldGoBack?: boolean;
     onPress?: () => void;
+    iconColor?: string;
 }
 
-const HeaderBackIconButton = ({ iconName, shouldGoBack = true, onPress }: Props) => {
-    const router = useRouter();
-
+const HeaderBackIconButton = ({ iconName, shouldGoBack = true, onPress, iconColor = "black" }: Props) => {
     const handlePress = () => {
         if (onPress) {
             onPress();
@@ -24,7 +23,7 @@ const HeaderBackIconButton = ({ iconName, shouldGoBack = true, onPress }: Props)
     return (
         <Pressable onPress={handlePress} style={styles.pressable}>
             <View style={styles.button}>
-                <FontAwesome6 name={iconName} size={24} color="black" />
+                <FontAwesome6 name={iconName} size={24} color={iconColor} />
             </View>
         </Pressable>
     );

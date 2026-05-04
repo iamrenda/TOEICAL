@@ -29,7 +29,7 @@ function TabLayout() {
                 <Label>Reading</Label>
                 <Icon sf="list.clipboard.fill" />
             </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="writing">
+            <NativeTabs.Trigger name="(writing)">
                 <Label>Writing</Label>
                 <Icon sf="pencil.line" />
             </NativeTabs.Trigger>

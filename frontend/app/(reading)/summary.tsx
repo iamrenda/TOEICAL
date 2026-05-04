@@ -40,7 +40,12 @@ const SummaryScreen = () => {
                         size={200}
                         strokeWidth={10}
                         animationDuration={1500}
-                    />
+                    >
+                        <Text style={{ fontSize: 48, fontWeight: "800", color: Variables.textPrimary }}>
+                            {scorePercentage.toFixed(0)}%
+                        </Text>
+                        <Text style={{ fontSize: 16, fontWeight: "700", color: Variables.gray400 }}>正解率</Text>
+                    </CircularProgressChart>
                 </View>
 
                 {/* Stats Cards */}

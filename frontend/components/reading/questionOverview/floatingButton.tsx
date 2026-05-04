@@ -18,7 +18,7 @@ const FloatingButton = ({ onPress }: Props) => {
     );
 };
 
-export default FloatingButton;
+export { FloatingButton };
 
 const styles = StyleSheet.create({
     button: {

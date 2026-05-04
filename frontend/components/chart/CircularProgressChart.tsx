@@ -18,6 +18,8 @@ interface CircularProgressChartProps {
     size?: number;
     strokeWidth?: number;
     animationDuration?: number;
+    color?: string;
+    children?: React.ReactNode;
 }
 
 const CircularProgressChart: React.FC<CircularProgressChartProps> = ({
@@ -25,6 +27,8 @@ const CircularProgressChart: React.FC<CircularProgressChartProps> = ({
     size = 160,
     strokeWidth = 10,
     animationDuration = 1500,
+    color = Variables.green600,
+    children,
 }) => {
     const radius = (size - strokeWidth) / 2;
     const circumference = 2 * Math.PI * radius;
@@ -70,7 +74,7 @@ const CircularProgressChart: React.FC<CircularProgressChartProps> = ({
                         cx={size / 2}
                         cy={size / 2}
                         r={radius}
-                        stroke={Variables.green600}
+                        stroke={color}
                         strokeWidth={strokeWidth}
                         fill="none"
                         strokeDasharray={circumference}
@@ -82,12 +86,7 @@ const CircularProgressChart: React.FC<CircularProgressChartProps> = ({
                     />
                 </Svg>
 
-                <Animated.View style={[animatedTextStyle, { alignItems: "center" }]}>
-                    <Text style={{ fontSize: 48, fontWeight: "800", color: Variables.textPrimary }}>
-                        {percentage.toFixed(0)}%
-                    </Text>
-                    <Text style={{ fontSize: 16, fontWeight: "700", color: Variables.gray400 }}>正解率</Text>
-                </Animated.View>
+                <Animated.View style={[animatedTextStyle, { alignItems: "center" }]}>{children}</Animated.View>
             </View>
         </View>
     );

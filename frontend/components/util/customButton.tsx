@@ -80,21 +80,17 @@ const styles = StyleSheet.create({
     disabledContainer: {
         backgroundColor: Variables.gray100,
     },
-
     secondary: {
         borderWidth: 2,
         borderColor: Variables.primary600,
     },
-
     shadow: {
         boxShadow: `0px 20px 25px -5px #2b6cee39, 0px 8px 10px -5px #2b6cee39`,
     },
-
     text: {
         fontSize: 16,
         fontWeight: "bold",
     },
-
     icon: {
         marginLeft: 8,
     },

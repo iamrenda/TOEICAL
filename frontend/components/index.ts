@@ -8,14 +8,15 @@ export { StatusList } from "./home/statusList";
 
 export { QuizQuestionSelectionModal } from "./modal/quizQuestionSelectionModal";
 
-export { ExplanationText } from "./question/explanationText";
-export { QuestionIdLabel } from "./question/questionIdLabel";
-export { QuestionOption } from "./question/questionOption";
+export { ExplanationText } from "./reading/question/explanationText";
+export { QuestionIdLabel } from "./reading/question/questionIdLabel";
+export { QuestionOption } from "./reading/question/questionOption";
 
-export { QuestionOverviewFilter } from "./questionOverview/questionOverviewFilter";
-export { QuestionOverviewItem } from "./questionOverview/questionOverviewItem";
+export { FloatingButton } from "./reading/questionOverview/floatingButton";
+export { QuestionOverviewFilter } from "./reading/questionOverview/questionOverviewFilter";
+export { QuestionOverviewItem } from "./reading/questionOverview/questionOverviewItem";
 
-export { CircularProgressChart } from "./charts/CircularProgressChart";
+export { CircularProgressChart } from "./chart/CircularProgressChart";
 
 export { CustomButton } from "./util/customButton";
 export { Footer } from "./util/footer";
