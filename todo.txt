@@ -1,3 +1,11 @@
+TODO
+ - work on /topic api endpoint (backend)
+ - connect the backend to the frontend
+ - work on state management on the frontend
+ - setup fast API
+ - add endpoint for AI analysis
+ - connect to the frontend
+
 LIST
 == client ==
  - username lookup
@@ -8,3 +16,8 @@ LIST
  - store refresh tokens in DB
  - add type safeties to api endpoints
  - add indexes to optimize SQL
+
+== Do Later (Improvements that i can make) ==
+ - /api/question -->> /api/reading
+ - Store TOEIC JSON format instead
+ - Validate query better for reading using Zod's enum

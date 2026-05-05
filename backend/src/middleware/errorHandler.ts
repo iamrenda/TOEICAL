@@ -11,6 +11,8 @@ export const errorHandler = (err: ApiError, req: Request, res: Response, next: N
         message: err.message,
     };
 
+    console.log(`Error: ${err.message}\nStack: ${err.stack}`);
+
     return res.status(err.statusCode).json(response);
 };
 
