@@ -21,7 +21,7 @@ const getTopics = async (
             on wtt.writing_tag_id = writing_tags.id
             where ($1::text is null or wt.difficulty = $1) and ($2::text is null or writing_tags.tag = $2);
             `,
-            [difficulty || null, tag || null],
+            [difficulty === "ALL" ? null : difficulty, tag === "ALL" ? null : tag],
         );
 
         return res.json({ status: "success", code: 200, data });
