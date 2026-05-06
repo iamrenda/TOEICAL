@@ -7,29 +7,20 @@ import { CustomButton } from "@/components/util/customButton";
 import getDifficultyColor from "@/util/getDifficultyColor";
 import { Footer } from "@/components";
 import { router } from "expo-router";
+import useWritingStore from "@/store/useWritingStore";
 
 const WritingTopicCardModal = () => {
-    // CHECK
-    const selectedItem = {
-        id: 10,
-        topic: "What is your favorite way to travel — by car, train, or plane?",
-        description:
-            "Pick your preferred mode of travel and explain what you like about it. You can also describe a trip you took using that method.",
-        difficulty: "easy",
-        limit_time_minutes: 7,
-        recommended_word_count: 70,
-        tags: ["daily-life", "opinion"],
-    };
+    const { selectedTopic } = useWritingStore();
 
     const handleStart = () => {
         router.back();
-        router.push(`/(writing)/${selectedItem.id}`);
+        router.push(`/(writing)/essayWriting`);
     };
 
     return (
         <SafeAreaView style={styles.modalContainer} edges={["bottom"]}>
             <ScrollView>
-                {selectedItem && (
+                {selectedTopic && (
                     <>
                         {/* Difficulty Badge */}
                         <View style={{ marginBottom: 24 }}>
@@ -38,7 +29,7 @@ const WritingTopicCardModal = () => {
                                     styles.badge,
                                     styles.largeBADGE,
                                     {
-                                        backgroundColor: getDifficultyColor(selectedItem.difficulty.toUpperCase()).bg,
+                                        backgroundColor: getDifficultyColor(selectedTopic.difficulty).bg,
                                     },
                                 ]}
                             >
@@ -47,20 +38,20 @@ const WritingTopicCardModal = () => {
                                         styles.badgeText,
                                         styles.largeBadgeText,
                                         {
-                                            color: getDifficultyColor(selectedItem.difficulty.toUpperCase()).text,
+                                            color: getDifficultyColor(selectedTopic.difficulty).text,
                                         },
                                     ]}
                                 >
-                                    {selectedItem.difficulty.toUpperCase()}
+                                    {selectedTopic.difficulty}
                                 </Text>
                             </View>
                         </View>
 
-                        <Text style={styles.modalTopic}>{selectedItem.topic}</Text>
-                        <Text style={styles.modalDescription}>{selectedItem.description}</Text>
+                        <Text style={styles.modalTopic}>{selectedTopic.topic}</Text>
+                        <Text style={styles.modalDescription}>{selectedTopic.description}</Text>
 
                         <View style={styles.tagsContainer}>
-                            {selectedItem.tags.map((tag, index) => (
+                            {selectedTopic.tags.map((tag, index) => (
                                 <View key={index} style={styles.tag}>
                                     <Text style={styles.tagText}># {tag}</Text>
                                 </View>
@@ -70,12 +61,14 @@ const WritingTopicCardModal = () => {
                         <View style={styles.infoRow}>
                             <View style={styles.infoItem}>
                                 <FontAwesome6 name="clock" size={18} color={Variables.primary600} />
-                                <Text style={styles.modalText}>{selectedItem.limit_time_minutes} minutes</Text>
+                                <Text style={styles.modalText}>{selectedTopic.limit_time_minutes} minutes</Text>
                             </View>
 
                             <View style={styles.infoItem}>
                                 <FontAwesome6 name="pencil" size={18} color={Variables.primary600} />
-                                <Text style={styles.modalText}>{selectedItem.recommended_word_count} words (推奨)</Text>
+                                <Text style={styles.modalText}>
+                                    {selectedTopic.recommended_word_count} words (推奨)
+                                </Text>
                             </View>
                         </View>
                     </>

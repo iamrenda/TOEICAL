@@ -1,16 +1,11 @@
 import Variables from "@/constants/Variables";
+import { WritingDifficulty } from "@/types/Writing";
 
-enum Difficulty {
-    EASY = "EASY",
-    MEDIUM = "MEDIUM",
-    HARD = "HARD",
-}
-
-const difficultyColors: Record<Difficulty | string, { bg: string; text: string }> = {
-    [Difficulty.EASY]: { bg: "#E6F4EA", text: "#1E8E3E" },
-    [Difficulty.MEDIUM]: { bg: "#FEF7E0", text: "#E37400" },
-    [Difficulty.HARD]: { bg: "#FCE8E6", text: "#D93025" },
-    DEFAULT: { bg: Variables.gray100, text: Variables.gray600 },
+const difficultyColors: Record<WritingDifficulty, { bg: string; text: string }> = {
+    [WritingDifficulty.ALL]: { bg: Variables.gray100, text: Variables.gray600 },
+    [WritingDifficulty.Easy]: { bg: "#E6F4EA", text: "#1E8E3E" },
+    [WritingDifficulty.Medium]: { bg: "#FEF7E0", text: "#E37400" },
+    [WritingDifficulty.Hard]: { bg: "#FCE8E6", text: "#D93025" },
 };
 
 /**
@@ -18,8 +13,8 @@ const difficultyColors: Record<Difficulty | string, { bg: string; text: string }
  * @param diff
  * @returns
  */
-const getDifficultyColor = (text: Difficulty | string) => {
-    return difficultyColors[text] || difficultyColors.DEFAULT;
+const getDifficultyColor = (text: WritingDifficulty) => {
+    return difficultyColors[text];
 };
 
 export default getDifficultyColor;
