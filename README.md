@@ -8,10 +8,14 @@ https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
 
 - リーディングモード: TOEICの問題をランダムに出題し、解答後に正解と解説を表示します。また問題一覧を見ることもできます。
 
-## 検討中の機能
+## 進捗
 
-- ライティングモード: ユーザーが選んだテーマに基づいて、ライティングの練習ができる
-- スピーキングモード: ユーザーが選んだテーマに基づいて、スピーキングの練習ができる
+- [x] フロントエンドの基本的な画面構成とナビゲーションの実装
+- [x] バックエンドのAPI設計と実装
+- [x] フロントエンドとバックエンドの統合
+- [x] リーディングモードの実装
+- [ ] ライティングモードの実装 (現在進行中)
+- [ ] スピーキングモードの実装
 
 ## テックスタック
 
@@ -36,6 +40,24 @@ https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
 - Python
 - FastAPI
 - GenAI API
+
+## セットアップ方法
+
+### フロントエンド
+
+cd frontend
+npm run dev
+
+### バックエンド (Express.js)
+
+cd backend
+npm run dev
+
+### バックエンド (FastAPI)
+
+cd ai
+./venv/Scripts/activate
+fastapi dev main.py
 
 ## 設計 （リンク）
 
