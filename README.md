@@ -17,7 +17,7 @@ https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
 - [ ] ライティングモードの実装 (現在進行中)
 - [ ] スピーキングモードの実装
 
-## テックスタック
+## 技術スタック
 
 フロントエンド
 
@@ -27,7 +27,7 @@ https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
 - TypeScript
 - Zustand
 
-バックエンド
+バックエンド (Express.js x FastAPI)
 
 - Node.js
 - Express.js
@@ -42,19 +42,25 @@ https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
 
 ### フロントエンド
 
+```
 cd frontend
 npm run dev
+```
 
 ### バックエンド (Express.js)
 
+```
 cd backend
 npm run dev
+```
 
 ### バックエンド (FastAPI)
 
+```
 cd ai
 ./venv/Scripts/activate
 fastapi dev main.py
+```
 
 ## 設計 （リンク）
 
