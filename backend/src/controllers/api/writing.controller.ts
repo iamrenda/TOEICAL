@@ -3,24 +3,19 @@ import DB from "../../db/api.ts";
 import type { Response, NextFunction } from "express";
 import type { AIWritingResult } from "../../types/Writing.ts";
 import type { ValidatedRequest } from "express-zod-safe";
-import type {
-    getTopicsSchema,
-    getWritingResultsParamsBodySchema,
-    getWritingResultsParamsSchema,
-} from "../../schemas/writing.schema.ts";
+import type { WritingTopicsSchema, WritingResultsParamsSchema } from "../../schemas/writing.schema.ts";
 import type { ApiResponse } from "../../types/ApiResponse.ts";
 import ApiError from "../../util/ApiError.ts";
 import type { AxiosResponse } from "../../types/Axios.ts";
 
 const getWritingAnalysis = async (
     req: ValidatedRequest<{
-        params: typeof getWritingResultsParamsSchema;
-        body: typeof getWritingResultsParamsBodySchema;
+        body: typeof WritingResultsParamsSchema;
     }>,
     res: Response<ApiResponse<AIWritingResult>>,
     next: NextFunction,
 ) => {
-    const { userId } = req.params;
+    const { user } = req;
     const { topic, topicId, description, essay, difficulty, timeLimit, timeTaken, wordCount } = req.body;
 
     try {
@@ -80,7 +75,7 @@ const getWritingAnalysis = async (
                 INSERT INTO users_writing (user_id, writing_topic_id, writing_content, writing_results_id)
                 VALUES ($1, $2, $3, $4);
                 `,
-                [userId, topicId, revised_essay, writingResultId],
+                [user?.id, topicId, revised_essay, writingResultId],
             );
         });
 
@@ -96,7 +91,7 @@ const getWritingAnalysis = async (
 };
 
 const getTopics = async (
-    req: ValidatedRequest<{ query: typeof getTopicsSchema }>,
+    req: ValidatedRequest<{ query: typeof WritingTopicsSchema }>,
     res: Response<ApiResponse<any>>,
     next: NextFunction,
 ) => {

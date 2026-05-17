@@ -1,10 +1,6 @@
 import { z } from "zod";
 
-export const getWritingResultsParamsSchema = z.object({
-    userId: z.coerce.number(),
-});
-
-export const getWritingResultsParamsBodySchema = z.object({
+export const WritingResultsParamsSchema = z.object({
     topic: z.string(),
     topicId: z.coerce.number(),
     description: z.string(),
@@ -15,11 +11,7 @@ export const getWritingResultsParamsBodySchema = z.object({
     wordCount: z.coerce.number(),
 });
 
-export const getWritingResultsParamsQuerySchema = z.object({
-    writingTopicId: z.coerce.number(),
-});
-
-export const getTopicsSchema = z.object({
+export const WritingTopicsSchema = z.object({
     difficulty: z.enum(["ALL", "EASY", "MEDIUM", "HARD"]),
     tag: z.enum(["ALL", "daily-life", "reflection", "opinion", "creativity", "social"]),
 });
