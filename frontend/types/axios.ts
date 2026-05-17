@@ -1,6 +1,13 @@
-export interface AxiosResponse<T = any> {
-    status: "success" | "error";
-    code: number;
-    message: string;
-    data?: T;
-}
+export type AxiosResponse<T, E = Error> =
+    | {
+          status: "success";
+          code: number;
+          data: T;
+          error: null;
+      }
+    | {
+          status: "error";
+          code: number;
+          data: null;
+          error: E;
+      };

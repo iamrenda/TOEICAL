@@ -111,6 +111,11 @@ const useQuizStore = create<QuizState>((set, get) => ({
 
         try {
             const res = await api.get<AxiosResponse<Question>>(`/question/${questionId}`);
+
+            if (res.data.status !== "success") {
+                return { success: false, errorType: ErrorType.SERVER };
+            }
+
             set({
                 currentQuestion: res.data.data,
                 selectedOptionId: null,
@@ -133,6 +138,9 @@ const useQuizStore = create<QuizState>((set, get) => ({
             const res = await api.get<AxiosResponse<Question>>(
                 `/question/${currentQuestionId}/next?sortBy=id.asc&starred=${isStarredFilter}`,
             );
+            if (res.data.status !== "success") {
+                return { success: false, errorType: ErrorType.SERVER };
+            }
             set({
                 currentQuestion: res.data.data,
                 selectedOptionId: null,
@@ -181,7 +189,7 @@ const useQuizStore = create<QuizState>((set, get) => ({
         try {
             const res = await api.get<AxiosResponse<Question[]>>(`/question/random?type=${type}&count=${count}`);
 
-            if (!res.data.data) {
+            if (res.data.status !== "success") {
                 return { success: false, errorType: ErrorType.SERVER };
             }
 

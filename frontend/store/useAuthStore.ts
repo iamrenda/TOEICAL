@@ -87,7 +87,11 @@ const useAuthStore = create<AuthState>((set) => ({
                 password,
             });
 
-            const { username, accessToken, refreshToken } = res.data.data!;
+            if (res.data.status !== "success") {
+                return { success: false, errorType: ErrorType.AUTH };
+            }
+
+            const { username, accessToken, refreshToken } = res.data.data;
 
             await setItemAsync("accessToken", accessToken);
             await setItemAsync("refreshToken", refreshToken);

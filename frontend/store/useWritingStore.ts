@@ -4,6 +4,7 @@ import { AxiosResponse } from "@/types/Axios";
 import { WritingDifficulty, WritingTags, WritingTopic } from "@/types/Writing";
 import { ZustandResponse } from "@/types/Zustand";
 import { create } from "zustand";
+import { ErrorType } from "@/types/Error";
 
 interface WritingState {
     isLoading: boolean;
@@ -44,6 +45,11 @@ const useWritingStore = create<WritingState>((set, get) => ({
             const res = await api.get<AxiosResponse<WritingTopic[]>>(
                 `writing/topics?difficulty=${difficulty}&tag=${tags}`,
             );
+
+            if (res.data.status !== "success") {
+                return { success: false, errorType: ErrorType.SERVER };
+            }
+
             set({ allTopics: res.data.data });
 
             return { success: true };

@@ -39,7 +39,7 @@ const useQuestionOverviewStore = create<QuestionOverviewState>((set, get) => ({
                 `/question/overview?sortBy=id.asc&limit=100&page=${nextPage}&starred=${useQuestionOverviewStore.getState().selectedFilter === "starred"}`,
             );
 
-            if (!res.data.data) {
+            if (res.data.status !== "success") {
                 return { success: false, errorType: ErrorType.SERVER };
             }
 
