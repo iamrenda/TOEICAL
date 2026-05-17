@@ -34,9 +34,6 @@ https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
 - Zod
 - TypeScript
 - PostgreSQL
-
-検討中
-
 - Python
 - FastAPI
 - GenAI API

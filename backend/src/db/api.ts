@@ -1,4 +1,4 @@
-import { Pool } from "pg";
+import { Pool, type PoolClient } from "pg";
 import dotenv from "dotenv";
 import ApiError from "../util/ApiError.ts";
 
@@ -51,6 +51,44 @@ const DB = () => {
                 throw new ApiError(500, "An unexpected error occurred.");
             } finally {
                 db.release();
+            }
+        },
+        transaction: async <T>(
+            callback: (client: { query: <U>(sql: string, params?: any[]) => Promise<U[]> }) => Promise<T>,
+        ) => {
+            const client: PoolClient | ApiError = await getPool();
+            if (client instanceof ApiError) {
+                throw client;
+            }
+
+            try {
+                await client.query("BEGIN");
+
+                const query = async <U>(sql: string, params: any[] = []) => {
+                    try {
+                        const result = await client.query(sql, params);
+                        return result.rows as U[];
+                    } catch (e) {
+                        const error = errorMapping[(e as any).code];
+                        throw error
+                            ? new ApiError(error.status, error.message)
+                            : new ApiError(500, "An unexpected error occurred.");
+                    }
+                };
+
+                const result = await callback({ query });
+
+                await client.query("COMMIT");
+                return result;
+            } catch (e) {
+                try {
+                    await client.query("ROLLBACK");
+                } catch (rollbackError) {
+                    console.error("Failed to rollback transaction:", rollbackError);
+                }
+                throw e;
+            } finally {
+                client.release();
             }
         },
     };

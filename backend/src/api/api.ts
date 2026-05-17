@@ -1,9 +1,12 @@
 import axios from "axios";
+import dotenv from "dotenv";
 
-const TIMEOUT_IN_MS = 5000;
+dotenv.config();
+
+const TIMEOUT_IN_MS = 60_000;
 
 const api = axios.create({
-    baseURL: "",
+    baseURL: process.env.FASTAPI_URL!,
     headers: { "Content-Type": "application/json" },
     timeout: TIMEOUT_IN_MS,
 });
