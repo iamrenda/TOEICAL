@@ -1,6 +1,13 @@
-export interface ApiResponse<T> {
-    status: "success" | "error";
-    code: number;
-    message?: string;
-    data?: T;
-}
+export type ApiResponse<T, E = Error> =
+    | {
+          status: "success";
+          data: T;
+          message: string;
+          error: null;
+      }
+    | {
+          status: "error";
+          data: null;
+          message: string;
+          error: E;
+      };

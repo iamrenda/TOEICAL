@@ -1,5 +1,6 @@
 TODO
- - add endpoint for AI analysis
+ - read over reading controllers to see whether api response is actually working -> commit
+ - 
  - connect to the frontend
  - Question -> Reading
 

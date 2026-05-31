@@ -81,8 +81,8 @@ const getWritingAnalysis = async (
 
         return res.status(200).json({
             status: "success",
-            code: 200,
             message: "Writing results saved successfully",
+            error: null,
             data: writingAnalysis.data.data,
         });
     } catch (e) {
@@ -122,7 +122,7 @@ const getTopics = async (
             [difficulty === "ALL" ? null : difficulty, tag === "ALL" ? null : tag],
         );
 
-        return res.status(200).json({ status: "success", code: 200, data });
+        return res.status(200).json({ status: "success", data, message: "Topics retrieved successfully", error: null });
     } catch (e) {
         next(e);
     }

@@ -19,12 +19,12 @@ import { useHeaderHeight } from "@react-navigation/elements";
 
 const EssayWritingScreen = () => {
     const [text, setText] = React.useState("");
-    const [timeLeft, setTimeLeft] = React.useState(0);
+    const [timeLeftSeconds, setTimeLeft] = React.useState(0);
     const [isClockHidden, setIsClockHidden] = React.useState(false);
     const [isClockRunning, setIsClockRunning] = React.useState(true);
 
     const navigation = useNavigation();
-    const { selectedTopic, setUserEssay, reset } = useWritingStore();
+    const { selectedTopic, setUserEssay, submitEssay, reset } = useWritingStore();
 
     const wordCount = text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
     const userHeaderHeight = useHeaderHeight();
@@ -35,9 +35,19 @@ const EssayWritingScreen = () => {
         return `${m}:${s.toString().padStart(2, "0")}`;
     };
 
-    const onSubmit = () => {
+    const onSubmit = async () => {
         setIsClockRunning(false);
+        router.replace("/(writing)/loading");
         setUserEssay(text);
+        const res = await submitEssay(text, Math.floor(timeLeftSeconds / 60), wordCount);
+
+        if (!res.success) {
+            Alert.alert("提出に失敗しました", "もう一度試してください。", [
+                { text: "OK", onPress: () => setIsClockRunning(true) },
+            ]);
+            router.replace("/(writing)/result");
+        }
+
         router.replace("/(writing)/result");
     };
 
@@ -52,14 +62,14 @@ const EssayWritingScreen = () => {
     }, [selectedTopic]);
 
     React.useEffect(() => {
-        if (timeLeft <= 0 || !isClockRunning) return;
+        if (timeLeftSeconds <= 0 || !isClockRunning) return;
 
         const interval = setInterval(() => {
             setTimeLeft((prev) => prev - 1);
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [timeLeft, isClockRunning]);
+    }, [timeLeftSeconds, isClockRunning]);
 
     if (!selectedTopic) {
         return <ActivityIndicator size="large" />;
@@ -140,7 +150,7 @@ const EssayWritingScreen = () => {
                 <View style={styles.toolbar}>
                     <Pressable style={styles.timerContainer} onPress={() => setIsClockHidden(!isClockHidden)}>
                         <Text style={styles.timerText}>
-                            {!isClockHidden || timeLeft < 60 ? formatTime(timeLeft) : "--:--"}
+                            {!isClockHidden || timeLeftSeconds < 60 ? formatTime(timeLeftSeconds) : "--:--"}
                         </Text>
                     </Pressable>
                     <Text style={styles.wordCountText}>

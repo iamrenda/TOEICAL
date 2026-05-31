@@ -10,6 +10,7 @@ import {
 } from "../../schemas/question.schema.ts";
 import type { ValidatedRequest } from "express-zod-safe";
 import ApiError from "../../util/ApiError.ts";
+import type { ApiResponse } from "../../types/ApiResponse.ts";
 
 type QuestionOverview = {
     id: number;
@@ -50,7 +51,7 @@ const getQuestionDataById = async (questionId: number, userId?: number) => {
 
 export const getQuestionOverviews = async (
     req: ValidatedRequest<{ query: typeof OverviewQuestionSchema }>,
-    res: Response,
+    res: Response<ApiResponse<QuestionOverview[]>>,
     next: NextFunction,
 ) => {
     try {
@@ -115,7 +116,7 @@ export const getQuestionOverviews = async (
 
         return res
             .status(200)
-            .json({ status: "success", code: 200, message: "Question overviews retrieved successfully", data });
+            .json({ status: "success", message: "Question overviews retrieved successfully", data, error: null });
     } catch (e) {
         next(e);
     }
@@ -123,7 +124,7 @@ export const getQuestionOverviews = async (
 
 export const getRandomQuestions = async (
     req: ValidatedRequest<{ query: typeof RandomQuestionSchema }>,
-    res: Response,
+    res: Response<ApiResponse<Question[]>>,
     next: NextFunction,
 ) => {
     try {
@@ -210,15 +211,19 @@ export const getRandomQuestions = async (
         const queryParameters = [user?.id, count];
         const data = await DB().query<Question>(query, queryParameters);
 
+        if (data.length === 0) {
+            throw new ApiError(404, "No questions found for the specified type");
+        }
+
         return res
             .status(200)
-            .json({ status: "success", code: 200, message: "Random questions retrieved successfully", data });
+            .json({ status: "success", message: "Random questions retrieved successfully", data, error: null });
     } catch (e) {
         next(e);
     }
 };
 
-export const getQuestionCount = async (req: Request, res: Response, next: NextFunction) => {
+export const getQuestionCount = async (req: Request, res: Response<ApiResponse<any>>, next: NextFunction) => {
     try {
         const { user } = req;
 
@@ -262,7 +267,7 @@ export const getQuestionCount = async (req: Request, res: Response, next: NextFu
 
         return res
             .status(200)
-            .json({ status: "success", code: 200, message: "Question count retrieved successfully", data });
+            .json({ status: "success", message: "Question count retrieved successfully", data, error: null });
     } catch (e) {
         next(e);
     }
@@ -287,7 +292,9 @@ export const saveAnswerHistory = async (
             wasCorrect,
         ]);
 
-        return res.status(201).json({ status: "success", code: 201, message: "Answer history saved successfully" });
+        return res
+            .status(201)
+            .json({ status: "success", message: "Answer history saved successfully", error: null, data: null });
     } catch (e) {
         next(e);
     }
@@ -295,7 +302,7 @@ export const saveAnswerHistory = async (
 
 export const getQuestionById = async (
     req: ValidatedRequest<{ params: typeof QuestionIdSchema }>,
-    res: Response,
+    res: Response<ApiResponse<Question>>,
     next: NextFunction,
 ) => {
     try {
@@ -310,7 +317,7 @@ export const getQuestionById = async (
 
         return res
             .status(200)
-            .json({ status: "success", code: 200, message: "Question retrieved successfully", data: data[0] });
+            .json({ status: "success", message: "Question retrieved successfully", data: data[0]!, error: null });
     } catch (e) {
         next(e);
     }
@@ -318,7 +325,7 @@ export const getQuestionById = async (
 
 export const getNextQuestionById = async (
     req: ValidatedRequest<{ params: typeof QuestionIdSchema; query: typeof NextQuestionSchema }>,
-    res: Response,
+    res: Response<ApiResponse<Question>>,
     next: NextFunction,
 ) => {
     try {
@@ -351,17 +358,20 @@ export const getNextQuestionById = async (
 
             return res.status(200).json({
                 status: "success",
-                code: 200,
                 message: "Next starred question retrieved successfully",
-                data: data[0],
+                data: data[0]!,
+                error: null,
             });
         } else {
             const nextQuestionId = questionId + 1;
             const data = await getQuestionDataById(nextQuestionId, user?.id);
 
-            return res
-                .status(200)
-                .json({ status: "success", code: 200, message: "Next question retrieved successfully", data: data[0] });
+            return res.status(200).json({
+                status: "success",
+                message: "Next question retrieved successfully",
+                data: data[0]!,
+                error: null,
+            });
         }
     } catch (e) {
         next(e);
@@ -370,7 +380,7 @@ export const getNextQuestionById = async (
 
 export const starQuestion = async (
     req: ValidatedRequest<{ params: typeof QuestionIdSchema }>,
-    res: Response,
+    res: Response<ApiResponse<any>>,
     next: NextFunction,
 ) => {
     try {
@@ -382,7 +392,9 @@ export const starQuestion = async (
             [user?.id, questionId],
         );
 
-        return res.status(201).json({ status: "success", code: 201, message: "Question starred successfully" });
+        return res
+            .status(201)
+            .json({ status: "success", message: "Question starred successfully", error: null, data: null });
     } catch (e) {
         next(e);
     }
@@ -390,7 +402,7 @@ export const starQuestion = async (
 
 export const unstarQuestion = async (
     req: ValidatedRequest<{ params: typeof QuestionIdSchema }>,
-    res: Response,
+    res: Response<ApiResponse<any>>,
     next: NextFunction,
 ) => {
     try {
@@ -402,7 +414,9 @@ export const unstarQuestion = async (
             questionId,
         ]);
 
-        return res.status(200).json({ status: "success", code: 200, message: "Question unstarred successfully" });
+        return res
+            .status(200)
+            .json({ status: "success", message: "Question unstarred successfully", error: null, data: null });
     } catch (e) {
         next(e);
     }

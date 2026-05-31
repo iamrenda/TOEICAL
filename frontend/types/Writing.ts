@@ -23,3 +23,24 @@ export enum WritingTags {
     "creativity" = "creativity",
     "social" = "social",
 }
+
+export interface WritingEssayAnalysisInput {
+    topic: string;
+    topicId: number;
+    description: string;
+    essay: string;
+    difficulty: WritingDifficulty;
+    timeLimit: number;
+    timeTaken: number;
+    wordCount: number;
+}
+
+export interface WritingEssayAnalysisOutput {
+    structure_score: number;
+    topic_relevancy_score: number;
+    grammar_score: number;
+    vocabulary_score: number;
+    overall_score: number;
+    revised_essay: string;
+    feedback_summary: string;
+}

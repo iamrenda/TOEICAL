@@ -8,6 +8,12 @@ const WritingLayout = () => {
         <Stack>
             <Stack.Screen name="essayWriting" options={{}} />
             <Stack.Screen
+                name="loading"
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen
                 name="aiEssayModal"
                 options={{
                     presentation: "modal",

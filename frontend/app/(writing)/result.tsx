@@ -3,53 +3,82 @@ import { StyleSheet, Text, View, ScrollView } from "react-native";
 import Variables from "@/constants/Variables";
 import { CircularProgressChart, CustomButton, Footer } from "@/components";
 import { router } from "expo-router";
+import useWritingStore from "@/store/useWritingStore";
 
-const resultData = {
-    overallScore: 82,
-    metrics: [
-        {
-            title: "文法 (Grammar)",
-            score: 78,
-            feedback: "一貫した時制の使用が必要ですが、基本構造は良好です。",
-        },
-        {
-            title: "関連性 (Relevancy)",
-            score: 92,
-            feedback: "設問に対して非常に的確な回答がなされています。",
-        },
-        {
-            title: "構成 (Structure)",
-            score: 85,
-            feedback: "序論、本論、結論の流れが明確に構築されています。",
-        },
-        {
-            title: "語彙 (Vocab Usage)",
-            score: 74,
-            feedback: "より学術的で具体的な単語の選択肢を検討してください。",
-        },
-    ],
-    overallFeedback: [
-        "今回のエッセイは、技術の影響という複雑なテーマに対し、論理的で分かりやすい構成で書かれています。特に導入部から結論に至るまでのパラグラフの役割が明確で、読者が筆者の主張を追いやすい内容でした。",
-        "改善点としては、時制と三単現のsといった基本的な文法ミスをゼロにすること、そして「smartphone」や「communicate」といった一般的な語彙に加え、より学術的な「digital infrastructure」や「interpersonal synergy」といった表現を取り入れることで、さらなるハイスコアが期待できます。",
-    ],
-    aiGeneratedEssay: [
-        "In recent years, technology has significantly changed the way people communicate in daily life.",
-        "On one hand, digital tools such as messaging apps and video calls help families and friends stay connected across long distances. These tools also allow students and workers to collaborate more efficiently.",
-        "On the other hand, excessive reliance on smartphones can reduce face-to-face interaction and weaken social skills. Some people spend more time online than in real conversations.",
-        "In my opinion, technology is beneficial when used in moderation. People should take advantage of digital communication while also making time for in-person relationships.",
-    ],
-    estimatedScore: "Band 7.5",
-    aiAccuracy: "99.2%",
+type Rubric = {
+    title: string;
+    score: number;
+};
+
+const RubricDescription = ({ metric }: { metric: Rubric }) => {
+    return (
+        <View style={styles.metricItem}>
+            <View style={styles.metricItemHeader}>
+                <Text style={styles.metricItemTitle}>{metric.title}</Text>
+                <Text style={styles.metricItemScoreRow}>
+                    <Text style={styles.metricItemScore}>{metric.score}</Text>
+                    <Text style={styles.metricItemTotal}>/100</Text>
+                </Text>
+            </View>
+            <View style={styles.progressBarBackground}>
+                <View style={[styles.progressBarFill, { width: `${metric.score}%` }]} />
+            </View>
+        </View>
+    );
 };
 
 const ResultScreen = () => {
+    const { essayAnalysisResult } = useWritingStore();
+
+    if (!essayAnalysisResult) {
+        // This case should ideally never happen, but we can show a fallback UI just in case
+        return (
+            <View style={styles.safeArea}>
+                <View style={[styles.card, { margin: 20 }]}>
+                    <Text style={{ fontSize: 16, color: Variables.textSecondary }}>
+                        結果の読み込みに失敗しました。もう一度試してください。
+                    </Text>
+                </View>
+            </View>
+        );
+    }
+
+    const {
+        structure_score,
+        topic_relevancy_score,
+        grammar_score,
+        vocabulary_score,
+        overall_score,
+        feedback_summary,
+        revised_essay,
+    } = essayAnalysisResult;
+
+    const rubrics = [
+        {
+            title: "文法 (Grammar)",
+            score: grammar_score,
+        },
+        {
+            title: "関連性 (Relevancy)",
+            score: topic_relevancy_score,
+        },
+        {
+            title: "構成 (Structure)",
+            score: structure_score,
+        },
+        {
+            title: "語彙 (Vocab Usage)",
+            score: vocabulary_score,
+        },
+    ];
+
     return (
         <View style={styles.safeArea}>
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.card}>
-                    <CircularProgressChart percentage={resultData.overallScore} color={Variables.primary600}>
+                    <CircularProgressChart percentage={overall_score} color={Variables.primary600}>
                         <Text style={{ fontSize: 36, fontWeight: "800", color: Variables.textPrimary }}>
-                            {resultData.overallScore}%
+                            {overall_score}%
                         </Text>
                         <Text style={{ fontSize: 16, fontWeight: "700", color: Variables.gray400 }}>総合評価</Text>
                     </CircularProgressChart>
@@ -65,20 +94,8 @@ const ResultScreen = () => {
                         <Text style={styles.metricsSubtitle}>METRIC ANALYSIS</Text>
                     </View>
 
-                    {resultData.metrics.map((metric, index) => (
-                        <View key={index} style={styles.metricItem}>
-                            <View style={styles.metricItemHeader}>
-                                <Text style={styles.metricItemTitle}>{metric.title}</Text>
-                                <Text style={styles.metricItemScoreRow}>
-                                    <Text style={styles.metricItemScore}>{metric.score}</Text>
-                                    <Text style={styles.metricItemTotal}>/100</Text>
-                                </Text>
-                            </View>
-                            <View style={styles.progressBarBackground}>
-                                <View style={[styles.progressBarFill, { width: `${metric.score}%` }]} />
-                            </View>
-                            <Text style={styles.metricFeedback}>{metric.feedback}</Text>
-                        </View>
+                    {rubrics.map((metric, index) => (
+                        <RubricDescription key={index} metric={metric} />
                     ))}
                 </View>
 
@@ -89,11 +106,7 @@ const ResultScreen = () => {
                         <Text style={styles.feedbackTitle}>AI 総合フィードバック</Text>
                     </View>
 
-                    {resultData.overallFeedback.map((paragraph, index) => (
-                        <Text key={index} style={styles.feedbackParagraph}>
-                            {paragraph}
-                        </Text>
-                    ))}
+                    <Text style={styles.feedbackParagraph}>{feedback_summary}</Text>
                 </View>
             </ScrollView>
             <Footer style={{ paddingVertical: 12, paddingHorizontal: 24, gap: 12 }}>
