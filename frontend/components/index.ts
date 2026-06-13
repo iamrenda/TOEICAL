@@ -4,7 +4,6 @@ export { AuthHeader } from "./auth/authHeader";
 export { AuthTextInput } from "./auth/authTextInput";
 
 export { GamemodeList } from "./home/gamemodeList";
-export { StatusList } from "./home/statusList";
 
 export { QuizQuestionSelectionModal } from "./modal/quizQuestionSelectionModal";
 
