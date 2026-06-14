@@ -16,6 +16,11 @@ interface WritingState {
     isLoading: boolean;
     essayAnalysisResult: WritingEssayAnalysisOutput | null;
 
+    selectedDifficulty: WritingDifficulty;
+    setSelectedDifficulty: (difficulty: WritingDifficulty) => void;
+    selectedTags: WritingTags;
+    setSelectedTags: (tags: WritingTags) => void;
+
     selectedTopic: WritingTopic | null;
     setSelectedTopic: (topicId: number | null) => void;
 
@@ -33,6 +38,17 @@ interface WritingState {
 const useWritingStore = create<WritingState>((set, get) => ({
     isLoading: false,
     essayAnalysisResult: null,
+
+    selectedDifficulty: WritingDifficulty.ALL,
+    setSelectedDifficulty: (difficulty) => {
+        set({ selectedDifficulty: difficulty });
+        get().fetchTopics(difficulty, get().selectedTags);
+    },
+    selectedTags: WritingTags.ALL,
+    setSelectedTags: (tags) => {
+        set({ selectedTags: tags });
+        get().fetchTopics(get().selectedDifficulty, tags);
+    },
 
     selectedTopic: null,
     setSelectedTopic: (id) => {

@@ -61,14 +61,12 @@ const WritingTopicCardModal = () => {
                         <View style={styles.infoRow}>
                             <View style={styles.infoItem}>
                                 <FontAwesome6 name="clock" size={18} color={Variables.primary600} />
-                                <Text style={styles.modalText}>{selectedTopic.limit_time_minutes} minutes</Text>
+                                <Text style={styles.modalText}>{selectedTopic.limit_time_minutes} 分</Text>
                             </View>
 
                             <View style={styles.infoItem}>
                                 <FontAwesome6 name="pencil" size={18} color={Variables.primary600} />
-                                <Text style={styles.modalText}>
-                                    {selectedTopic.recommended_word_count} words (推奨)
-                                </Text>
+                                <Text style={styles.modalText}>{selectedTopic.recommended_word_count} 文字 (推奨)</Text>
                             </View>
                         </View>
                     </>

@@ -62,7 +62,14 @@ const EssayWritingScreen = () => {
     }, [selectedTopic]);
 
     React.useEffect(() => {
-        if (timeLeftSeconds <= 0 || !isClockRunning) return;
+        if (timeLeftSeconds <= 0 || !isClockRunning) {
+            setIsClockRunning(false);
+            if (timeLeftSeconds <= 0) {
+                Alert.alert("時間切れです", "書いてある内容で提出します。", [
+                    { text: "OK", onPress: () => onSubmit() },
+                ]);
+            }
+        }
 
         const interval = setInterval(() => {
             setTimeLeft((prev) => prev - 1);

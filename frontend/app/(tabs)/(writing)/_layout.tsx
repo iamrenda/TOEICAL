@@ -1,6 +1,5 @@
 import { HeaderBackIconButton } from "@/components";
-import { router, Stack } from "expo-router";
-import { Alert } from "react-native";
+import { Stack } from "expo-router";
 
 const WritingLayout = () => {
     return (
