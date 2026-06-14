@@ -22,8 +22,13 @@ export { Footer } from "./util/footer";
 export { Header } from "./util/header";
 export { HeaderBackIconButton } from "./util/headerBackIconButton";
 
-export { TopicCardList } from "./writing/topicCardList";
-export { DifficultySelector } from "./writing/difficultySelector";
-export { FilterSection } from "./writing/filterSection";
-export { TagSelector } from "./writing/tagSelector";
-export { TopicCard } from "./writing/topicCard";
+export { TopicCardList } from "./writing/home/topicCardList";
+export { DifficultySelector } from "./writing/home/difficultySelector";
+export { FilterSection } from "./writing/home/filterSection";
+export { TagSelector } from "./writing/home/tagSelector";
+export { TopicCard } from "./writing/home/topicCard";
+
+export { CalendarGrid } from "./writing/calendar/calendarGrid";
+export { CalendarDayCell } from "./writing/calendar/calendarDayCell";
+export { MonthNavigator } from "./writing/calendar/monthNavigator";
+export { CalendarEntryFooter } from "./writing/calendar/calendarEntryFooter";

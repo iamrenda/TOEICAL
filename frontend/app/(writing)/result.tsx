@@ -43,15 +43,8 @@ const ResultScreen = () => {
         );
     }
 
-    const {
-        structure_score,
-        topic_relevancy_score,
-        grammar_score,
-        vocabulary_score,
-        overall_score,
-        feedback_summary,
-        revised_essay,
-    } = essayAnalysisResult;
+    const { structure_score, topic_relevancy_score, grammar_score, vocabulary_score, overall_score, feedback_summary } =
+        essayAnalysisResult;
 
     const rubrics = [
         {

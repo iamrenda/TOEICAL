@@ -1,7 +1,7 @@
 import Variables from "@/constants/Variables";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { StyleSheet, Text, View, ScrollView, ActivityIndicator } from "react-native";
 import React from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
 import useWritingStore from "@/store/useWritingStore";
 import { FilterSection, TopicCardList } from "@/components";
 
