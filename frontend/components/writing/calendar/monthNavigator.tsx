@@ -2,18 +2,22 @@ import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Variables from "@/constants/Variables";
-import { MONTH_LABEL } from "@/data/writingCalendarData";
+import useWritingHistory from "@/store/useWritingHistory";
 
 const MonthNavigator = () => {
+    const { currentMonth, currentYear, setPreviousMonth, setNextMonth } = useWritingHistory();
+
+    const monthLabel = `${currentYear}年${currentMonth}月`;
+
     return (
         <View style={styles.container}>
-            <Pressable style={styles.navButton}>
+            <Pressable style={styles.navButton} onPress={setPreviousMonth}>
                 <FontAwesome6 name="chevron-left" size={16} color={Variables.textPrimary} />
             </Pressable>
 
-            <Text style={styles.monthLabel}>{MONTH_LABEL}</Text>
+            <Text style={styles.monthLabel}>{monthLabel}</Text>
 
-            <Pressable style={styles.navButton}>
+            <Pressable style={styles.navButton} onPress={setNextMonth}>
                 <FontAwesome6 name="chevron-right" size={16} color={Variables.textPrimary} />
             </Pressable>
         </View>

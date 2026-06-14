@@ -2,32 +2,60 @@ import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Variables from "@/constants/Variables";
-import { SELECTED_ENTRY } from "@/data/writingCalendarData";
+import useWritingHistory from "@/store/useWritingHistory";
+import { UserWritingHistory } from "@/types/Writing";
 
-const CalendarEntryFooter = () => {
-    const entry = SELECTED_ENTRY;
+const Entry = ({ selectedEntry }: { selectedEntry: UserWritingHistory }) => {
+    const dateLabel = new Date(selectedEntry.created_at).toLocaleDateString("ja-JP", {
+        month: "short",
+        day: "numeric",
+    });
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.dateLabel}>{entry.dateLabel}</Text>
+                <Text style={styles.dateLabel}>{dateLabel}</Text>
                 <View style={styles.scoreRow}>
                     <Text style={styles.scoreLabel}>AI スコア</Text>
                     <View style={styles.scoreBadge}>
-                        <Text style={styles.scoreValue}>{entry.score}</Text>
+                        <Text style={styles.scoreValue}>{selectedEntry.overall_score}</Text>
                     </View>
                 </View>
             </View>
 
-            <Text style={styles.title}>{entry.title}</Text>
+            <Text style={styles.title}>{selectedEntry.topic}</Text>
             <Text style={styles.snippet} numberOfLines={2}>
-                {entry.snippet}
+                {selectedEntry.description}
             </Text>
 
             <Pressable style={styles.button}>
                 <Text style={styles.buttonText}>エッセイとフィードバックを見る</Text>
                 <FontAwesome6 name="arrow-right" size={16} color={Variables.white} />
             </Pressable>
+        </View>
+    );
+};
+
+const CalendarEntryFooter = () => {
+    const { selectedEntries, setSelectedEntries } = useWritingHistory();
+
+    React.useEffect(() => {
+        setSelectedEntries();
+    }, []);
+
+    if (!selectedEntries) {
+        return (
+            <View style={styles.container}>
+                <Text style={styles.title}>この日の記録はありません</Text>
+            </View>
+        );
+    }
+
+    return (
+        <View style={{ marginBottom: 24 }}>
+            {selectedEntries.map((entry) => (
+                <Entry key={entry.id} selectedEntry={entry} />
+            ))}
         </View>
     );
 };

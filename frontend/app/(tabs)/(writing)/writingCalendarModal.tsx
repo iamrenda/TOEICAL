@@ -2,7 +2,7 @@ import React from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Variables from "@/constants/Variables";
-import { CalendarEntryFooter, CalendarGrid, MonthNavigator } from "@/components";
+import { CalendarEntryFooter, Calendar, MonthNavigator } from "@/components";
 
 const WritingCalendarModal = () => {
     return (
@@ -11,7 +11,7 @@ const WritingCalendarModal = () => {
                 <Text style={styles.heading}>My ライティング</Text>
 
                 <MonthNavigator />
-                <CalendarGrid />
+                <Calendar />
                 <CalendarEntryFooter />
 
                 <View style={{ height: 24 }} />

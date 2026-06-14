@@ -28,7 +28,7 @@ export { FilterSection } from "./writing/home/filterSection";
 export { TagSelector } from "./writing/home/tagSelector";
 export { TopicCard } from "./writing/home/topicCard";
 
-export { CalendarGrid } from "./writing/calendar/calendarGrid";
+export { Calendar } from "./writing/calendar/calendar";
 export { CalendarDayCell } from "./writing/calendar/calendarDayCell";
 export { MonthNavigator } from "./writing/calendar/monthNavigator";
 export { CalendarEntryFooter } from "./writing/calendar/calendarEntryFooter";

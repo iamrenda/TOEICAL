@@ -1,7 +1,7 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
 import Variables from "@/constants/Variables";
-import { CalendarCell } from "@/data/writingCalendarData";
+import { StyleSheet, Text, View } from "react-native";
+import { CalendarCell } from "@/types/Writing";
 
 interface Props {
     cell: CalendarCell;
@@ -14,11 +14,7 @@ const CalendarDayCell = ({ cell }: Props) => {
     }
 
     const weekdayColor =
-        cell.weekday === "sun"
-            ? Variables.red500
-            : cell.weekday === "sat"
-              ? Variables.primary600
-              : Variables.textPrimary;
+        cell.weekday === 0 ? Variables.red500 : cell.weekday === 6 ? Variables.primary600 : Variables.textPrimary;
 
     const circleStyle = [
         styles.circle,
@@ -28,11 +24,7 @@ const CalendarDayCell = ({ cell }: Props) => {
 
     const numberStyle = [
         styles.dayNumber,
-        cell.isSelected
-            ? styles.dayNumberSelected
-            : cell.isToday
-              ? styles.dayNumberToday
-              : { color: weekdayColor },
+        cell.isSelected ? styles.dayNumberSelected : cell.isToday ? styles.dayNumberToday : { color: weekdayColor },
     ];
 
     return (

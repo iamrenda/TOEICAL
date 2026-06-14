@@ -44,3 +44,19 @@ export interface WritingEssayAnalysisOutput {
     revised_essay: string;
     feedback_summary: string;
 }
+
+export interface UserWritingHistory extends WritingEssayAnalysisOutput {
+    id: number;
+    topic: string;
+    description: string;
+    writing_content: string;
+    created_at: string;
+}
+
+export interface CalendarCell {
+    day: number | null;
+    weekday: number;
+    hasEntry: boolean;
+    isToday: boolean;
+    isSelected: boolean;
+}

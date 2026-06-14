@@ -15,3 +15,8 @@ export const WritingTopicsSchema = z.object({
     difficulty: z.enum(["ALL", "EASY", "MEDIUM", "HARD"]),
     tag: z.enum(["ALL", "daily-life", "reflection", "opinion", "creativity", "social"]),
 });
+
+export const WritingHistorySchema = z.object({
+    from: z.iso.date(),
+    to: z.iso.date(),
+});

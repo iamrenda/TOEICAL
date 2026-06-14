@@ -3,7 +3,11 @@ import DB from "../../db/api.ts";
 import type { Response, NextFunction } from "express";
 import type { AIWritingResult } from "../../types/Writing.ts";
 import type { ValidatedRequest } from "express-zod-safe";
-import type { WritingTopicsSchema, WritingResultsParamsSchema } from "../../schemas/writing.schema.ts";
+import type {
+    WritingTopicsSchema,
+    WritingResultsParamsSchema,
+    WritingHistorySchema,
+} from "../../schemas/writing.schema.ts";
 import type { ApiResponse } from "../../types/ApiResponse.ts";
 import ApiError from "../../util/ApiError.ts";
 import type { AxiosResponse } from "../../types/Axios.ts";
@@ -128,4 +132,33 @@ const getTopics = async (
     }
 };
 
-export { getTopics, getWritingAnalysis };
+const getHistory = async (
+    req: ValidatedRequest<{ query: typeof WritingHistorySchema }>,
+    res: Response<ApiResponse<any>>,
+    next: NextFunction,
+) => {
+    const { user } = req;
+    const { from, to } = req.query;
+
+    try {
+        const data = await DB().query(
+            `
+            SELECT wt.topic, wt.description, uw.writing_content, wr.*
+            FROM users_writing AS uw
+            INNER JOIN writing_topics AS wt
+            ON uw.writing_topic_id = wt.id
+            INNER JOIN writing_results AS wr
+            ON uw.writing_results_id = wr.id
+            WHERE uw.user_id = $1 AND $2 <= wr.created_at AND wr.created_at <= $3;
+        `,
+            [user?.id, from, to],
+        );
+        return res
+            .status(200)
+            .json({ status: "success", data, message: "Writing history retrieved successfully", error: null });
+    } catch (e) {
+        next(e);
+    }
+};
+
+export { getTopics, getWritingAnalysis, getHistory };
