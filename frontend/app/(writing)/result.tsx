@@ -31,7 +31,6 @@ const ResultScreen = () => {
     const { essayAnalysisResult } = useWritingStore();
 
     if (!essayAnalysisResult) {
-        // This case should ideally never happen, but we can show a fallback UI just in case
         return (
             <View style={styles.safeArea}>
                 <View style={[styles.card, { margin: 20 }]}>
@@ -77,14 +76,12 @@ const ResultScreen = () => {
                     </CircularProgressChart>
                 </View>
 
-                {/* Metric Analysis Card */}
                 <View style={[styles.card, styles.metricsCard]}>
                     <View style={styles.metricsHeader}>
                         <View style={styles.metricsTitleRow}>
                             <View style={styles.metricsIndicator} />
                             <Text style={styles.metricsTitle}>評価詳細</Text>
                         </View>
-                        <Text style={styles.metricsSubtitle}>METRIC ANALYSIS</Text>
                     </View>
 
                     {rubrics.map((metric, index) => (
@@ -163,12 +160,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
         color: Variables.textPrimary,
-    },
-    metricsSubtitle: {
-        fontSize: 10,
-        fontWeight: "bold",
-        color: Variables.primary800,
-        letterSpacing: 1,
     },
     metricItem: {
         marginBottom: 24,

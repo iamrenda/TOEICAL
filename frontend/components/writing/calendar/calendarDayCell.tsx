@@ -1,39 +1,47 @@
 import React from "react";
 import Variables from "@/constants/Variables";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { CalendarCell } from "@/types/Writing";
+import useWritingHistory from "@/store/useWritingHistory";
 
 interface Props {
     cell: CalendarCell;
 }
 
 const CalendarDayCell = ({ cell }: Props) => {
+    const { day, weekday, isSelected, isToday, hasEntry } = cell;
+    const { currentYear, currentMonth, setSelectedDate } = useWritingHistory();
+
     // Empty leading cell — keeps the grid aligned without rendering content.
-    if (cell.day === null) {
+    if (day === null) {
         return <View style={styles.cell} />;
     }
 
     const weekdayColor =
-        cell.weekday === 0 ? Variables.red500 : cell.weekday === 6 ? Variables.primary600 : Variables.textPrimary;
+        weekday === 0 ? Variables.red500 : weekday === 6 ? Variables.primary600 : Variables.textPrimary;
 
     const circleStyle = [
         styles.circle,
-        cell.isSelected && styles.circleSelected,
-        !cell.isSelected && cell.isToday && styles.circleToday,
+        isSelected && styles.circleSelected,
+        !isSelected && isToday && styles.circleToday,
     ];
 
     const numberStyle = [
         styles.dayNumber,
-        cell.isSelected ? styles.dayNumberSelected : cell.isToday ? styles.dayNumberToday : { color: weekdayColor },
+        isSelected ? styles.dayNumberSelected : isToday ? styles.dayNumberToday : { color: weekdayColor },
     ];
 
+    const handleClick = () => {
+        setSelectedDate(`${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(day).padStart(2, "0")}`);
+    };
+
     return (
-        <View style={styles.cell}>
+        <Pressable style={styles.cell} onPress={handleClick}>
             <View style={circleStyle}>
-                <Text style={numberStyle}>{cell.day}</Text>
+                <Text style={numberStyle}>{day}</Text>
             </View>
-            <View style={[styles.dot, cell.hasEntry && styles.dotActive]} />
-        </View>
+            <View style={[styles.dot, hasEntry && styles.dotActive]} />
+        </Pressable>
     );
 };
 

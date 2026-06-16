@@ -31,7 +31,10 @@ const useWritingHistory = create<WritingHistory>((set, get) => ({
     isLoading: false,
 
     selectedDate: `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`,
-    setSelectedDate: (date) => set({ selectedDate: date }),
+    setSelectedDate: (date) => {
+        set({ selectedDate: date });
+        get().setSelectedEntries();
+    },
 
     selectedEntries: null,
     setSelectedEntries: () => {
@@ -51,16 +54,23 @@ const useWritingHistory = create<WritingHistory>((set, get) => ({
     currentYear: new Date().getFullYear(),
     setNextMonth: () => {
         set((state) => {
-            const nextMonth = state.currentMonth === 12 ? 1 : state.currentMonth + 1;
-            const nextYear = nextMonth === 1 ? state.currentYear + 1 : state.currentYear;
-            return { currentMonth: nextMonth, currentYear: nextYear };
+            const newMonth = state.currentMonth === 12 ? 1 : state.currentMonth + 1;
+            const newYear = newMonth === 1 ? state.currentYear + 1 : state.currentYear;
+            const newSelectedDate = `${newYear}-${String(newMonth).padStart(2, "0")}-01`;
+
+            return { currentMonth: newMonth, currentYear: newYear, selectedDate: newSelectedDate };
         });
     },
     setPreviousMonth: () => {
         set((state) => {
-            const prevMonth = state.currentMonth === 1 ? 12 : state.currentMonth - 1;
-            const prevYear = prevMonth === 12 ? state.currentYear - 1 : state.currentYear;
-            return { currentMonth: prevMonth, currentYear: prevYear };
+            const newMonth = state.currentMonth === 1 ? 12 : state.currentMonth - 1;
+            const newYear = newMonth === 12 ? state.currentYear - 1 : state.currentYear;
+            const newSelectedDate = `${newYear}-${String(newMonth).padStart(2, "0")}-01`;
+            return {
+                currentMonth: newMonth,
+                currentYear: newYear,
+                selectedDate: newSelectedDate,
+            };
         });
     },
 

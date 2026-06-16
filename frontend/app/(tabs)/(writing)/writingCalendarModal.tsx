@@ -1,10 +1,13 @@
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Variables from "@/constants/Variables";
 import { CalendarEntryFooter, Calendar, MonthNavigator } from "@/components";
+import useWritingHistory from "@/store/useWritingHistory";
 
 const WritingCalendarModal = () => {
+    const { isLoading } = useWritingHistory();
+
     return (
         <SafeAreaView style={styles.container} edges={["bottom"]}>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -12,7 +15,7 @@ const WritingCalendarModal = () => {
 
                 <MonthNavigator />
                 <Calendar />
-                <CalendarEntryFooter />
+                {isLoading ? <ActivityIndicator /> : <CalendarEntryFooter />}
 
                 <View style={{ height: 24 }} />
             </ScrollView>

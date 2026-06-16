@@ -15,6 +15,7 @@ import { ErrorType } from "@/types/Error";
 interface WritingState {
     isLoading: boolean;
     essayAnalysisResult: WritingEssayAnalysisOutput | null;
+    setEssayAnalysisResult: (result: WritingEssayAnalysisOutput | null) => void;
 
     selectedDifficulty: WritingDifficulty;
     setSelectedDifficulty: (difficulty: WritingDifficulty) => void;
@@ -38,6 +39,7 @@ interface WritingState {
 const useWritingStore = create<WritingState>((set, get) => ({
     isLoading: false,
     essayAnalysisResult: null,
+    setEssayAnalysisResult: (result) => set({ essayAnalysisResult: result }),
 
     selectedDifficulty: WritingDifficulty.ALL,
     setSelectedDifficulty: (difficulty) => {

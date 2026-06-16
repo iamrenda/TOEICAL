@@ -3,13 +3,34 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import Variables from "@/constants/Variables";
 import useWritingHistory from "@/store/useWritingHistory";
-import { UserWritingHistory } from "@/types/Writing";
+import { UserWritingHistory, WritingEssayAnalysisOutput } from "@/types/Writing";
+import { router } from "expo-router";
+import useWritingStore from "@/store/useWritingStore";
 
 const Entry = ({ selectedEntry }: { selectedEntry: UserWritingHistory }) => {
     const dateLabel = new Date(selectedEntry.created_at).toLocaleDateString("ja-JP", {
         month: "short",
         day: "numeric",
     });
+
+    const { setUserEssay, setEssayAnalysisResult } = useWritingStore();
+
+    const handleClick = () => {
+        const essayAnalysisResult: WritingEssayAnalysisOutput = {
+            structure_score: selectedEntry.structure_score,
+            topic_relevancy_score: selectedEntry.topic_relevancy_score,
+            grammar_score: selectedEntry.grammar_score,
+            vocabulary_score: selectedEntry.vocabulary_score,
+            overall_score: selectedEntry.overall_score,
+            revised_essay: selectedEntry.writing_content,
+            feedback_summary: selectedEntry.feedback_summary,
+        };
+
+        setUserEssay(selectedEntry.writing_content);
+        setEssayAnalysisResult(essayAnalysisResult);
+        router.back();
+        router.push("/(writing)/result");
+    };
 
     return (
         <View style={styles.container}>
@@ -28,7 +49,7 @@ const Entry = ({ selectedEntry }: { selectedEntry: UserWritingHistory }) => {
                 {selectedEntry.description}
             </Text>
 
-            <Pressable style={styles.button}>
+            <Pressable style={styles.button} onPress={handleClick}>
                 <Text style={styles.buttonText}>エッセイとフィードバックを見る</Text>
                 <FontAwesome6 name="arrow-right" size={16} color={Variables.white} />
             </Pressable>
@@ -39,11 +60,12 @@ const Entry = ({ selectedEntry }: { selectedEntry: UserWritingHistory }) => {
 const CalendarEntryFooter = () => {
     const { selectedEntries, setSelectedEntries } = useWritingHistory();
 
+    // Initial load
     React.useEffect(() => {
         setSelectedEntries();
     }, []);
 
-    if (!selectedEntries) {
+    if (!selectedEntries || selectedEntries.length === 0) {
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>この日の記録はありません</Text>

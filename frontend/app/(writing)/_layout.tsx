@@ -29,7 +29,7 @@ const WritingLayout = () => {
                 options={{
                     headerShadowVisible: false,
                     headerTitle: "",
-                    headerLeft: () => <HeaderBackIconButton iconName="xmark" onPress={() => router.back()} />,
+                    headerLeft: () => <HeaderBackIconButton iconName="xmark" />,
                 }}
             />
         </Stack>
