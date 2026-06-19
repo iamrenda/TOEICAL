@@ -10,10 +10,16 @@ import type { UserTokenPayload, UserEntity } from "../../types/User.ts";
 
 dotenv.config();
 
-const refreshTokens: string[] = [];
-
 const ACCESS_TOKEN_EXPIRY = "1h";
-const REFRESH_TOKEN_EXPIRY = "7d";
+const REFRESH_TOKEN_EXPIRY = "30d";
+
+interface RefreshTokenEntity {
+    id: number;
+    user_id: number;
+    token: string;
+    expires_at: string;
+    is_revoked: boolean;
+}
 
 const generateAccessToken = (user: UserTokenPayload) => {
     try {
@@ -89,7 +95,14 @@ export const userLogin = async (
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
 
-        refreshTokens.push(refreshToken);
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 30);
+
+        await DB().query("INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3);", [
+            user.id,
+            refreshToken,
+            expiresAt.toISOString(),
+        ]);
 
         return res.status(200).json({
             status: "success",
@@ -102,7 +115,7 @@ export const userLogin = async (
     }
 };
 
-export const fetchAccessToken = (
+export const fetchAccessToken = async (
     req: ValidatedRequest<{ body: typeof UserTokenSchema }>,
     res: Response,
     next: NextFunction,
@@ -114,7 +127,12 @@ export const fetchAccessToken = (
             throw new ApiError(400, "No token provided");
         }
 
-        if (!refreshTokens.includes(refreshToken)) {
+        const data = await DB().query<RefreshTokenEntity>(
+            "SELECT * FROM refresh_tokens WHERE token = $1 AND expires_at > NOW() AND is_revoked = FALSE;",
+            [refreshToken],
+        );
+
+        if (!data || data.length === 0) {
             throw new ApiError(401, "Invalid refresh token");
         }
 
@@ -126,6 +144,38 @@ export const fetchAccessToken = (
             code: 200,
             message: "Access token generated successfully",
             data: { accessToken },
+        });
+    } catch (e) {
+        next(e);
+    }
+};
+
+export const userLogout = async (
+    req: ValidatedRequest<{ body: typeof UserTokenSchema }>,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const refreshToken = req.body.token;
+
+        if (!refreshToken) {
+            throw new ApiError(400, "No token provided");
+        }
+
+        const data = await DB().query<RefreshTokenEntity>("SELECT * FROM refresh_tokens WHERE token = $1;", [
+            refreshToken,
+        ]);
+
+        if (!data || data.length === 0) {
+            throw new ApiError(401, "Invalid refresh token");
+        }
+
+        await DB().query("UPDATE refresh_tokens SET is_revoked = TRUE WHERE token = $1;", [refreshToken]);
+
+        return res.status(200).json({
+            status: "success",
+            code: 200,
+            message: "Logout successful",
         });
     } catch (e) {
         next(e);
