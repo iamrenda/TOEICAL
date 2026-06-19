@@ -6,7 +6,11 @@ import useWritingStore from "@/store/useWritingStore";
 import { FilterSection, TopicCardList } from "@/components";
 
 const WritingScreen = () => {
-    const { isLoading, allTopics } = useWritingStore();
+    const { isLoading, allTopics, fetchTopics } = useWritingStore();
+
+    React.useEffect(() => {
+        fetchTopics();
+    }, []);
 
     return (
         <SafeAreaView style={styles.safeArea} edges={["top"]}>

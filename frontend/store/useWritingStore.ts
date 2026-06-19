@@ -26,7 +26,7 @@ interface WritingState {
     setSelectedTopic: (topicId: number | null) => void;
 
     allTopics: WritingTopic[] | null;
-    fetchTopics: (difficulty: WritingDifficulty | null, tags: WritingTags | null) => Promise<ZustandResponse>;
+    fetchTopics: () => Promise<ZustandResponse>;
 
     userEssay: string;
     setUserEssay: (text: string) => void;
@@ -44,12 +44,12 @@ const useWritingStore = create<WritingState>((set, get) => ({
     selectedDifficulty: WritingDifficulty.ALL,
     setSelectedDifficulty: (difficulty) => {
         set({ selectedDifficulty: difficulty });
-        get().fetchTopics(difficulty, get().selectedTags);
+        get().fetchTopics();
     },
     selectedTags: WritingTags.ALL,
     setSelectedTags: (tags) => {
         set({ selectedTags: tags });
-        get().fetchTopics(get().selectedDifficulty, tags);
+        get().fetchTopics();
     },
 
     selectedTopic: null,
@@ -64,12 +64,13 @@ const useWritingStore = create<WritingState>((set, get) => ({
     },
 
     allTopics: null,
-    fetchTopics: async (difficulty: WritingDifficulty | null, tags: WritingTags | null) => {
+    fetchTopics: async () => {
         set({ isLoading: true });
+        const { selectedDifficulty, selectedTags } = get();
 
         try {
             const res = await api.get<AxiosResponse<WritingTopic[]>>(
-                `writing/topics?difficulty=${difficulty}&tag=${tags}`,
+                `writing/topics?difficulty=${selectedDifficulty}&tag=${selectedTags}`,
             );
 
             if (res.data.status !== "success") {

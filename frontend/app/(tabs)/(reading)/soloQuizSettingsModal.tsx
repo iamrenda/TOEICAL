@@ -4,10 +4,10 @@ import { Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { QuizQuestionSelectionModal, Footer, CustomButton } from "@/components";
 import useQuizStore from "@/store/useQuizStore";
-import { useRouter } from "expo-router";
 import showErrorAlert from "@/util/showErrorAlert";
 import { ErrorMessages } from "@/constants/ErrorMessages";
 import api from "@/api/api";
+import { router } from "expo-router";
 
 const problemTypes = [
     { id: 1, title: "ランダム", subtitle: "こちらが決めちゃいますよ！", icon: "dice" },
@@ -22,7 +22,6 @@ const SoloQuizSettingsModal = () => {
     const [selectedProblemType, setSelectedProblemType] = React.useState(1);
     const [counts, setCounts] = React.useState({ all: 0, answered: 0, starred: 0, last_answered_wrong: 0 });
     const [maxCount, setMaxCount] = React.useState(0);
-    const router = useRouter();
 
     React.useEffect(() => {
         const fetchCounts = async () => {
