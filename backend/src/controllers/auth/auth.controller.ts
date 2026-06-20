@@ -27,7 +27,7 @@ const generateAccessToken = (user: UserTokenPayload) => {
             expiresIn: ACCESS_TOKEN_EXPIRY,
         });
     } catch (e) {
-        throw new ApiError(500, "Failed to generate access token");
+        throw new ApiError(401, "Failed to generate access token");
     }
 };
 
@@ -41,7 +41,7 @@ const generateRefreshToken = (user: UserEntity) => {
             },
         );
     } catch (e) {
-        throw new ApiError(500, "Failed to generate refresh token");
+        throw new ApiError(401, "Failed to generate refresh token");
     }
 };
 

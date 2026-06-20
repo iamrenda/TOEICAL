@@ -1,6 +1,6 @@
 import { ErrorType } from "./Error";
 
-export interface ZustandResponse {
+export interface ZustandResponse<T = any> {
     success: boolean;
     errorType?: ErrorType;
 }

@@ -1,10 +1,9 @@
 import Links from "@/constants/Links";
 import useAuthStore from "@/store/useAuthStore";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { getItemAsync } from "expo-secure-store";
+import axios, { AxiosError } from "axios";
 import { ErrorType } from "@/types/Error";
-import normalizeError from "@/util/normalizeError";
 import { ErrorResponse } from "@/types/ErrorResponse";
+import normalizeError from "@/util/normalizeError";
 
 // const TIMEOUT_IN_MS = 5000;
 const TIMEOUT_IN_MS = 60_000;
@@ -47,30 +46,21 @@ api.interceptors.response.use(
             originalRequest._retry = true;
 
             try {
-                const refreshToken = await getItemAsync("refreshToken");
+                const res = await useAuthStore.getState().refreshAccessToken();
 
-                if (!refreshToken) {
-                    throw new Error("No refresh token available");
+                if (!res.success) {
+                    await useAuthStore.getState().logout();
+                    return Promise.reject(normalizeError(error));
                 }
 
-                // Refresh the token
-                const res = await axios.post<AxiosResponse<{ accessToken: string }>>(`${Links.BASE_URL_AUTH}/token`, {
-                    token: refreshToken,
-                });
-
-                const newAccessToken = res.data.data?.accessToken;
-
-                if (!newAccessToken) {
-                    throw new Error("No access token in refresh response");
-                }
-
-                useAuthStore.setState({ accessToken: newAccessToken });
+                const newToken = useAuthStore.getState().accessToken;
 
                 // Retry original request with new token
-                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
                 return api(originalRequest);
             } catch (refreshError) {
                 // Token refresh failed, normalize and handle the error
+                await useAuthStore.getState().logout();
                 const errorResponse = normalizeError(refreshError);
                 return Promise.reject(errorResponse);
             }

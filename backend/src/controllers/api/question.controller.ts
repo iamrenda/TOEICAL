@@ -19,10 +19,6 @@ type QuestionOverview = {
     last_answered_at: string;
 };
 
-// TODO validate sort by and order by format
-const validSortBy = new Set(["id"]);
-const validOrderBy = new Set(["asc", "desc"]);
-
 const getQuestionDataById = async (questionId: number, userId?: number) => {
     try {
         const data = await DB().query<Question>(
