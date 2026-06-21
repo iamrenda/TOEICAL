@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import DB from "../../db/api.ts";
 import ApiError from "../../util/ApiError.ts";
+import logger from "../../logger.ts";
 import type { NextFunction, Response } from "express";
 import type { ValidatedRequest } from "express-zod-safe";
 import type { UserLoginSchema, UserSignupSchema, UserTokenSchema } from "../../schemas/users.schema.ts";
@@ -103,6 +104,8 @@ export const userLogin = async (
             refreshToken,
             expiresAt.toISOString(),
         ]);
+
+        logger.info(`User ${user.username} logged in successfully`);
 
         return res.status(200).json({
             status: "success",
