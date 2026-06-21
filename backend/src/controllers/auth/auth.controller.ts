@@ -69,6 +69,8 @@ export const userSignup = async (
             user.password,
         ]);
 
+        logger.info(`User ${user.username} signed up successfully`);
+
         return res.status(201).json({ status: "success", code: 201, message: "User created successfully" });
     } catch (e) {
         next(e);
@@ -174,6 +176,8 @@ export const userLogout = async (
         }
 
         await DB().query("UPDATE refresh_tokens SET is_revoked = TRUE WHERE token = $1;", [refreshToken]);
+
+        logger.info({ userId: data[0]!.user_id }, "User logged out successfully");
 
         return res.status(200).json({
             status: "success",

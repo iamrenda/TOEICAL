@@ -1,5 +1,6 @@
 import { type NextFunction, type Request, type Response } from "express";
 import type ApiError from "../util/ApiError.ts";
+import logger from "../logger.ts";
 
 export const errorHandler = (err: ApiError, req: Request, res: Response, next: NextFunction) => {
     err.statusCode = err.statusCode || 500;
@@ -11,7 +12,8 @@ export const errorHandler = (err: ApiError, req: Request, res: Response, next: N
         message: err.message,
     };
 
-    console.log(`Error: ${err.message}\nStack: ${err.stack}`);
+    const log = err.statusCode >= 500 ? logger.error : logger.warn;
+    log({ err, path: req.path }, err.message);
 
     return res.status(err.statusCode).json(response);
 };
