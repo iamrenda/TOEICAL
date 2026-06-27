@@ -8,14 +8,17 @@ https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
 
 - リーディングモード: TOEICの問題をランダムに出題し、解答後に正解と解説を表示します。また問題一覧を見ることもできます。
 
+## 補足
+
+- レビューには Claude を使用しています。
+
 ## 進捗
 
 - [x] フロントエンドの基本的な画面構成とナビゲーションの実装
 - [x] バックエンドのAPI設計と実装
 - [x] フロントエンドとバックエンドの統合
 - [x] リーディングモードの実装
-- [ ] ライティングモードの実装 (現在進行中)
-- [ ] スピーキングモードの実装
+- [x] ライティングモードの実装 (現在進行中)
 
 ## 技術スタック
 
@@ -27,11 +30,12 @@ https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
 - TypeScript
 - Zustand
 
-バックエンド (Express.js x FastAPI)
+バックエンド
 
 - Node.js
 - Express.js
 - Zod
+- Pino
 - TypeScript
 - PostgreSQL
 - Python
