@@ -1,4 +1,6 @@
 import os
+import logging
+import time
 from fastapi import FastAPI
 from google import genai
 from dotenv import load_dotenv
@@ -8,6 +10,8 @@ load_dotenv()
 
 app = FastAPI()
 client = genai.Client(api_key=os.environ.get("GEMINI_KEY"))
+
+logging.basicConfig(level=logging.INFO)
 
 class ApiResponse:
     def __init__(self, status: str, data: str):
@@ -38,11 +42,16 @@ def health():
         model="gemini-2.5-flash-lite",
         contents="Say hello to the English Learners in Japan!",
     )
+    logging.info(f"Health check response: {response.text}")
 
     return {"status": "success", "data": response.text}
 
 @app.post("/ai/writing/analysis")
 def postAnalysis(request: WritingAnalysisRequest):
+    logging.info("Received writing analysis request:", extra={"topic": request.topic, "difficulty": request.difficulty, "timeLimit": request.timeLimit, "timeTaken": request.timeTaken, "wordCount": request.wordCount})
+
+    start_time = time.time()
+
     prompt_contents = [
         f"Topic: {request.topic}",
         f"Description: {request.description}",
@@ -62,18 +71,27 @@ def postAnalysis(request: WritingAnalysisRequest):
         "Write the 'feedback_summary' in clear, encouraging Japanese so the learner can easily understand it."
     )
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt_contents,
-        config={
-            "system_instruction": system_instruction,
-            "temperature": 0.7,
-            "response_mime_type": "application/json",
-            "response_schema": WritingAnalysisResponse
-        },
-    )
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt_contents,
+            config={
+                "system_instruction": system_instruction,
+                "temperature": 0.7,
+                "response_mime_type": "application/json",
+                "response_schema": WritingAnalysisResponse
+            },
+        )
 
-    if (not response.parsed):
-        return {"status": "error", "data": None, "error": "Failed to parse response from AI model." }
+        response_time = round((time.perf_counter() - start_time) * 1000)
 
-    return {"status": "success", "data": response.parsed, "error": None }
+        logging.info(f"Writing analysis response generated", extra={"response_time_ms": response_time, "model_used": "gemini-2.5-flash"})
+        return {"status": "success", "data": response.parsed, "error": None }
+    except Exception as e:
+        logging.error("Error generating response from AI model.", exc_info=True)
+
+        return {
+            "status": "error",
+            "data": None,
+            "error": "AI request failed"
+        }
