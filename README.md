@@ -34,13 +34,15 @@ https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
 
 - Node.js
 - Express.js
-- Zod
-- Pino
 - TypeScript
+- Zod
 - PostgreSQL
 - Python
 - FastAPI
 - GenAI API
+- Pino
+- Jest
+- Supertest
 
 ## セットアップ方法
 
