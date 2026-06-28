@@ -12,7 +12,6 @@ const pool = new Pool({
     port: process.env.DB_PORT ? +process.env.DB_PORT : 5432,
 });
 
-// https://www.postgresql.org/docs/current/errcodes-appendix.html
 const errorMapping: Record<string, { status: number; message: string }> = {
     "23503": { status: 400, message: "Related record not found." },
     "22P02": { status: 400, message: "Invalid input format." },

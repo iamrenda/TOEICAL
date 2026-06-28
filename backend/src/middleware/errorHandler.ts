@@ -1,21 +1,25 @@
-import { type NextFunction, type Request, type Response } from "express";
-import type ApiError from "../util/ApiError.ts";
+import { type Request, type Response } from "express";
 import logger from "../logger.ts";
+import ApiError from "../util/ApiError.ts";
 
-export const errorHandler = (err: ApiError, req: Request, res: Response, next: NextFunction) => {
-    err.statusCode = err.statusCode || 500;
-    err.message = err.message || "An unexpected error occurred.";
+export const errorHandler = (err: any, req: Request, res: Response) => {
+    // expected / handled
+    if (err instanceof ApiError) {
+        const log = err.statusCode >= 500 ? logger.error : logger.warn;
 
-    const response = {
+        log({ path: req.path, err }, err.message);
+
+        return res.status(err.statusCode).json({
+            status: "error",
+            code: err.statusCode,
+            message: err.message,
+        });
+    }
+
+    logger.error(`Unexpected error at error handler\n${err}`);
+    return res.status(500).json({
         status: "error",
-        code: err.statusCode,
-        message: err.message,
-    };
-
-    const log = err.statusCode >= 500 ? logger.error : logger.warn;
-    log({ err, path: req.path }, err.message);
-
-    return res.status(err.statusCode).json(response);
+        code: 500,
+        message: "An unexpected error occurred",
+    });
 };
-
-export default errorHandler;

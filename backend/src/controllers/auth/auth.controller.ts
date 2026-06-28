@@ -35,7 +35,7 @@ const generateAccessToken = (user: UserTokenPayload) => {
 const generateRefreshToken = (user: UserEntity) => {
     try {
         return jwt.sign(
-            { id: user.id, username: user.username, email: user.email },
+            { id: user.id, username: user.username, email: user.email, jti: crypto.randomUUID() },
             process.env.REFRESH_TOKEN_SECRET!,
             {
                 expiresIn: REFRESH_TOKEN_EXPIRY,
@@ -97,6 +97,8 @@ export const userLogin = async (
 
         const accessToken = generateAccessToken(user);
         const refreshToken = generateRefreshToken(user);
+
+        console.log(refreshToken);
 
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 30);
