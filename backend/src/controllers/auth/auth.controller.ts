@@ -169,7 +169,7 @@ export const userLogout = async (
             throw new ApiError(400, "No token provided");
         }
 
-        const data = await DB().query<RefreshTokenEntity>("SELECT * FROM refresh_tokens WHERE token = $1;", [
+        const data = await DB().query<RefreshTokenEntity>("SELECT * FROM refresh_tokens WHERE token = $1", [
             refreshToken,
         ]);
 
