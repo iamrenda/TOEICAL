@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "nodemon ./src/index.ts",
-        "test": "jest --forceExit"
+        "test": "dotenv -e .env.test -- jest --forceExit"
     },
     "keywords": [],
     "author": "",
@@ -36,6 +36,7 @@
         "@types/pg": "^8.16.0",
         "@types/supertest": "^7.2.0",
         "babel-jest": "^30.4.1",
+        "dotenv-cli": "^11.0.0",
         "jest": "^30.4.2",
         "nodemon": "^3.1.14",
         "pino-pretty": "^13.1.3",

@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import DB from "../../db/api.ts";
+import DB from "../../db/db.ts";
 import ApiError from "../../util/ApiError.ts";
 import logger from "../../logger.ts";
 import type { NextFunction, Response } from "express";

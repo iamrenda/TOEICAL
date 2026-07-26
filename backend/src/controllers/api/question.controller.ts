@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import DB from "../../db/api.ts";
+import DB from "../../db/db.ts";
 import type { Question } from "../../types/Question.ts";
 import {
     HistorySaveSchema,

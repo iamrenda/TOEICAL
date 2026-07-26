@@ -2,28 +2,29 @@ import supertest from "supertest";
 import app from "../index.ts";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
+import DB from "../db/db.ts";
+import { TEST_USER } from "./seed.ts";
 import { randomBytes } from "crypto";
 
 dotenv.config();
 
-const VALID_USER = {
-    userId: 65,
-    email: "testing@example.com",
-    password: "password",
-};
-
 const randomEmail = () => `${Date.now()}@test.com`;
 const randomUsername = (length = 10) => randomBytes(length).toString("hex").slice(0, length);
+
+const getTestUserId = async () => {
+    const [user] = await DB().query<{ id: number }>("SELECT id FROM users WHERE email = $1", [TEST_USER.email]);
+    return user!.id;
+};
 
 const validRefreshToken = async () => {
     const login = await supertest(app)
         .post("/auth/login")
-        .send({ email: VALID_USER.email, password: VALID_USER.password });
+        .send({ email: TEST_USER.email, password: TEST_USER.password });
     return login.body.data.refreshToken;
 };
 
-const expiredRefreshToken = () =>
-    jwt.sign({ userId: VALID_USER.userId }, process.env.REFRESH_TOKEN_SECRET!, {
+const expiredRefreshToken = async () =>
+    jwt.sign({ userId: await getTestUserId() }, process.env.REFRESH_TOKEN_SECRET!, {
         expiresIn: "-10s",
     });
 
@@ -63,7 +64,7 @@ describe("POST /auth/signup", () => {
             const salt = Date.now();
             const testEmails = [`test_${salt}`, `test_${salt}@`, `test_${salt}.com`, `test_${salt}@.com`, ""];
 
-            for (const email in testEmails) {
+            for (const email of testEmails) {
                 const response = await supertest(app).post("/auth/signup").send({
                     username: randomUsername(),
                     email,
@@ -86,7 +87,7 @@ describe("POST /auth/signup", () => {
                 {},
             ];
 
-            for (const body in testBody) {
+            for (const body of testBody) {
                 const response = await supertest(app).post("/auth/signup").send(body);
                 expect(response.statusCode).toBe(400);
             }
@@ -98,8 +99,8 @@ describe("POST /auth/login", () => {
     describe("when valid and correct email and password are given", () => {
         test("should respond with a 200 status code", async () => {
             const response = await supertest(app).post("/auth/login").send({
-                email: VALID_USER.email,
-                password: VALID_USER.password,
+                email: TEST_USER.email,
+                password: TEST_USER.password,
             });
             expect(response.statusCode).toBe(200);
         });
@@ -115,7 +116,7 @@ describe("POST /auth/login", () => {
                 {},
             ];
 
-            for (const body in testBody) {
+            for (const body of testBody) {
                 const response = await supertest(app).post("/auth/signup").send(body);
                 expect(response.statusCode).toBe(400);
             }
@@ -140,7 +141,7 @@ describe("POST /auth/token", () => {
         beforeEach(async () => {
             const loginResponse = await supertest(app)
                 .post("/auth/login")
-                .send({ email: VALID_USER.email, password: VALID_USER.password });
+                .send({ email: TEST_USER.email, password: TEST_USER.password });
 
             expect(loginResponse.statusCode).toBe(200);
 
@@ -173,7 +174,7 @@ describe("POST /auth/token", () => {
 
     describe("when the refresh token is expired", () => {
         test("should respond with a status code of 401", async () => {
-            const expiredToken = jwt.sign({ userId: VALID_USER.userId }, process.env.REFRESH_TOKEN_SECRET!, {
+            const expiredToken = jwt.sign({ userId: await getTestUserId() }, process.env.REFRESH_TOKEN_SECRET!, {
                 expiresIn: "-10s",
             });
             const response = await supertest(app).post("/auth/token").send({
@@ -212,13 +213,13 @@ describe("POST /auth/logout", () => {
             expect(response.statusCode).toBe(200);
         });
 
-        test("the token is revoked", async () => {});
+        // test("the token is revoked", async () => {});
     });
 
     describe("when the body is invalid", () => {
         test("should respond with a status code of 400", async () => {
             const testBody = [{}, { token: "" }];
-            for (const body in testBody) {
+            for (const body of testBody) {
                 const response = await supertest(app).post("/auth/logout").send(body);
                 expect(response.statusCode).toBe(400);
             }
@@ -243,7 +244,7 @@ describe("POST /auth/logout", () => {
 
     describe("when the token is already expired", () => {
         test("should respond with a status code of 401", async () => {
-            const token = expiredRefreshToken();
+            const token = await expiredRefreshToken();
 
             const response = await supertest(app).post("/auth/logout").send({ token });
             expect(response.statusCode).toBe(401);

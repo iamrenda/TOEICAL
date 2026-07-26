@@ -1,0 +1,14 @@
+\encoding UTF8
+\i users.sql
+\i question.sql
+\i option.sql
+\i detailed_description.sql
+\i translated_vocab.sql
+\i refresh_tokens.sql
+\i answer_history.sql
+\i starred_question.sql
+\i writing_topics.sql
+\i writing_tags.sql
+\i writing_topic_tags.sql
+\i writing_results.sql
+\i users_writing.sql

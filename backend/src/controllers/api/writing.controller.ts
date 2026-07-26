@@ -1,5 +1,5 @@
 import api from "../../api/api.ts";
-import DB from "../../db/api.ts";
+import DB from "../../db/db.ts";
 import type { Response, NextFunction } from "express";
 import type { AIWritingResult } from "../../types/Writing.ts";
 import type { ValidatedRequest } from "express-zod-safe";
