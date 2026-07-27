@@ -1,13 +1,13 @@
-import { type Request, type Response } from "express";
+import { type ErrorRequestHandler, type NextFunction, type Request, type Response } from "express";
 import logger from "../logger.ts";
 import ApiError from "../util/ApiError.ts";
 
-export const errorHandler = (err: any, req: Request, res: Response) => {
+export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     // expected / handled
     if (err instanceof ApiError) {
-        const log = err.statusCode >= 500 ? logger.error : logger.warn;
+        const logType = err.statusCode >= 500 ? "error" : "warn";
 
-        log({ path: req.path, err }, err.message);
+        logger[logType]({ err, path: req.path, method: req.method }, err.message);
 
         return res.status(err.statusCode).json({
             status: "error",
@@ -16,7 +16,7 @@ export const errorHandler = (err: any, req: Request, res: Response) => {
         });
     }
 
-    logger.error(`Unexpected error at error handler\n${err}`);
+    logger.error({ err, path: req.path, method: req.method }, "Unhandled error");
     return res.status(500).json({
         status: "error",
         code: 500,

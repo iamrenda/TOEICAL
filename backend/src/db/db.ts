@@ -26,30 +26,29 @@ const DB = () => {
         try {
             return await pool.connect();
         } catch (e) {
-            console.error(e);
-            return new ApiError(500, "Unable to connect to the database");
+            throw new ApiError(500, "Unable to connect to the database", { cause: e });
         }
     };
 
     const api = {
         query: async <T>(sql: string, params: any[] = []) => {
-            const db = await getPool();
-
-            if (db instanceof ApiError) {
-                throw db;
-            }
+            let db;
 
             try {
+                db = await getPool();
                 const result = await db.query(sql, params);
+
                 return result.rows as T[];
             } catch (e) {
                 const error = errorMapping[(e as any).code];
+
                 if (error) {
-                    throw new ApiError(error.status, error.message);
+                    throw new ApiError(error.status, error.message, { cause: error });
                 }
-                throw new ApiError(500, "An unexpected error occurred.");
+
+                throw new ApiError(500, "An unexpected error occurred.", { cause: e });
             } finally {
-                db.release();
+                db?.release();
             }
         },
         transaction: async <T>(

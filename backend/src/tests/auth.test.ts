@@ -51,9 +51,9 @@ describe("POST /auth/signup", () => {
     describe("when the username has already exist", () => {
         test("should respond with 409 status code", async () => {
             const response = await supertest(app).post("/auth/signup").send({
-                username: "username",
+                username: TEST_USER.username,
                 email: randomEmail(),
-                password: "password",
+                password: TEST_USER.password,
             });
             expect(response.statusCode).toBe(409);
         });

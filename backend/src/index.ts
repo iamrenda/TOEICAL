@@ -29,7 +29,7 @@ app.use("/api", apiRouter);
 
 // 404 not found
 app.use((req, res, next) => {
-    throw new ApiError(404, "Route not found");
+    throw new ApiError(404, `Route not found (${req.originalUrl})`);
 });
 
 // error handling
