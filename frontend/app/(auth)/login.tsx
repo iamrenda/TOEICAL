@@ -6,7 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { router } from "expo-router";
 import { AuthHeader, AuthTextInput, CustomButton, AuthFooter, AuthErrorText } from "@/components";
-import { ErrorType } from "@/types/Error";
+import { ErrorType } from "@/types/ErrorType";
 import { ErrorMessages } from "@/constants/ErrorMessages";
 
 interface Inputs {

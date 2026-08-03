@@ -8,15 +8,17 @@ import type {
     WritingResultsParamsSchema,
     WritingHistorySchema,
 } from "../../schemas/writing.schema.ts";
-import type { ApiResponse } from "../../types/ApiResponse.ts";
+import type { ApiSuccessResponse } from "../../types/ApiResponse.ts";
 import ApiError from "../../util/ApiError.ts";
-import type { AxiosResponse } from "../../types/Axios.ts";
+import type { AxiosResponse } from "../../types/AxiosResponse.ts";
+import { ErrorCode } from "../../types/ErrorCode.ts";
+import { sendSuccess } from "../../util/apiResponse.ts";
 
 const getWritingAnalysis = async (
     req: ValidatedRequest<{
         body: typeof WritingResultsParamsSchema;
     }>,
-    res: Response<ApiResponse<AIWritingResult>>,
+    res: Response<ApiSuccessResponse<AIWritingResult>>,
     next: NextFunction,
 ) => {
     const { user } = req;
@@ -35,7 +37,7 @@ const getWritingAnalysis = async (
         });
 
         if (writingAnalysis.data.status !== "success") {
-            throw new ApiError(500, "Failed to get writing analysis from AI.");
+            throw new ApiError(500, "Failed to get writing analysis from AI.", { errorCode: ErrorCode.AI_UNAVAILABLE });
         }
 
         const {
@@ -68,7 +70,9 @@ const getWritingAnalysis = async (
             );
 
             if (!rows || rows.length === 0) {
-                throw new ApiError(500, "Failed to insert into writing_results table.");
+                throw new ApiError(500, "Failed to insert into writing_results table.", {
+                    errorCode: ErrorCode.DATABASE_ERROR,
+                });
             }
 
             const writingResultId = rows[0]!.id;
@@ -83,12 +87,7 @@ const getWritingAnalysis = async (
             );
         });
 
-        return res.status(200).json({
-            status: "success",
-            message: "Writing results saved successfully",
-            error: null,
-            data: writingAnalysis.data.data,
-        });
+        return sendSuccess(res, 200, "Writing results saved successfully", writingAnalysis.data.data);
     } catch (e) {
         next(e);
     }
@@ -96,7 +95,7 @@ const getWritingAnalysis = async (
 
 const getTopics = async (
     req: ValidatedRequest<{ query: typeof WritingTopicsSchema }>,
-    res: Response<ApiResponse<any>>,
+    res: Response<ApiSuccessResponse<any>>,
     next: NextFunction,
 ) => {
     try {
@@ -126,7 +125,7 @@ const getTopics = async (
             [difficulty === "ALL" ? null : difficulty, tag === "ALL" ? null : tag],
         );
 
-        return res.status(200).json({ status: "success", data, message: "Topics retrieved successfully", error: null });
+        return sendSuccess(res, 200, "Topics retrieved successfully", data);
     } catch (e) {
         next(e);
     }
@@ -134,7 +133,7 @@ const getTopics = async (
 
 const getHistory = async (
     req: ValidatedRequest<{ query: typeof WritingHistorySchema }>,
-    res: Response<ApiResponse<any>>,
+    res: Response<ApiSuccessResponse<any>>,
     next: NextFunction,
 ) => {
     const { user } = req;
@@ -153,9 +152,8 @@ const getHistory = async (
         `,
             [user?.id, from, to],
         );
-        return res
-            .status(200)
-            .json({ status: "success", data, message: "Writing history retrieved successfully", error: null });
+
+        return sendSuccess(res, 200, "Writing history retrieved successfully", data);
     } catch (e) {
         next(e);
     }

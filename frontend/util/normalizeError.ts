@@ -1,23 +1,38 @@
 import { ErrorMessages } from "@/constants/ErrorMessages";
-import { ErrorCodeMapping, ErrorType } from "@/types/Error";
-import { ErrorResponse } from "@/types/ErrorResponse";
+import { NormalizedError } from "@/types/NormalizedError";
 import { isAxiosError } from "axios";
+import { ErrorCodeMapping } from "@/types/ErrorCodeMapping";
+import { HttpStatusMapping } from "@/types/HttpStatusMapping";
+import { ErrorType } from "@/types/ErrorType";
+import { ApiErrorResponse } from "@/types/ApiResponse";
 
-/**
- * Normalizes Axios errors into our standard ErrorResponse format
- */
-const normalizeError = (error: unknown): ErrorResponse => {
-    // Handle Axios errors
-    if (isAxiosError(error)) {
-        const status = error.response?.status || 500;
-        const errorType = ErrorCodeMapping[status] || ErrorType.SERVER;
+const normalizeError = (error: unknown): NormalizedError => {
+    // Axios errors
+    if (isAxiosError<ApiErrorResponse>(error)) {
+        if (!error.response) {
+            return {
+                success: false,
+                code: 0,
+                errorType: ErrorType.NETWORK,
+                message: ErrorMessages[ErrorType.NETWORK],
+                originalError: error,
+            };
+        }
+
+        const responseData = error.response.data;
+        const status = responseData.code ?? error.response?.status ?? 500;
+        const errorCode = responseData.errorCode ?? undefined;
+        const errorType =
+            (errorCode ? ErrorCodeMapping[errorCode] : undefined) ?? HttpStatusMapping[status] ?? ErrorType.SERVER;
+        const errorMessage = ErrorMessages[errorType];
 
         return {
-            isCustomError: true,
             success: false,
             code: status,
+            errorCode,
             errorType,
-            message: ErrorMessages[errorType],
+            message: errorMessage,
+            serverMessage: responseData.message,
             originalError: error,
         };
     }
@@ -25,7 +40,6 @@ const normalizeError = (error: unknown): ErrorResponse => {
     // Handle standard JavaScript errors
     if (error instanceof Error) {
         return {
-            isCustomError: true,
             success: false,
             code: 500,
             errorType: ErrorType.UNKNOWN,
@@ -36,7 +50,6 @@ const normalizeError = (error: unknown): ErrorResponse => {
 
     // Handle unknown error types
     return {
-        isCustomError: true,
         success: false,
         code: 500,
         errorType: ErrorType.UNKNOWN,

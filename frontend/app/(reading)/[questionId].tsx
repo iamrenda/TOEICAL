@@ -6,7 +6,7 @@ import { Stack, useLocalSearchParams, router, useNavigation } from "expo-router"
 import { Footer, QuestionOption, CustomButton, QuestionIdLabel, HeaderBackIconButton } from "@/components";
 import showErrorAlert from "@/util/showErrorAlert";
 import { ErrorMessages } from "@/constants/ErrorMessages";
-import { ErrorType } from "@/types/Error";
+import { ErrorType } from "@/types/ErrorType";
 
 const optionLetter = ["A", "B", "C", "D"];
 

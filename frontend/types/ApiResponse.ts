@@ -1,4 +1,4 @@
-import type { ErrorCode } from "./ErrorCode.ts";
+import { ErrorCode } from "./ErrorCode";
 
 export type ApiSuccessResponse<T> = {
     status: "success";

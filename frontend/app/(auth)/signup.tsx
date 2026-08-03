@@ -5,7 +5,7 @@ import { ScrollView, StyleSheet, View, KeyboardAvoidingView } from "react-native
 import { useForm, SubmitHandler } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AuthTextInput, CustomButton, AuthFooter, AuthHeader, AuthErrorText } from "@/components";
-import { ErrorType } from "@/types/Error";
+import { ErrorType } from "@/types/ErrorType";
 import { ErrorMessages } from "@/constants/ErrorMessages";
 
 interface Inputs {

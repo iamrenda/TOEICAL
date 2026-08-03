@@ -10,7 +10,9 @@ import {
 } from "../../schemas/question.schema.ts";
 import type { ValidatedRequest } from "express-zod-safe";
 import ApiError from "../../util/ApiError.ts";
-import type { ApiResponse } from "../../types/ApiResponse.ts";
+import type { ApiSuccessResponse } from "../../types/ApiResponse.ts";
+import { sendSuccess } from "../../util/apiResponse.ts";
+import { ErrorCode } from "../../types/ErrorCode.ts";
 
 type QuestionOverview = {
     id: number;
@@ -47,7 +49,7 @@ const getQuestionDataById = async (questionId: number, userId?: number) => {
 
 export const getQuestionOverviews = async (
     req: ValidatedRequest<{ query: typeof OverviewQuestionSchema }>,
-    res: Response<ApiResponse<QuestionOverview[]>>,
+    res: Response<ApiSuccessResponse<QuestionOverview[]>>,
     next: NextFunction,
 ) => {
     try {
@@ -57,7 +59,9 @@ export const getQuestionOverviews = async (
         const sortByArr = sortBy.split(".");
 
         if (sortByArr.length != 2) {
-            throw new ApiError(400, "Invalid sortBy format. Expected format: field.order (e.g. id.asc)");
+            throw new ApiError(400, "Invalid sortBy format. Expected format: field.order (e.g. id.asc)", {
+                errorCode: ErrorCode.INVALID_FORMAT,
+            });
         }
 
         const offset = (page - 1) * limit;
@@ -110,9 +114,7 @@ export const getQuestionOverviews = async (
 
         const data = await DB().query<QuestionOverview>(query, [user?.id, limit, offset]);
 
-        return res
-            .status(200)
-            .json({ status: "success", message: "Question overviews retrieved successfully", data, error: null });
+        return sendSuccess(res, 200, "Question overviews retrieved successfully", data);
     } catch (e) {
         next(e);
     }
@@ -120,7 +122,7 @@ export const getQuestionOverviews = async (
 
 export const getRandomQuestions = async (
     req: ValidatedRequest<{ query: typeof RandomQuestionSchema }>,
-    res: Response<ApiResponse<Question[]>>,
+    res: Response<ApiSuccessResponse<Question[]>>,
     next: NextFunction,
 ) => {
     try {
@@ -208,18 +210,18 @@ export const getRandomQuestions = async (
         const data = await DB().query<Question>(query, queryParameters);
 
         if (data.length === 0) {
-            throw new ApiError(404, "No questions found for the specified type");
+            throw new ApiError(404, "No questions found for the specified type", {
+                errorCode: ErrorCode.RESOURCE_NOT_FOUND,
+            });
         }
 
-        return res
-            .status(200)
-            .json({ status: "success", message: "Random questions retrieved successfully", data, error: null });
+        return sendSuccess(res, 200, "Random questions retrieved successfully", data);
     } catch (e) {
         next(e);
     }
 };
 
-export const getQuestionCount = async (req: Request, res: Response<ApiResponse<any>>, next: NextFunction) => {
+export const getQuestionCount = async (req: Request, res: Response<ApiSuccessResponse<any>>, next: NextFunction) => {
     try {
         const { user } = req;
 
@@ -261,9 +263,7 @@ export const getQuestionCount = async (req: Request, res: Response<ApiResponse<a
             last_answered_wrong: Number(lastWrongAttemptCount[0]?.wrong_last_attempt_count),
         };
 
-        return res
-            .status(200)
-            .json({ status: "success", message: "Question count retrieved successfully", data, error: null });
+        return sendSuccess(res, 200, "Question count retrieved successfully", data);
     } catch (e) {
         next(e);
     }
@@ -274,7 +274,7 @@ export const saveAnswerHistory = async (
         body: typeof HistorySaveSchema;
         params: typeof QuestionIdSchema;
     }>,
-    res: Response,
+    res: Response<ApiSuccessResponse<null>>,
     next: NextFunction,
 ) => {
     try {
@@ -288,9 +288,7 @@ export const saveAnswerHistory = async (
             wasCorrect,
         ]);
 
-        return res
-            .status(201)
-            .json({ status: "success", message: "Answer history saved successfully", error: null, data: null });
+        return sendSuccess(res, 201, "Answer history saved successfully", null);
     } catch (e) {
         next(e);
     }
@@ -298,7 +296,7 @@ export const saveAnswerHistory = async (
 
 export const getQuestionById = async (
     req: ValidatedRequest<{ params: typeof QuestionIdSchema }>,
-    res: Response<ApiResponse<Question>>,
+    res: Response<ApiSuccessResponse<Question>>,
     next: NextFunction,
 ) => {
     try {
@@ -307,13 +305,13 @@ export const getQuestionById = async (
 
         const data = await getQuestionDataById(questionId, user?.id);
 
-        if (data.length === 0) {
-            throw new ApiError(404, `Question ID: ${questionId} not found`);
+        if (!data || data.length === 0) {
+            throw new ApiError(404, `Question ID: ${questionId} not found`, {
+                errorCode: ErrorCode.RESOURCE_NOT_FOUND,
+            });
         }
 
-        return res
-            .status(200)
-            .json({ status: "success", message: "Question retrieved successfully", data: data[0]!, error: null });
+        return sendSuccess(res, 200, "Question retrieved successfully", data[0]!);
     } catch (e) {
         next(e);
     }
@@ -321,7 +319,7 @@ export const getQuestionById = async (
 
 export const getNextQuestionById = async (
     req: ValidatedRequest<{ params: typeof QuestionIdSchema; query: typeof NextQuestionSchema }>,
-    res: Response<ApiResponse<Question>>,
+    res: Response<ApiSuccessResponse<Question>>,
     next: NextFunction,
 ) => {
     try {
@@ -332,7 +330,9 @@ export const getNextQuestionById = async (
         const sortByArr = sortBy.split(".");
 
         if (sortByArr.length != 2) {
-            throw new ApiError(400, "Invalid sortBy format. Expected format: field.order (e.g. id.asc)");
+            throw new ApiError(400, "Invalid sortBy format. Expected format: field.order (e.g. id.asc)", {
+                errorCode: ErrorCode.INVALID_FORMAT,
+            });
         }
 
         if (starred) {
@@ -352,22 +352,24 @@ export const getNextQuestionById = async (
 
             const data = await getQuestionDataById(Number(nextQuestionId[0]?.question_id), user?.id);
 
-            return res.status(200).json({
-                status: "success",
-                message: "Next starred question retrieved successfully",
-                data: data[0]!,
-                error: null,
-            });
+            if (!data || data.length === 0) {
+                throw new ApiError(404, `Question ID: ${questionId} not found`, {
+                    errorCode: ErrorCode.RESOURCE_NOT_FOUND,
+                });
+            }
+
+            return sendSuccess(res, 200, "Next starred question retrieved successfully", data[0]!);
         } else {
             const nextQuestionId = questionId + 1;
             const data = await getQuestionDataById(nextQuestionId, user?.id);
 
-            return res.status(200).json({
-                status: "success",
-                message: "Next question retrieved successfully",
-                data: data[0]!,
-                error: null,
-            });
+            if (!data || data.length === 0) {
+                throw new ApiError(404, `Question ID: ${questionId} not found`, {
+                    errorCode: ErrorCode.RESOURCE_NOT_FOUND,
+                });
+            }
+
+            return sendSuccess(res, 200, "Next question retrieved successfully", data[0]!);
         }
     } catch (e) {
         next(e);
@@ -376,7 +378,7 @@ export const getNextQuestionById = async (
 
 export const starQuestion = async (
     req: ValidatedRequest<{ params: typeof QuestionIdSchema }>,
-    res: Response<ApiResponse<any>>,
+    res: Response<ApiSuccessResponse<null>>,
     next: NextFunction,
 ) => {
     try {
@@ -388,9 +390,7 @@ export const starQuestion = async (
             [user?.id, questionId],
         );
 
-        return res
-            .status(201)
-            .json({ status: "success", message: "Question starred successfully", error: null, data: null });
+        return sendSuccess(res, 201, "Question starred successfully", null);
     } catch (e) {
         next(e);
     }
@@ -398,7 +398,7 @@ export const starQuestion = async (
 
 export const unstarQuestion = async (
     req: ValidatedRequest<{ params: typeof QuestionIdSchema }>,
-    res: Response<ApiResponse<any>>,
+    res: Response<ApiSuccessResponse<null>>,
     next: NextFunction,
 ) => {
     try {
@@ -410,9 +410,7 @@ export const unstarQuestion = async (
             questionId,
         ]);
 
-        return res
-            .status(200)
-            .json({ status: "success", message: "Question unstarred successfully", error: null, data: null });
+        return sendSuccess(res, 200, "Question unstarred successfully", null);
     } catch (e) {
         next(e);
     }

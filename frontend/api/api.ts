@@ -1,11 +1,7 @@
 import Links from "@/constants/Links";
 import useAuthStore from "@/store/useAuthStore";
 import axios, { AxiosError } from "axios";
-import { ErrorType } from "@/types/Error";
-import { ErrorResponse } from "@/types/ErrorResponse";
-import normalizeError from "@/util/normalizeError";
 
-// const TIMEOUT_IN_MS = 5000;
 const TIMEOUT_IN_MS = 60_000;
 
 const api = axios.create({
@@ -32,13 +28,7 @@ api.interceptors.response.use(
 
         // Network error (no response received)
         if (!error.response) {
-            return Promise.reject({
-                isCustomError: true,
-                success: false,
-                code: 0,
-                errorType: ErrorType.NETWORK,
-                error,
-            } as ErrorResponse);
+            return Promise.reject(error);
         }
 
         // Handle Unauthorized - Attempt token refresh
@@ -50,7 +40,7 @@ api.interceptors.response.use(
 
                 if (!res.success) {
                     await useAuthStore.getState().logout();
-                    return Promise.reject(normalizeError(error));
+                    return Promise.reject(error);
                 }
 
                 const newToken = useAuthStore.getState().accessToken;
@@ -61,13 +51,11 @@ api.interceptors.response.use(
             } catch (refreshError) {
                 // Token refresh failed, normalize and handle the error
                 await useAuthStore.getState().logout();
-                const errorResponse = normalizeError(refreshError);
-                return Promise.reject(errorResponse);
+                return Promise.reject(refreshError);
             }
         }
 
-        const errorResponse = normalizeError(error);
-        return Promise.reject(errorResponse);
+        return Promise.reject(error);
     },
 );
 

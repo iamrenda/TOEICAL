@@ -1,34 +1,16 @@
-import { ErrorResponse } from "@/types/ErrorResponse";
-import { ZustandResponse } from "@/types/Zustand";
-import { ErrorType } from "@/types/Error";
+import normalizeError from "./normalizeError";
+import { StoreErrorResult } from "@/types/StoreResult";
 
-/**
- * Checks if the given error is an ErrorResponse (Handled error)
- */
-const isCustomResponse = (e: unknown): e is ErrorResponse => {
-    return typeof e === "object" && e !== null && "isCustomError" in e && (e as any).isCustomError === true;
-};
+const handleError = (error: unknown): StoreErrorResult => {
+    const normalized = normalizeError(error);
 
-/**
- * Main error handler used for stores
- * Logs error and returns normalized ErrorResponse for UI display
- */
-const handleError = (error: unknown): ZustandResponse => {
-    if (isCustomResponse(error)) {
-        const e = error;
+    console.error("REQUEST FAILURE:", normalized.originalError);
 
-        console.log("[Handled Error]", {
-            errorType: e.errorType,
-            message: e.message,
-            originalError: e.originalError,
-        });
-
-        return { success: false, errorType: e.errorType };
-    }
-
-    console.log("[Unhandled Error]", error);
-
-    return { success: false, errorType: ErrorType.UNKNOWN };
+    return {
+        success: false,
+        errorType: normalized.errorType,
+        errorMessage: normalized.message,
+    };
 };
 
 export default handleError;

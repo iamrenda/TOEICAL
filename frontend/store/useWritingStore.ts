@@ -1,6 +1,6 @@
 import api from "@/api/api";
 import handleError from "@/util/handleError";
-import { AxiosResponse } from "@/types/Axios";
+import { ApiSuccessResponse } from "@/types/ApiResponse";
 import {
     WritingDifficulty,
     WritingEssayAnalysisInput,
@@ -8,9 +8,8 @@ import {
     WritingTags,
     WritingTopic,
 } from "@/types/Writing";
-import { ZustandResponse } from "@/types/Zustand";
+import { StoreResult } from "@/types/StoreResult";
 import { create } from "zustand";
-import { ErrorType } from "@/types/Error";
 
 interface WritingState {
     isLoading: boolean;
@@ -26,12 +25,16 @@ interface WritingState {
     setSelectedTopic: (topicId: number | null) => void;
 
     allTopics: WritingTopic[] | null;
-    fetchTopics: () => Promise<ZustandResponse>;
+    fetchTopics: () => Promise<StoreResult>;
 
     userEssay: string;
     setUserEssay: (text: string) => void;
 
-    submitEssay: (essay: string, timeTaken: number, wordCount: number) => Promise<ZustandResponse>;
+    submitEssay: (
+        essay: string,
+        timeTaken: number,
+        wordCount: number,
+    ) => Promise<StoreResult<WritingEssayAnalysisOutput>>;
 
     reset: () => void;
 }
@@ -69,17 +72,13 @@ const useWritingStore = create<WritingState>((set, get) => ({
         const { selectedDifficulty, selectedTags } = get();
 
         try {
-            const res = await api.get<AxiosResponse<WritingTopic[]>>(
+            const res = await api.get<ApiSuccessResponse<WritingTopic[]>>(
                 `writing/topics?difficulty=${selectedDifficulty}&tag=${selectedTags}`,
             );
 
-            if (res.data.status !== "success") {
-                return { success: false, errorType: ErrorType.SERVER };
-            }
-
             set({ allTopics: res.data.data });
 
-            return { success: true };
+            return { success: true, data: null };
         } catch (e) {
             return handleError(e);
         } finally {
@@ -108,7 +107,7 @@ const useWritingStore = create<WritingState>((set, get) => ({
         };
 
         try {
-            const res = await api.post<AxiosResponse<WritingEssayAnalysisOutput>>("writing", body);
+            const res = await api.post<ApiSuccessResponse<WritingEssayAnalysisOutput>>("writing", body);
 
             set({ essayAnalysisResult: res.data.data });
 

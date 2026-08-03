@@ -1,14 +1,14 @@
 import Links from "@/constants/Links";
 import useUserStore from "./useUserStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
 import handleError from "@/util/handleError";
+import api from "@/api/api";
 import { create } from "zustand";
-import { ErrorType } from "@/types/Error";
+import { ErrorType } from "@/types/ErrorType";
 import { setItemAsync, deleteItemAsync, getItemAsync } from "expo-secure-store";
 import { UserStorageData, UserTokenData } from "@/types/User";
-import { ZustandResponse } from "@/types/Zustand";
-import { AxiosResponse } from "@/types/Axios";
+import { StoreResult } from "@/types/StoreResult";
+import { ApiSuccessResponse } from "@/types/ApiResponse";
 
 interface UserLoginResponse {
     username: string;
@@ -27,16 +27,16 @@ interface AuthState {
 
     setLoading: (isLoading: boolean) => void;
 
-    refreshAccessToken: () => Promise<ZustandResponse>;
-    getTokenData: () => Promise<UserTokenData | null>;
+    refreshAccessToken: () => Promise<StoreResult>;
+    getTokenData: () => Promise<StoreResult<UserTokenData>>;
     setTokenData: (tokenData: UserTokenData) => void;
-    persistTokenData: (tokenData: UserTokenData) => Promise<void>;
+    persistTokenData: (tokenData: UserTokenData) => Promise<StoreResult>;
     clearSession: () => Promise<void>;
 
-    initialize: () => Promise<ZustandResponse>;
-    signUp: (username: string, email: string, password: string) => Promise<ZustandResponse>;
-    login: (email: string, password: string) => Promise<ZustandResponse>;
-    logout: () => Promise<ZustandResponse>;
+    initialize: () => Promise<StoreResult>;
+    signUp: (username: string, email: string, password: string) => Promise<StoreResult>;
+    login: (email: string, password: string) => Promise<StoreResult>;
+    logout: () => Promise<void>;
 }
 
 const ACCESS_TOKEN_EXPIRY = 60 * 60 * 1000; // 1 hr
@@ -58,13 +58,13 @@ const useAuthStore = create<AuthState>((set, get) => ({
     refreshAccessToken: async () => {
         try {
             const current = get();
-            const res = await axios.post<AxiosResponse<{ accessToken: string }>>(`${Links.BASE_URL_AUTH}/token`, {
+            if (!current.refreshToken) {
+                return { success: false, errorType: ErrorType.AUTH, errorMessage: "認証に失敗しました。" };
+            }
+
+            const res = await api.post<ApiSuccessResponse<{ accessToken: string }>>(`${Links.BASE_URL_AUTH}/token`, {
                 token: current.refreshToken,
             });
-
-            if (res.data.status !== "success") {
-                return { success: false, errorType: ErrorType.AUTH };
-            }
 
             const { accessToken } = res.data.data;
             const tokenData: UserTokenData = {
@@ -76,15 +76,24 @@ const useAuthStore = create<AuthState>((set, get) => ({
             current.setTokenData(tokenData);
             await current.persistTokenData(tokenData);
 
-            return { success: true };
-        } catch (error) {
-            return handleError(error);
+            return { success: true, data: null };
+        } catch (e) {
+            return handleError(e);
         }
     },
 
     getTokenData: async () => {
-        const rawTokenData = await getItemAsync("token-data");
-        return rawTokenData ? JSON.parse(rawTokenData) : null;
+        try {
+            const rawTokenData = await getItemAsync("token-data");
+
+            if (!rawTokenData) {
+                return { success: false, errorType: ErrorType.AUTH, errorMessage: "認証に失敗しました。" };
+            }
+
+            return { success: true, data: JSON.parse(rawTokenData) };
+        } catch (e) {
+            return handleError(e);
+        }
     },
 
     setTokenData: (tokenData: UserTokenData) => {
@@ -98,33 +107,42 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
     // update token data in secure storage
     persistTokenData: async (tokenData: UserTokenData) => {
-        await setItemAsync("token-data", JSON.stringify(tokenData));
+        try {
+            await setItemAsync("token-data", JSON.stringify(tokenData));
+            return { success: true, data: null };
+        } catch (e) {
+            return handleError(e);
+        }
     },
 
     clearSession: async () => {
-        await AsyncStorage.removeItem("user-data");
-        await deleteItemAsync("token-data");
-        useUserStore.setState({ username: "" });
-
-        set({
-            accessToken: null,
-            refreshToken: null,
-            accessTokenExpiresAt: null,
-            refreshTokenExpiresAt: null,
-            isLoggedIn: false,
-        });
+        try {
+            await Promise.all([AsyncStorage.removeItem("user-data"), deleteItemAsync("token-data")]);
+        } catch (e) {
+            console.error("Failed to clear session", e);
+        } finally {
+            useUserStore.setState({ username: "" });
+            set({
+                accessToken: null,
+                refreshToken: null,
+                accessTokenExpiresAt: null,
+                refreshTokenExpiresAt: null,
+                isLoggedIn: false,
+            });
+        }
     },
 
     initialize: async () => {
         try {
             const current = get();
-            const tokenData = await current.getTokenData();
+            const res = await current.getTokenData();
 
-            if (!tokenData) {
+            if (!res.success) {
                 set({ isLoggedIn: false, isLoading: false });
-                return { success: false, errorType: ErrorType.NOT_FOUND };
+                return res;
             }
 
+            const tokenData = res.data;
             current.setTokenData(tokenData);
 
             const { accessTokenExpiresAt, refreshTokenExpiresAt } = tokenData;
@@ -153,7 +171,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
             }
 
             set({ isLoggedIn: true });
-            return { success: true };
+            return { success: true, data: null };
         } catch (e) {
             return handleError(e);
         } finally {
@@ -165,13 +183,13 @@ const useAuthStore = create<AuthState>((set, get) => ({
         set({ isLoading: true });
 
         try {
-            await axios.post<AxiosResponse<void>>(`${Links.BASE_URL_AUTH}/signup`, {
+            await api.post<ApiSuccessResponse<void>>(`${Links.BASE_URL_AUTH}/signup`, {
                 username,
                 email,
                 password,
             });
 
-            return { success: true };
+            return { success: true, data: null };
         } catch (e) {
             return handleError(e);
         } finally {
@@ -184,7 +202,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
         try {
             const current = get();
-            const res = await axios.post<AxiosResponse<UserLoginResponse>>(`${Links.BASE_URL_AUTH}/login`, {
+            const res = await api.post<ApiSuccessResponse<UserLoginResponse>>(`${Links.BASE_URL_AUTH}/login`, {
                 email,
                 password,
             });
@@ -210,7 +228,7 @@ const useAuthStore = create<AuthState>((set, get) => ({
             useUserStore.setState({ username });
 
             set({ isLoggedIn: true });
-            return { success: true };
+            return { success: true, data: null };
         } catch (e) {
             return handleError(e);
         } finally {
@@ -222,13 +240,11 @@ const useAuthStore = create<AuthState>((set, get) => ({
         set({ isLoading: true });
 
         try {
-            await axios.post(`${Links.BASE_URL_AUTH}/logout`, {
+            await api.post<ApiSuccessResponse<void>>(`${Links.BASE_URL_AUTH}/logout`, {
                 token: get().refreshToken,
             });
-
-            return { success: true };
-        } catch (error) {
-            return handleError(error);
+        } catch (e) {
+            console.log("Failed to logout.", e);
         } finally {
             await get().clearSession();
             set({ isLoading: false });

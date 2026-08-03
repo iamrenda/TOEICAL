@@ -3,9 +3,9 @@ import handleError from "@/util/handleError";
 import useQuestionOverviewStore from "./useQuestionOverviewStore";
 import { create } from "zustand";
 import { Question } from "@/types/Question";
-import { AxiosResponse } from "@/types/Axios";
-import { ZustandResponse } from "@/types/Zustand";
-import { ErrorType } from "@/types/Error";
+import { ApiSuccessResponse } from "@/types/ApiResponse";
+import { StoreResult } from "@/types/StoreResult";
+import { ErrorType } from "@/types/ErrorType";
 
 interface QuizState {
     // Single Question Mode
@@ -24,73 +24,26 @@ interface QuizState {
     isLoading: boolean;
     isQuizMode: boolean;
 
-    /**
-     * Fetch a single question by ID
-     * Used when user picks a question from list
-     */
-    fetchQuestion: (questionId: number) => Promise<ZustandResponse>;
+    fetchQuestion: (questionId: number) => Promise<StoreResult>;
+    fetchNextQuestion: (currentQuestionId: number) => Promise<StoreResult>;
 
-    /**
-     * Fetch next question in sequence (applies filters like starred)
-     */
-    fetchNextQuestion: (currentQuestionId: number) => Promise<ZustandResponse>;
-
-    /**
-     * Submit answer for single question mode
-     * Validates against current question's correct_option_id
-     */
-    submitAnswer: (questionId: number, selectedOptionId: number) => Promise<ZustandResponse>;
-
-    /**
-     * Set the selected option (before submission)
-     */
+    // submit answer for **single** question mode
+    submitAnswer: (questionId: number, selectedOptionId: number) => Promise<StoreResult>;
     selectOption: (optionId: number) => void;
+    fetchQuizQuestions: (type: string, count: number) => Promise<StoreResult>;
 
-    /**
-     * Initialize a quiz session
-     * Fetches all questions and resets progress
-     */
-    fetchQuizQuestions: (type: string, count: number) => Promise<ZustandResponse>;
-
-    /**
-     * Mark current question as answered and increment score if correct
-     */
+    // marks current question as answered and increment score if correct
     answerQuizQuestion: (isCorrect: boolean, selectedOptionId: number) => void;
 
-    /**
-     * Set the index of the question to view in the explanation modal from the summary
-     */
+    // sets the index of the question to view in the explanation modal from the summary
     setExplanationQuestionIndex: (index: number | null) => void;
 
-    /**
-     * Record time spent on current question
-     */
     addTime: (time: number) => void;
-
-    /**
-     * Move to next question in quiz
-     */
     nextQuizQuestion: () => void;
-
-    /**
-     * Submit quiz answer to backend and move to next
-     */
     submitQuizAnswer: (questionId: number, isCorrect: boolean) => Promise<void>;
 
-    /**
-     * Reset all state
-     */
     reset: () => void;
-
-    /**
-     * Helper: Get current question based on mode
-     * Returns currentQuestion in single mode, quizQuestions[quizCurrentIndex] in quiz mode
-     */
     getCurrentQuestion: () => Question | null;
-
-    /**
-     * Helper: Check if current question is answered correctly
-     */
     isCurrentAnswerCorrect: () => boolean;
 }
 
@@ -110,18 +63,14 @@ const useQuizStore = create<QuizState>((set, get) => ({
         set({ isLoading: true });
 
         try {
-            const res = await api.get<AxiosResponse<Question>>(`/question/${questionId}`);
-
-            if (res.data.status !== "success") {
-                return { success: false, errorType: ErrorType.SERVER };
-            }
+            const res = await api.get<ApiSuccessResponse<Question>>(`/question/${questionId}`);
 
             set({
                 currentQuestion: res.data.data,
                 selectedOptionId: null,
                 isQuizMode: false, // Explicitly single-question mode
             });
-            return { success: true };
+            return { success: true, data: null };
         } catch (e) {
             return handleError(e);
         } finally {
@@ -135,19 +84,17 @@ const useQuizStore = create<QuizState>((set, get) => ({
         const isStarredFilter = useQuestionOverviewStore.getState().selectedFilter === "starred";
 
         try {
-            const res = await api.get<AxiosResponse<Question>>(
+            const res = await api.get<ApiSuccessResponse<Question>>(
                 `/question/${currentQuestionId}/next?sortBy=id.asc&starred=${isStarredFilter}`,
             );
-            if (res.data.status !== "success") {
-                return { success: false, errorType: ErrorType.SERVER };
-            }
+
             set({
                 currentQuestion: res.data.data,
                 selectedOptionId: null,
                 isQuizMode: false,
             });
 
-            return { success: true };
+            return { success: true, data: null };
         } catch (e) {
             return handleError(e);
         } finally {
@@ -160,10 +107,10 @@ const useQuizStore = create<QuizState>((set, get) => ({
         const wasCorrect = selectedOptionId === (state.currentQuestion?.correct_option_id ?? -1);
 
         try {
-            await api.post<AxiosResponse<void>>(`/question/history/${questionId}`, {
+            await api.post<ApiSuccessResponse<void>>(`/question/history/${questionId}`, {
                 wasCorrect,
             });
-            return { success: true };
+            return { success: true, data: null };
         } catch (e) {
             return handleError(e);
         }
@@ -187,17 +134,14 @@ const useQuizStore = create<QuizState>((set, get) => ({
         });
 
         try {
-            const res = await api.get<AxiosResponse<Question[]>>(`/question/random?type=${type}&count=${count}`);
-
-            if (res.data.status !== "success") {
-                return { success: false, errorType: ErrorType.SERVER };
-            }
+            const res = await api.get<ApiSuccessResponse<Question[]>>(`/question/random?type=${type}&count=${count}`);
 
             set({
                 quizQuestions: res.data.data,
                 currentQuestion: res.data.data[0],
             });
-            return { success: true };
+
+            return { success: true, data: null };
         } catch (e) {
             return handleError(e);
         } finally {
@@ -233,7 +177,7 @@ const useQuizStore = create<QuizState>((set, get) => ({
         try {
             await api.post(`/question/history/${questionId}`, { wasCorrect: isCorrect });
         } catch (e) {
-            console.log("Error saving quiz answer history", e);
+            console.log("Error saving quiz answer history.", e);
         }
     },
 

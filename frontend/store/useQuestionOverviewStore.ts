@@ -2,9 +2,9 @@ import api from "@/api/api";
 import handleError from "@/util/handleError";
 import { create } from "zustand";
 import { Overview, OverviewFilters } from "@/types/Question";
-import { ZustandResponse } from "@/types/Zustand";
-import { AxiosResponse } from "@/types/Axios";
-import { ErrorType } from "@/types/Error";
+import { StoreResult } from "@/types/StoreResult";
+import { ApiSuccessResponse } from "@/types/ApiResponse";
+import { ErrorType } from "@/types/ErrorType";
 
 interface QuestionOverviewState {
     questions: Overview[];
@@ -13,7 +13,7 @@ interface QuestionOverviewState {
     selectedFilter: OverviewFilters;
     isLoading: boolean;
 
-    fetchQuestions: (loadMore?: boolean) => Promise<ZustandResponse>;
+    fetchQuestions: (loadMore?: boolean) => Promise<StoreResult>;
     setSelectedFilter: (filter: OverviewFilters) => void;
     toggleStarQuestion: (id: number, isStarred: boolean) => Promise<void>;
 }
@@ -35,13 +35,9 @@ const useQuestionOverviewStore = create<QuestionOverviewState>((set, get) => ({
         try {
             const nextPage = loadMore ? page + 1 : 1;
 
-            const res = await api.get<AxiosResponse<Overview[]>>(
+            const res = await api.get<ApiSuccessResponse<Overview[]>>(
                 `/question/overview?sortBy=id.asc&limit=100&page=${nextPage}&starred=${useQuestionOverviewStore.getState().selectedFilter === "starred"}`,
             );
-
-            if (res.data.status !== "success") {
-                return { success: false, errorType: ErrorType.SERVER };
-            }
 
             if (questions.length === 0 || !loadMore) {
                 set({ questions: res.data.data, page: 1 });
@@ -49,7 +45,7 @@ const useQuestionOverviewStore = create<QuestionOverviewState>((set, get) => ({
                 set({ questions: [...questions, ...res.data.data], page: nextPage });
             }
 
-            return { success: true };
+            return { success: true, data: null };
         } catch (e) {
             return handleError(e);
         } finally {
@@ -65,12 +61,12 @@ const useQuestionOverviewStore = create<QuestionOverviewState>((set, get) => ({
     toggleStarQuestion: async (id, isStarred) => {
         try {
             if (isStarred) {
-                await api.delete<AxiosResponse<void>>(`/question/starred/${id}`);
+                await api.delete<ApiSuccessResponse<void>>(`/question/starred/${id}`);
             } else {
-                await api.post<AxiosResponse<void>>(`/question/starred/${id}`);
+                await api.post<ApiSuccessResponse<void>>(`/question/starred/${id}`);
             }
         } catch (e) {
-            console.log("Error toggling star:", e);
+            console.log("Error toggling star", e);
         }
     },
 }));

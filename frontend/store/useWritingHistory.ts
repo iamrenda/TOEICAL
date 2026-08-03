@@ -1,8 +1,8 @@
 import api from "@/api/api";
-import { AxiosResponse } from "@/types/Axios";
-import { ErrorType } from "@/types/Error";
+import { ApiSuccessResponse } from "@/types/ApiResponse";
+import { ErrorType } from "@/types/ErrorType";
 import { UserWritingHistory } from "@/types/Writing";
-import { ZustandResponse } from "@/types/Zustand";
+import { StoreResult } from "@/types/StoreResult";
 import handleError from "@/util/handleError";
 import { create } from "zustand";
 
@@ -22,7 +22,7 @@ interface WritingHistory {
     setPreviousMonth: () => void;
 
     currentMonthHistory: UserWritingHistory[];
-    getCurrentMonthHistory(): Promise<ZustandResponse>;
+    getCurrentMonthHistory(): Promise<StoreResult>;
 }
 
 const today = new Date();
@@ -85,13 +85,9 @@ const useWritingHistory = create<WritingHistory>((set, get) => ({
             const formattedMonth = String(currentMonth).padStart(2, "0");
             const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
 
-            const res = await api.get<AxiosResponse<UserWritingHistory[]>>(
+            const res = await api.get<ApiSuccessResponse<UserWritingHistory[]>>(
                 `writing/history?from=${formattedYear}-${formattedMonth}-01&to=${formattedYear}-${formattedMonth}-${daysInMonth}`,
             );
-
-            if (res.data.status !== "success") {
-                return { success: false, error: ErrorType.SERVER };
-            }
 
             set({ currentMonthHistory: res.data.data });
 
