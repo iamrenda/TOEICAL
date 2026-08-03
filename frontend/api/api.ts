@@ -2,7 +2,7 @@ import Links from "@/constants/Links";
 import useAuthStore from "@/store/useAuthStore";
 import axios, { AxiosError } from "axios";
 
-const TIMEOUT_IN_MS = 60_000;
+const TIMEOUT_IN_MS = 120_000;
 
 const api = axios.create({
     baseURL: Links.BASE_URL_API,

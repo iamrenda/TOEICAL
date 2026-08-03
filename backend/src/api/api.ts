@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const TIMEOUT_IN_MS = 60_000;
+const TIMEOUT_IN_MS = 120_000;
 
 const api = axios.create({
     baseURL: process.env.FASTAPI_URL!,

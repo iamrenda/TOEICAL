@@ -181,9 +181,9 @@ const QuestionScreen = () => {
                     />
                 ))}
 
-            <Footer>
+            <Footer style={{ gap: 12 }}>
                 {isSubmitted ? (
-                    <View style={styles.submittedContainer}>
+                    <>
                         <CustomButton
                             text="解説"
                             variant="secondary"
@@ -191,7 +191,7 @@ const QuestionScreen = () => {
                             flex={3}
                         />
                         <CustomButton text="次の問題" variant="primary" onPress={onNextQuestion} flex={7} />
-                    </View>
+                    </>
                 ) : (
                     <CustomButton
                         text="決定！"
@@ -217,28 +217,10 @@ const styles = StyleSheet.create({
         paddingTop: 24,
         backgroundColor: Variables.white,
     },
-    questionIdText: {
-        alignSelf: "flex-start",
-        color: Variables.primary600,
-        backgroundColor: Variables.primary100,
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderWidth: 1,
-        borderColor: Variables.primary600,
-        borderRadius: Variables.borderRadiusPrimary,
-        fontSize: 12,
-        fontWeight: "600",
-        marginBottom: 12,
-    },
     questionText: {
         fontSize: 20,
         fontWeight: "600",
         marginBottom: 36,
         lineHeight: 28,
-    },
-
-    submittedContainer: {
-        flexDirection: "row",
-        gap: 12,
     },
 });

@@ -39,7 +39,7 @@ class WritingAnalysisResponse(BaseModel):
 @app.get("/health")
 def health():
     response = client.models.generate_content(
-        model="gemini-2.5-flash-lite",
+        model="gemini-2.5-flash",
         contents="Say hello to the English Learners in Japan!",
     )
     logging.info(f"Health check response: {response.text}")
@@ -73,7 +73,7 @@ def postAnalysis(request: WritingAnalysisRequest):
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.5-flash",
+            model="gemini-3.5-flash-lite",
             contents=prompt_contents,
             config={
                 "system_instruction": system_instruction,
@@ -85,10 +85,10 @@ def postAnalysis(request: WritingAnalysisRequest):
 
         response_time = round((time.perf_counter() - start_time) * 1000)
 
-        logging.info(f"Writing analysis response generated", extra={"response_time_ms": response_time, "model_used": "gemini-2.5-flash"})
+        logging.info(f"Writing analysis response generated", extra={"response_time_ms": response_time, "model_used": "gemini-3.5-flash-lite"})
         return {"status": "success", "data": response.parsed, "error": None }
     except Exception as e:
-        logging.error("Error generating response from AI model.", exc_info=True)
+        logging.error(f"Error generating response from AI model: {e}", exc_info=True)
 
         return {
             "status": "error",
