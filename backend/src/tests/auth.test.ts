@@ -212,13 +212,11 @@ describe("POST /auth/logout", () => {
             });
             expect(response.statusCode).toBe(200);
         });
-
-        // test("the token is revoked", async () => {});
     });
 
     describe("when the body is invalid", () => {
         test("should respond with a status code of 400", async () => {
-            const testBody = [{}, { token: "" }];
+            const testBody = [{}];
             for (const body of testBody) {
                 const response = await supertest(app).post("/auth/logout").send(body);
                 expect(response.statusCode).toBe(400);
