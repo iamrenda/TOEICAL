@@ -3,7 +3,7 @@ CREATE TABLE answer_history (
     user_id INTEGER NOT NULL,
     question_id INTEGER NOT NULL,
     was_correct BOOLEAN NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    answered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (question_id) REFERENCES question(id) ON DELETE CASCADE
