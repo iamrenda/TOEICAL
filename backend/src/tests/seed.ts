@@ -1,11 +1,6 @@
 import bcrypt from "bcrypt";
 import DB from "../db/db.ts";
-
-export const TEST_USER = {
-    username: "testing",
-    email: "test@example.com",
-    password: "password",
-};
+import { TEST_USER } from "./util.ts";
 
 const seed = async () => {
     const passwordHash = await bcrypt.hash("password", 10);

@@ -9,6 +9,7 @@ import {
     NextQuestionSchema,
 } from "../../schemas/question.schema.ts";
 import type { ValidatedRequest } from "express-zod-safe";
+import type { z } from "zod";
 import ApiError from "../../util/ApiError.ts";
 import type { ApiSuccessResponse } from "../../types/ApiResponse.ts";
 import { sendSuccess } from "../../util/apiResponse.ts";
@@ -17,8 +18,37 @@ import { ErrorCode } from "../../types/ErrorCode.ts";
 type QuestionOverview = {
     id: number;
     question: string;
-    last_attempt_correct: boolean;
+    is_starred: boolean;
+    was_last_attempt_correct: boolean;
     last_answered_at: string;
+};
+
+type SortBy = z.infer<typeof OverviewQuestionSchema>["sortBy"];
+
+const SORT_ORDER_BY: Record<SortBy, string> = {
+    "id.asc": "q.id ASC",
+    "id.desc": "q.id DESC",
+    "starred_date.asc": "sq.created_at ASC NULLS LAST, q.id ASC",
+    "starred_date.desc": "sq.created_at DESC NULLS LAST, q.id DESC",
+};
+
+const SORT_AFTER_CURRENT: Record<SortBy, string> = {
+    "id.asc": "q.id > c.id",
+    "id.desc": "q.id < c.id",
+    "starred_date.asc": `(
+        (c.created_at IS NOT NULL AND (
+            (sq.created_at IS NOT NULL AND (sq.created_at, q.id) > (c.created_at, c.id))
+            OR sq.created_at IS NULL
+        ))
+        OR (c.created_at IS NULL AND sq.created_at IS NULL AND q.id > c.id)
+    )`,
+    "starred_date.desc": `(
+        (c.created_at IS NOT NULL AND (
+            (sq.created_at IS NOT NULL AND (sq.created_at, q.id) < (c.created_at, c.id))
+            OR sq.created_at IS NULL
+        ))
+        OR (c.created_at IS NULL AND sq.created_at IS NULL AND q.id < c.id)
+    )`,
 };
 
 const getQuestionDataById = async (questionId: number, userId?: number) => {
@@ -56,14 +86,6 @@ export const getQuestionOverviews = async (
         const { user } = req;
         const { sortBy, limit, page, starred } = req.query;
 
-        const sortByArr = sortBy.split(".");
-
-        if (sortByArr.length != 2) {
-            throw new ApiError(400, "Invalid sortBy format. Expected format: field.order (e.g. id.asc)", {
-                errorCode: ErrorCode.INVALID_FORMAT,
-            });
-        }
-
         const offset = (page - 1) * limit;
 
         const query = starred
@@ -86,7 +108,7 @@ export const getQuestionOverviews = async (
                 ORDER BY ah.answered_at DESC
                 LIMIT 1
             ) la ON TRUE
-            ORDER BY q.${sortByArr[0]} ${sortByArr[1]}
+            ORDER BY ${SORT_ORDER_BY[sortBy]}
             LIMIT $2 OFFSET $3;
     `
             : `
@@ -108,7 +130,7 @@ export const getQuestionOverviews = async (
                 ORDER BY ah.answered_at DESC
                 LIMIT 1
             ) la ON TRUE
-            ORDER BY q.${sortByArr[0]} ${sortByArr[1]}	
+            ORDER BY ${SORT_ORDER_BY[sortBy]}
             LIMIT $2 OFFSET $3;
     `;
 
@@ -282,6 +304,17 @@ export const saveAnswerHistory = async (
         const { questionId } = req.params;
         const { wasCorrect } = req.body;
 
+        // check if question exists
+        await DB()
+            .query("SELECT id FROM question WHERE id = $1;", [questionId])
+            .then((result) => {
+                if (result.length === 0) {
+                    throw new ApiError(404, `Question ID: ${questionId} not found`, {
+                        errorCode: ErrorCode.RESOURCE_NOT_FOUND,
+                    });
+                }
+            });
+
         await DB().query("INSERT INTO answer_history (user_id, question_id, was_correct) VALUES ($1, $2, $3);", [
             user?.id,
             questionId,
@@ -327,50 +360,46 @@ export const getNextQuestionById = async (
         const { questionId } = req.params;
         const { sortBy, starred } = req.query;
 
-        const sortByArr = sortBy.split(".");
+        const nextQuestion = await DB().query<{ id: number }>(
+            `
+            WITH current AS (
+                SELECT q.id, sq.created_at
+                FROM question q
+                LEFT JOIN starred_question sq
+                    ON sq.question_id = q.id
+                    AND sq.user_id = $1
+                WHERE q.id = $2
+            )
+            SELECT q.id
+            FROM question q
+            LEFT JOIN starred_question sq
+                ON sq.question_id = q.id
+                AND sq.user_id = $1
+            CROSS JOIN current c
+            WHERE ${starred ? "sq.question_id IS NOT NULL" : "TRUE"}
+            AND ${SORT_AFTER_CURRENT[sortBy]}
+            ORDER BY ${SORT_ORDER_BY[sortBy]}
+            LIMIT 1;
+            `,
+            [user?.id, questionId],
+        );
 
-        if (sortByArr.length != 2) {
-            throw new ApiError(400, "Invalid sortBy format. Expected format: field.order (e.g. id.asc)", {
-                errorCode: ErrorCode.INVALID_FORMAT,
+        if (nextQuestion.length === 0) {
+            throw new ApiError(404, starred ? "No next starred question found" : "No next question found", {
+                errorCode: ErrorCode.RESOURCE_NOT_FOUND,
             });
         }
 
-        if (starred) {
-            const nextQuestionId = await DB().query<{ question_id: string }>(
-                `SELECT question_id
-                FROM starred_question
-                WHERE user_id = $1
-                AND question_id > $2
-                ORDER BY question_id ASC
-                LIMIT 1;`,
-                [user?.id, questionId],
-            );
+        const nextQuestionId = nextQuestion[0]!.id;
+        const data = await getQuestionDataById(nextQuestionId, user?.id);
 
-            if (nextQuestionId.length === 0) {
-                throw new ApiError(404, "No next starred question found");
-            }
-
-            const data = await getQuestionDataById(Number(nextQuestionId[0]?.question_id), user?.id);
-
-            if (!data || data.length === 0) {
-                throw new ApiError(404, `Question ID: ${questionId} not found`, {
-                    errorCode: ErrorCode.RESOURCE_NOT_FOUND,
-                });
-            }
-
-            return sendSuccess(res, 200, "Next starred question retrieved successfully", data[0]!);
-        } else {
-            const nextQuestionId = questionId + 1;
-            const data = await getQuestionDataById(nextQuestionId, user?.id);
-
-            if (!data || data.length === 0) {
-                throw new ApiError(404, `Question ID: ${questionId} not found`, {
-                    errorCode: ErrorCode.RESOURCE_NOT_FOUND,
-                });
-            }
-
-            return sendSuccess(res, 200, "Next question retrieved successfully", data[0]!);
+        if (data.length === 0) {
+            throw new ApiError(404, `Question ID: ${nextQuestionId} not found`, {
+                errorCode: ErrorCode.RESOURCE_NOT_FOUND,
+            });
         }
+
+        return sendSuccess(res, 200, "Next question retrieved successfully", data[0]!);
     } catch (e) {
         next(e);
     }
@@ -384,6 +413,17 @@ export const starQuestion = async (
     try {
         const { questionId } = req.params;
         const { user } = req;
+
+        // check if question exists
+        await DB()
+            .query("SELECT id FROM question WHERE id = $1;", [questionId])
+            .then((result) => {
+                if (result.length === 0) {
+                    throw new ApiError(404, `Question ID: ${questionId} not found`, {
+                        errorCode: ErrorCode.RESOURCE_NOT_FOUND,
+                    });
+                }
+            });
 
         await DB().query(
             "INSERT INTO starred_question (user_id, question_id) VALUES ($1, $2) ON CONFLICT (user_id, question_id) DO NOTHING;",
@@ -404,6 +444,17 @@ export const unstarQuestion = async (
     try {
         const { questionId } = req.params;
         const { user } = req;
+
+        // check if question exists
+        await DB()
+            .query("SELECT id FROM question WHERE id = $1;", [questionId])
+            .then((result) => {
+                if (result.length === 0) {
+                    throw new ApiError(404, `Question ID: ${questionId} not found`, {
+                        errorCode: ErrorCode.RESOURCE_NOT_FOUND,
+                    });
+                }
+            });
 
         await DB().query("DELETE FROM starred_question WHERE user_id = $1 AND question_id = $2;", [
             user?.id,

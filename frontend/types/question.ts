@@ -1,7 +1,7 @@
 export interface Option {
     option: string;
     option_id: number;
-    translated_option: string;
+    translated_option: string | null;
 }
 
 export interface Question {

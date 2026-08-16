@@ -9,7 +9,7 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
     if (err instanceof ApiError) {
         const logType = err.statusCode >= 500 ? "error" : "warn";
 
-        logger[logType]({ err, path: req.path, method: req.method }, err.message);
+        logger[logType]({ err, path: req.path, query: req.query, method: req.method }, err.message);
 
         return sendError(res, err.statusCode, err.message, err.errorCode);
     }
