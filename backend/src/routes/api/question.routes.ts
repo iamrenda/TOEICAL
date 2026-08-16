@@ -29,7 +29,7 @@ router.get("/:questionId/next", validate({ params: QuestionIdSchema, query: Next
 
 router.post("/history/:questionId", validate({ params: QuestionIdSchema, body: HistorySaveSchema }), saveAnswerHistory);
 
-router.post("/starred/:questionId", starQuestion);
-router.delete("/starred/:questionId", unstarQuestion);
+router.post("/starred/:questionId", validate({ params: QuestionIdSchema }), starQuestion);
+router.delete("/starred/:questionId", validate({ params: QuestionIdSchema }), unstarQuestion);
 
 export default router;
