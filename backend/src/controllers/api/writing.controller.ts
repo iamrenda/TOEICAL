@@ -1,43 +1,55 @@
 import api from "../../api/api.ts";
 import DB from "../../db/db.ts";
-import type { Response, NextFunction } from "express";
-import type { AIWritingResult } from "../../types/Writing.ts";
-import type { ValidatedRequest } from "express-zod-safe";
-import type {
-    WritingTopicsSchema,
-    WritingResultsParamsSchema,
-    WritingHistorySchema,
-} from "../../schemas/writing.schema.ts";
-import type { ApiSuccessResponse } from "../../types/ApiResponse.ts";
 import ApiError from "../../util/ApiError.ts";
-import type { AxiosResponse } from "../../types/AxiosResponse.ts";
+import type { Response, NextFunction } from "express";
+import type { ValidatedRequest } from "express-zod-safe";
+import type { WritingTopicRequestSchema, WritingRequestSchema, WritingHistoryRequestSchema } from "@toeical/shared";
+import type { ApiSuccessResponse, fastApiSuccessResponse } from "../../types/ApiResponse.ts";
 import { ErrorCode } from "../../types/ErrorCode.ts";
 import { sendSuccess } from "../../util/apiResponse.ts";
+import {
+    WritingAiAnalysisResponseSchema,
+    WritingResponseSchema,
+    WritingTopicListResponseSchema,
+    WritingHistoryListResponseSchema,
+    type WritingAiAnalysisResponse,
+    type WritingResponse,
+    type WritingTopicResponse,
+    type WritingTopicListResponse,
+    type WritingHistoryResponse,
+    type WritingHistoryListResponse,
+} from "@toeical/shared";
 
 const getWritingAnalysis = async (
     req: ValidatedRequest<{
-        body: typeof WritingResultsParamsSchema;
+        body: typeof WritingRequestSchema;
     }>,
-    res: Response<ApiSuccessResponse<AIWritingResult>>,
+    res: Response<ApiSuccessResponse<WritingResponse>>,
     next: NextFunction,
 ) => {
     const { user } = req;
     const { topic, topicId, description, essay, difficulty, timeLimit, timeTaken, wordCount } = req.body;
 
     try {
-        // AI analysis
-        const writingAnalysis = await api.post<AxiosResponse<AIWritingResult>>(`/ai/writing/analysis`, {
-            topic,
-            description,
-            essay,
-            difficulty,
-            timeLimit,
-            timeTaken,
-            wordCount,
-        });
+        const writingAnalysis = await api.post<fastApiSuccessResponse<WritingAiAnalysisResponse>>(
+            `/ai/writing/analysis`,
+            {
+                topic,
+                description,
+                essay,
+                difficulty,
+                timeLimit,
+                timeTaken,
+                wordCount,
+            },
+        );
 
-        if (writingAnalysis.data.status !== "success") {
-            throw new ApiError(500, "Failed to get writing analysis from AI.", { errorCode: ErrorCode.AI_UNAVAILABLE });
+        const analysisValidationResult = WritingAiAnalysisResponseSchema.safeParse(writingAnalysis.data.data);
+        if (!analysisValidationResult.success) {
+            throw new ApiError(500, "Invalid response from AI writing analysis.", {
+                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
+                zodError: analysisValidationResult.error,
+            });
         }
 
         const {
@@ -48,10 +60,10 @@ const getWritingAnalysis = async (
             overall_score,
             revised_essay,
             feedback_summary,
-        } = writingAnalysis.data.data;
+        } = analysisValidationResult.data;
 
+        // Saving writing results
         await DB().transaction(async (client) => {
-            // Saving writing results
             const rows = await client.query<{ id: string }>(
                 `
                 INSERT INTO writing_results (structure_score, topic_relevancy_score, grammar_score, vocabulary_score, overall_score, revised_essay, feedback_summary)
@@ -87,21 +99,29 @@ const getWritingAnalysis = async (
             );
         });
 
-        return sendSuccess(res, 200, "Writing results saved successfully", writingAnalysis.data.data);
+        const validationResult = WritingResponseSchema.safeParse(writingAnalysis.data.data);
+        if (!validationResult.success) {
+            throw new ApiError(500, "Invalid response from AI writing analysis", {
+                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
+                zodError: validationResult.error,
+            });
+        }
+
+        return sendSuccess(res, 200, "Writing results saved successfully", validationResult.data);
     } catch (e) {
         next(e);
     }
 };
 
 const getTopics = async (
-    req: ValidatedRequest<{ query: typeof WritingTopicsSchema }>,
-    res: Response<ApiSuccessResponse<any>>,
+    req: ValidatedRequest<{ query: typeof WritingTopicRequestSchema }>,
+    res: Response<ApiSuccessResponse<WritingTopicListResponse>>,
     next: NextFunction,
 ) => {
     try {
         const { difficulty, tag } = req.query;
 
-        const data = await DB().query(
+        const data = await DB().query<WritingTopicResponse>(
             `
                 SELECT 
                     wt.id,
@@ -117,13 +137,21 @@ const getTopics = async (
                 INNER JOIN writing_tags
                     ON wtt.writing_tag_id = writing_tags.id
                 WHERE ($1::text is null or wt.difficulty = $1)
-                AND ($2::text is null or writing_tags.tag = $2)
-                GROUP BY 
+                GROUP BY
                     wt.id
+                HAVING ($2::text is null or BOOL_OR(writing_tags.tag = $2))
                 ORDER BY wt.id ASC;
             `,
             [difficulty === "ALL" ? null : difficulty, tag === "ALL" ? null : tag],
         );
+
+        const validationResult = WritingTopicListResponseSchema.safeParse(data);
+        if (!validationResult.success) {
+            throw new ApiError(500, "Invalid response from writing topic", {
+                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
+                zodError: validationResult.error,
+            });
+        }
 
         return sendSuccess(res, 200, "Topics retrieved successfully", data);
     } catch (e) {
@@ -132,15 +160,15 @@ const getTopics = async (
 };
 
 const getHistory = async (
-    req: ValidatedRequest<{ query: typeof WritingHistorySchema }>,
-    res: Response<ApiSuccessResponse<any>>,
+    req: ValidatedRequest<{ query: typeof WritingHistoryRequestSchema }>,
+    res: Response<ApiSuccessResponse<WritingHistoryListResponse>>,
     next: NextFunction,
 ) => {
     const { user } = req;
     const { from, to } = req.query;
 
     try {
-        const data = await DB().query(
+        const data = await DB().query<WritingHistoryResponse>(
             `
             SELECT wt.topic, wt.description, uw.writing_content, wr.*
             FROM users_writing AS uw
@@ -152,6 +180,14 @@ const getHistory = async (
         `,
             [user?.id, from, to],
         );
+
+        const validationResult = WritingHistoryListResponseSchema.safeParse(data);
+        if (!validationResult.success) {
+            throw new ApiError(500, "Invalid response from writing history", {
+                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
+                zodError: validationResult.error,
+            });
+        }
 
         return sendSuccess(res, 200, "Writing history retrieved successfully", data);
     } catch (e) {

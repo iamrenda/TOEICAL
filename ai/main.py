@@ -1,7 +1,9 @@
 import os
 import logging
 import time
-from fastapi import FastAPI
+from typing import Generic, Literal, TypeVar
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from google import genai
 from dotenv import load_dotenv
 from pydantic import BaseModel
@@ -13,10 +15,12 @@ client = genai.Client(api_key=os.environ.get("GEMINI_KEY"))
 
 logging.basicConfig(level=logging.INFO)
 
-class ApiResponse:
-    def __init__(self, status: str, data: str):
-        self.status = status
-        self.data = data
+T = TypeVar("T")
+
+class ApiResponse(BaseModel, Generic[T]):
+    status: Literal["success", "error"]
+    data: T | None
+    message: str
 
 class WritingAnalysisRequest(BaseModel):
     topic: str
@@ -46,11 +50,11 @@ def health():
 
     return {"status": "success", "data": response.text}
 
-@app.post("/ai/writing/analysis")
+@app.post("/ai/writing/analysis", response_model=ApiResponse[WritingAnalysisResponse])
 def postAnalysis(request: WritingAnalysisRequest):
     logging.info("Received writing analysis request:", extra={"topic": request.topic, "difficulty": request.difficulty, "timeLimit": request.timeLimit, "timeTaken": request.timeTaken, "wordCount": request.wordCount})
 
-    start_time = time.time()
+    start_time = time.perf_counter()
 
     prompt_contents = [
         f"Topic: {request.topic}",
@@ -83,15 +87,17 @@ def postAnalysis(request: WritingAnalysisRequest):
             },
         )
 
-        response_time = round((time.perf_counter() - start_time) * 1000)
+        response_time_ms = (time.perf_counter() - start_time) * 1000
 
-        logging.info(f"Writing analysis response generated", extra={"response_time_ms": response_time, "model_used": "gemini-3.5-flash-lite"})
-        return {"status": "success", "data": response.parsed, "error": None }
+        logging.info(f"Writing analysis response generated", extra={"response_time_ms": response_time_ms, "model_used": "gemini-3.5-flash-lite"})
+        return ApiResponse(status="success", data=response.parsed, message="Writing analysis generated successfully")
     except Exception as e:
         logging.error(f"Error generating response from AI model: {e}", exc_info=True)
-
-        return {
-            "status": "error",
-            "data": None,
-            "error": "AI request failed"
-        }
+        return JSONResponse(
+            status_code=502,
+            content={
+                "status": "error",
+                "data": None,
+                "message": "AI service unavailable"
+            }
+        )
