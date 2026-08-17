@@ -2,18 +2,17 @@ import api from "@/api/api";
 import handleError from "@/util/handleError";
 import useQuestionOverviewStore from "./useQuestionOverviewStore";
 import { create } from "zustand";
-import { Question } from "@/types/Question";
 import { ApiSuccessResponse } from "@/types/ApiResponse";
 import { StoreResult } from "@/types/StoreResult";
-import { ErrorType } from "@/types/ErrorType";
+import { QuestionListResponse, QuestionResponse } from "@toeical/shared";
 
 interface QuizState {
     // Single Question Mode
-    currentQuestion: Question | null;
+    currentQuestion: QuestionResponse | null;
     selectedOptionId: number | null;
 
     // Quiz Mode
-    quizQuestions: Question[];
+    quizQuestions: QuestionResponse[];
     quizCurrentIndex: number;
     correctAnswersCount: number;
     times: number[];
@@ -43,7 +42,7 @@ interface QuizState {
     submitQuizAnswer: (questionId: number, isCorrect: boolean) => Promise<void>;
 
     reset: () => void;
-    getCurrentQuestion: () => Question | null;
+    getCurrentQuestion: () => QuestionResponse | null;
     isCurrentAnswerCorrect: () => boolean;
 }
 
@@ -63,7 +62,7 @@ const useQuizStore = create<QuizState>((set, get) => ({
         set({ isLoading: true });
 
         try {
-            const res = await api.get<ApiSuccessResponse<Question>>(`/question/${questionId}`);
+            const res = await api.get<ApiSuccessResponse<QuestionResponse>>(`/question/${questionId}`);
 
             set({
                 currentQuestion: res.data.data,
@@ -84,7 +83,7 @@ const useQuizStore = create<QuizState>((set, get) => ({
         const isStarredFilter = useQuestionOverviewStore.getState().selectedFilter === "starred";
 
         try {
-            const res = await api.get<ApiSuccessResponse<Question>>(
+            const res = await api.get<ApiSuccessResponse<QuestionResponse>>(
                 `/question/${currentQuestionId}/next?sortBy=id.asc&starred=${isStarredFilter}`,
             );
 
@@ -134,7 +133,9 @@ const useQuizStore = create<QuizState>((set, get) => ({
         });
 
         try {
-            const res = await api.get<ApiSuccessResponse<Question[]>>(`/question/random?type=${type}&count=${count}`);
+            const res = await api.get<ApiSuccessResponse<QuestionListResponse>>(
+                `/question/random?type=${type}&count=${count}`,
+            );
 
             set({
                 quizQuestions: res.data.data,

@@ -1,10 +1,10 @@
 import { z } from "zod";
 
-export const QuestionIdSchema = z.object({
+export const QuestionIdRequestSchema = z.object({
     questionId: z.coerce.number().int().min(1),
 });
 
-export const OverviewQuestionSchema = z.object({
+export const OverviewQuestionRequestSchema = z.object({
     sortBy: z.enum(["id.asc", "id.desc", "starred_date.asc", "starred_date.desc"], {
         message: "Invalid sortBy format. Expected format: field.order (e.g. id.asc)",
     }),
@@ -22,13 +22,13 @@ export const OverviewQuestionSchema = z.object({
     }),
 });
 
-export const NextQuestionSchema = OverviewQuestionSchema.pick({ sortBy: true, starred: true });
+export const NextQuestionRequestSchema = OverviewQuestionRequestSchema.pick({ sortBy: true, starred: true });
 
-export const RandomQuestionSchema = z.object({
+export const RandomQuestionRequestSchema = z.object({
     type: z.enum(["random", "starred", "unanswered", "wrong"]),
     count: z.coerce.number().int().min(1),
 });
 
-export const HistorySaveSchema = z.object({
+export const HistorySaveRequestSchema = z.object({
     wasCorrect: z.boolean(),
 });

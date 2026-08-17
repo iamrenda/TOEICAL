@@ -1,13 +1,14 @@
 import api from "@/api/api";
 import handleError from "@/util/handleError";
 import { create } from "zustand";
-import { Overview, OverviewFilters } from "@/types/Question";
 import { StoreResult } from "@/types/StoreResult";
 import { ApiSuccessResponse } from "@/types/ApiResponse";
-import { ErrorType } from "@/types/ErrorType";
+import { type QuestionOverviewListResponse } from "@toeical/shared";
+
+export type OverviewFilters = "all" | "starred";
 
 interface QuestionOverviewState {
-    questions: Overview[];
+    questions: QuestionOverviewListResponse;
     page: number;
     selectedQuestionIndex: number | null;
     selectedFilter: OverviewFilters;
@@ -35,7 +36,7 @@ const useQuestionOverviewStore = create<QuestionOverviewState>((set, get) => ({
         try {
             const nextPage = loadMore ? page + 1 : 1;
 
-            const res = await api.get<ApiSuccessResponse<Overview[]>>(
+            const res = await api.get<ApiSuccessResponse<QuestionOverviewListResponse>>(
                 `/question/overview?sortBy=id.asc&limit=100&page=${nextPage}&starred=${useQuestionOverviewStore.getState().selectedFilter === "starred"}`,
             );
 

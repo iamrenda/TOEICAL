@@ -1,7 +1,9 @@
 import React from "react";
 import Variables from "@/constants/Variables";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Option } from "@/types/Question";
+import { QuestionResponse } from "@toeical/shared";
+
+type Option = Pick<QuestionResponse["options"][number], "option" | "option_id" | "translated_option">;
 
 const QuestionOption = ({
     option,

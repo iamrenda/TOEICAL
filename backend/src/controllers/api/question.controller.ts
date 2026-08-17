@@ -1,13 +1,20 @@
 import type { NextFunction, Request, Response } from "express";
 import DB from "../../db/db.ts";
-import type { Question } from "../../types/Question.ts";
 import {
-    HistorySaveSchema,
-    QuestionIdSchema,
-    RandomQuestionSchema,
-    OverviewQuestionSchema,
-    NextQuestionSchema,
-} from "../../schemas/question.schema.ts";
+    HistorySaveRequestSchema,
+    QuestionIdRequestSchema,
+    RandomQuestionRequestSchema,
+    OverviewQuestionRequestSchema,
+    NextQuestionRequestSchema,
+    QuestionOverviewListResponseSchema,
+    QuestionResponseSchema,
+    QuestionListResponseSchema,
+    QuestionCountResponseSchema,
+    type QuestionOverviewListResponse,
+    type QuestionResponse,
+    type QuestionListResponse,
+    type QuestionCountResponse,
+} from "@toeical/shared";
 import type { ValidatedRequest } from "express-zod-safe";
 import type { z } from "zod";
 import ApiError from "../../util/ApiError.ts";
@@ -15,15 +22,7 @@ import type { ApiSuccessResponse } from "../../types/ApiResponse.ts";
 import { sendSuccess } from "../../util/apiResponse.ts";
 import { ErrorCode } from "../../types/ErrorCode.ts";
 
-type QuestionOverview = {
-    id: number;
-    question: string;
-    is_starred: boolean;
-    was_last_attempt_correct: boolean;
-    last_answered_at: string;
-};
-
-type SortBy = z.infer<typeof OverviewQuestionSchema>["sortBy"];
+type SortBy = z.infer<typeof OverviewQuestionRequestSchema>["sortBy"];
 
 const SORT_ORDER_BY: Record<SortBy, string> = {
     "id.asc": "q.id ASC",
@@ -53,14 +52,24 @@ const SORT_AFTER_CURRENT: Record<SortBy, string> = {
 
 const getQuestionDataById = async (questionId: number, userId?: number) => {
     try {
-        const data = await DB().query<Question>(
+        const data = await DB().query<QuestionResponse>(
             `
                 SELECT
                     q.*,
                     EXISTS(SELECT 1 FROM starred_question WHERE question_id = $1 AND user_id = $2) AS is_starred,
-                    json_agg(DISTINCT jsonb_build_object('option_id', o.id, 'option', o.option, 'translated_option', o.translated_option)) AS options,
-                    json_agg(DISTINCT dd.description) AS detailed_descriptions,
-                    json_agg(DISTINCT tv.translated_options_text) AS translated_vocabs
+                    COALESCE(
+                        json_agg(DISTINCT jsonb_build_object('option_id', o.id, 'option', o.option, 'translated_option', o.translated_option))
+                            FILTER (WHERE o.id IS NOT NULL),
+                        '[]'
+                    ) AS options,
+                    COALESCE(
+                        json_agg(DISTINCT dd.description) FILTER (WHERE dd.description IS NOT NULL),
+                        '[]'
+                    ) AS detailed_descriptions,
+                    COALESCE(
+                        json_agg(DISTINCT tv.translated_options_text) FILTER (WHERE tv.translated_options_text IS NOT NULL),
+                        '[]'
+                    ) AS translated_vocabs
                 FROM question AS q
                 LEFT JOIN option AS o ON q.id = o.question_id
                 LEFT JOIN detailed_description AS dd ON q.id = dd.question_id
@@ -78,8 +87,8 @@ const getQuestionDataById = async (questionId: number, userId?: number) => {
 };
 
 export const getQuestionOverviews = async (
-    req: ValidatedRequest<{ query: typeof OverviewQuestionSchema }>,
-    res: Response<ApiSuccessResponse<QuestionOverview[]>>,
+    req: ValidatedRequest<{ query: typeof OverviewQuestionRequestSchema }>,
+    res: Response<ApiSuccessResponse<QuestionOverviewListResponse>>,
     next: NextFunction,
 ) => {
     try {
@@ -134,17 +143,25 @@ export const getQuestionOverviews = async (
             LIMIT $2 OFFSET $3;
     `;
 
-        const data = await DB().query<QuestionOverview>(query, [user?.id, limit, offset]);
+        const data = await DB().query<QuestionOverviewListResponse>(query, [user?.id, limit, offset]);
 
-        return sendSuccess(res, 200, "Question overviews retrieved successfully", data);
+        const validationResult = QuestionOverviewListResponseSchema.safeParse(data);
+        if (!validationResult.success) {
+            throw new ApiError(500, "Response validation failed for question overviews", {
+                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
+                zodError: validationResult.error.issues,
+            });
+        }
+
+        return sendSuccess(res, 200, "Question overviews retrieved successfully", validationResult.data);
     } catch (e) {
         next(e);
     }
 };
 
 export const getRandomQuestions = async (
-    req: ValidatedRequest<{ query: typeof RandomQuestionSchema }>,
-    res: Response<ApiSuccessResponse<Question[]>>,
+    req: ValidatedRequest<{ query: typeof RandomQuestionRequestSchema }>,
+    res: Response<ApiSuccessResponse<QuestionListResponse>>,
     next: NextFunction,
 ) => {
     try {
@@ -213,13 +230,22 @@ export const getRandomQuestions = async (
                     WHERE sq.question_id = q.id
                     AND sq.user_id = $1
                 ) AS is_starred,
-                json_agg(DISTINCT jsonb_build_object(
-                    'option_id', o.id,
-                    'option', o.option,
-                    'translated_option', o.translated_option
-                )) AS options,
-                json_agg(DISTINCT dd.description) AS detailed_descriptions,
-                json_agg(DISTINCT tv.translated_options_text) AS translated_vocabs
+                COALESCE(
+                    json_agg(DISTINCT jsonb_build_object(
+                        'option_id', o.id,
+                        'option', o.option,
+                        'translated_option', o.translated_option
+                    )) FILTER (WHERE o.id IS NOT NULL),
+                    '[]'
+                ) AS options,
+                COALESCE(
+                    json_agg(DISTINCT dd.description) FILTER (WHERE dd.description IS NOT NULL),
+                    '[]'
+                ) AS detailed_descriptions,
+                COALESCE(
+                    json_agg(DISTINCT tv.translated_options_text) FILTER (WHERE tv.translated_options_text IS NOT NULL),
+                    '[]'
+                ) AS translated_vocabs
             FROM question AS q
             LEFT JOIN option AS o ON q.id = o.question_id
             LEFT JOIN detailed_description AS dd ON q.id = dd.question_id
@@ -229,21 +255,27 @@ export const getRandomQuestions = async (
         `;
 
         const queryParameters = [user?.id, count];
-        const data = await DB().query<Question>(query, queryParameters);
+        const data = await DB().query<QuestionListResponse>(query, queryParameters);
 
-        if (data.length === 0) {
-            throw new ApiError(404, "No questions found for the specified type", {
-                errorCode: ErrorCode.RESOURCE_NOT_FOUND,
+        const validationResult = QuestionListResponseSchema.safeParse(data);
+        if (!validationResult.success) {
+            throw new ApiError(500, "Response validation failed for random questions", {
+                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
+                zodError: validationResult.error.issues,
             });
         }
 
-        return sendSuccess(res, 200, "Random questions retrieved successfully", data);
+        return sendSuccess(res, 200, "Random questions retrieved successfully", validationResult.data);
     } catch (e) {
         next(e);
     }
 };
 
-export const getQuestionCount = async (req: Request, res: Response<ApiSuccessResponse<any>>, next: NextFunction) => {
+export const getQuestionCount = async (
+    req: Request,
+    res: Response<ApiSuccessResponse<QuestionCountResponse>>,
+    next: NextFunction,
+) => {
     try {
         const { user } = req;
 
@@ -254,9 +286,9 @@ export const getQuestionCount = async (req: Request, res: Response<ApiSuccessRes
             "SELECT COUNT(DISTINCT question_id) AS answered_question_count FROM answer_history WHERE user_id = $1",
             [user?.id],
         );
-        const lastWrongAttemptCount = await DB().query<{ wrong_last_attempt_count: string }>(
+        const lastWrongAttemptCount = await DB().query<{ last_attempt_count: string }>(
             `
-            SELECT COUNT(*) AS wrong_last_attempt_count
+            SELECT COUNT(*) AS last_attempt_count
             FROM (
                 SELECT 
                     question_id,
@@ -282,10 +314,18 @@ export const getQuestionCount = async (req: Request, res: Response<ApiSuccessRes
             all: Number(allQuestionCount[0]?.question_count),
             answered: Number(answeredQuestionCount[0]?.answered_question_count),
             starred: Number(starredQuestionCount[0]?.starred_question_count),
-            last_answered_wrong: Number(lastWrongAttemptCount[0]?.wrong_last_attempt_count),
+            last_answered_wrong: Number(lastWrongAttemptCount[0]?.last_attempt_count),
         };
 
-        return sendSuccess(res, 200, "Question count retrieved successfully", data);
+        const validationResult = QuestionCountResponseSchema.safeParse(data);
+        if (!validationResult.success) {
+            throw new ApiError(500, "Response validation failed for question count", {
+                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
+                zodError: validationResult.error.issues,
+            });
+        }
+
+        return sendSuccess(res, 200, "Question count retrieved successfully", validationResult.data);
     } catch (e) {
         next(e);
     }
@@ -293,8 +333,8 @@ export const getQuestionCount = async (req: Request, res: Response<ApiSuccessRes
 
 export const saveAnswerHistory = async (
     req: ValidatedRequest<{
-        body: typeof HistorySaveSchema;
-        params: typeof QuestionIdSchema;
+        body: typeof HistorySaveRequestSchema;
+        params: typeof QuestionIdRequestSchema;
     }>,
     res: Response<ApiSuccessResponse<null>>,
     next: NextFunction,
@@ -328,8 +368,8 @@ export const saveAnswerHistory = async (
 };
 
 export const getQuestionById = async (
-    req: ValidatedRequest<{ params: typeof QuestionIdSchema }>,
-    res: Response<ApiSuccessResponse<Question>>,
+    req: ValidatedRequest<{ params: typeof QuestionIdRequestSchema }>,
+    res: Response<ApiSuccessResponse<QuestionResponse>>,
     next: NextFunction,
 ) => {
     try {
@@ -344,15 +384,23 @@ export const getQuestionById = async (
             });
         }
 
-        return sendSuccess(res, 200, "Question retrieved successfully", data[0]!);
+        const validationResult = QuestionResponseSchema.safeParse(data[0]);
+        if (!validationResult.success) {
+            throw new ApiError(500, "Response validation failed for question by ID", {
+                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
+                zodError: validationResult.error.issues,
+            });
+        }
+
+        return sendSuccess(res, 200, "Question retrieved successfully", validationResult.data);
     } catch (e) {
         next(e);
     }
 };
 
 export const getNextQuestionById = async (
-    req: ValidatedRequest<{ params: typeof QuestionIdSchema; query: typeof NextQuestionSchema }>,
-    res: Response<ApiSuccessResponse<Question>>,
+    req: ValidatedRequest<{ params: typeof QuestionIdRequestSchema; query: typeof NextQuestionRequestSchema }>,
+    res: Response<ApiSuccessResponse<QuestionResponse>>,
     next: NextFunction,
 ) => {
     try {
@@ -399,14 +447,22 @@ export const getNextQuestionById = async (
             });
         }
 
-        return sendSuccess(res, 200, "Next question retrieved successfully", data[0]!);
+        const validationResult = QuestionResponseSchema.safeParse(data[0]);
+        if (!validationResult.success) {
+            throw new ApiError(500, "Response validation failed for next question", {
+                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
+                zodError: validationResult.error.issues,
+            });
+        }
+
+        return sendSuccess(res, 200, "Next question retrieved successfully", validationResult.data);
     } catch (e) {
         next(e);
     }
 };
 
 export const starQuestion = async (
-    req: ValidatedRequest<{ params: typeof QuestionIdSchema }>,
+    req: ValidatedRequest<{ params: typeof QuestionIdRequestSchema }>,
     res: Response<ApiSuccessResponse<null>>,
     next: NextFunction,
 ) => {
@@ -437,7 +493,7 @@ export const starQuestion = async (
 };
 
 export const unstarQuestion = async (
-    req: ValidatedRequest<{ params: typeof QuestionIdSchema }>,
+    req: ValidatedRequest<{ params: typeof QuestionIdRequestSchema }>,
     res: Response<ApiSuccessResponse<null>>,
     next: NextFunction,
 ) => {

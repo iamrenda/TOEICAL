@@ -10,26 +10,34 @@ import {
     unstarQuestion,
 } from "../../controllers/api/question.controller.ts";
 import {
-    HistorySaveSchema,
-    QuestionIdSchema,
-    RandomQuestionSchema,
-    OverviewQuestionSchema,
-    NextQuestionSchema,
-} from "../../schemas/question.schema.ts";
+    HistorySaveRequestSchema,
+    QuestionIdRequestSchema,
+    RandomQuestionRequestSchema,
+    OverviewQuestionRequestSchema,
+    NextQuestionRequestSchema,
+} from "@toeical/shared";
 import validate from "express-zod-safe";
 
 // api/question routes
 const router = express.Router();
 
-router.get("/overview", validate({ query: OverviewQuestionSchema }), getQuestionOverviews);
-router.get("/random", validate({ query: RandomQuestionSchema }), getRandomQuestions);
+router.get("/overview", validate({ query: OverviewQuestionRequestSchema }), getQuestionOverviews);
+router.get("/random", validate({ query: RandomQuestionRequestSchema }), getRandomQuestions);
 router.get("/count", getQuestionCount);
-router.get("/:questionId", validate({ params: QuestionIdSchema }), getQuestionById);
-router.get("/:questionId/next", validate({ params: QuestionIdSchema, query: NextQuestionSchema }), getNextQuestionById);
+router.get("/:questionId", validate({ params: QuestionIdRequestSchema }), getQuestionById);
+router.get(
+    "/:questionId/next",
+    validate({ params: QuestionIdRequestSchema, query: NextQuestionRequestSchema }),
+    getNextQuestionById,
+);
 
-router.post("/history/:questionId", validate({ params: QuestionIdSchema, body: HistorySaveSchema }), saveAnswerHistory);
+router.post(
+    "/history/:questionId",
+    validate({ params: QuestionIdRequestSchema, body: HistorySaveRequestSchema }),
+    saveAnswerHistory,
+);
 
-router.post("/starred/:questionId", validate({ params: QuestionIdSchema }), starQuestion);
-router.delete("/starred/:questionId", validate({ params: QuestionIdSchema }), unstarQuestion);
+router.post("/starred/:questionId", validate({ params: QuestionIdRequestSchema }), starQuestion);
+router.delete("/starred/:questionId", validate({ params: QuestionIdRequestSchema }), unstarQuestion);
 
 export default router;

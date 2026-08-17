@@ -1,3 +1,4 @@
+// Axios response type definition (currently only used for internal API calls)
 export type AxiosResponse<T, E = Error> =
     | {
           status: "success";

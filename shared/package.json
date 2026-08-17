@@ -1,0 +1,10 @@
+{
+    "name": "@toeical/shared",
+    "version": "1.0.0",
+    "main": "index.ts",
+    "type": "module",
+    "types": "index.ts",
+    "dependencies": {
+        "zod": "^4.3.6"
+    }
+}

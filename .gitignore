@@ -2,3 +2,4 @@ scrape
 sql
 .vscode
 .claude
+node_modules

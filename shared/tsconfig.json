@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "rootDir": "./",
+        "outDir": "./dist",
+        "rewriteRelativeImportExtensions": true,
+
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "target": "esnext",
+
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+
+        "strict": true,
+        "verbatimModuleSyntax": true,
+        "isolatedModules": true,
+        "moduleDetection": "force",
+        "skipLibCheck": true
+    },
+    "include": ["**/*.ts"]
+}
