@@ -7,7 +7,7 @@ CREATE TABLE users_writing (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (writing_topic_id) REFERENCES writing_topic(id) ON DELETE CASCADE,
+    FOREIGN KEY (writing_topic_id) REFERENCES writing_topics(id) ON DELETE CASCADE,
     FOREIGN KEY (writing_results_id) REFERENCES writing_results(id) ON DELETE CASCADE
 );
 

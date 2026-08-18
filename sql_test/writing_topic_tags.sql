@@ -3,7 +3,7 @@ CREATE TABLE writing_topic_tags (
     writing_tag_id INTEGER,
     
     PRIMARY KEY (writing_topic_id, writing_tag_id),
-    FOREIGN KEY (writing_topic_id) REFERENCES writing_topic(id),
+    FOREIGN KEY (writing_topic_id) REFERENCES writing_topics(id),
     FOREIGN KEY (writing_tag_id) REFERENCES writing_tags(id)
 );
 
