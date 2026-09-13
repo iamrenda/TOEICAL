@@ -4,15 +4,9 @@ import dotenv from "dotenv";
 import app from "../index.ts";
 import DB from "../db/db.ts";
 import { randomBytes } from "crypto";
+import { TEST_USER } from "./constants.ts";
 
 dotenv.config();
-
-export const TEST_USER = {
-    id: 99,
-    username: "testing",
-    email: "test@example.com",
-    password: "password",
-};
 
 export const getRandomEmail = () => `${Date.now()}@test.com`;
 export const getRandomUsername = (length = 10) => randomBytes(length).toString("hex").slice(0, length);

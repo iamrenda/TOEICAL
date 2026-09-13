@@ -25,9 +25,9 @@ export const WritingTopicResponseSchema = z.object({
     topic: z.string(),
     description: z.string(),
     difficulty: z.enum(["EASY", "MEDIUM", "HARD"]),
-    time_limit_minutes: z.number().int().min(1),
+    limit_time_minutes: z.number().int().min(1),
     recommended_word_count: z.number().int().min(1),
-    tag: z.enum(["daily-life", "reflection", "opinion", "creativity", "social"]),
+    tags: z.array(z.enum(["daily-life", "reflection", "opinion", "creativity", "social"])),
 });
 
 export const WritingTopicListResponseSchema = z.array(WritingTopicResponseSchema);

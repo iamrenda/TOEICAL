@@ -153,7 +153,7 @@ const getTopics = async (
             });
         }
 
-        return sendSuccess(res, 200, "Topics retrieved successfully", data);
+        return sendSuccess(res, 200, "Topics retrieved successfully", validationResult.data);
     } catch (e) {
         next(e);
     }
@@ -189,7 +189,7 @@ const getHistory = async (
             });
         }
 
-        return sendSuccess(res, 200, "Writing history retrieved successfully", data);
+        return sendSuccess(res, 200, "Writing history retrieved successfully", validationResult.data);
     } catch (e) {
         next(e);
     }

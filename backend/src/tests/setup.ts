@@ -2,7 +2,17 @@ import DB from "../db/db.ts";
 import seed from "./seed.ts";
 
 const truncateAll = async () => {
-    await DB().query(`TRUNCATE TABLE users RESTART IDENTITY CASCADE;`);
+    const tables = [
+        "users",
+        "writing_topics",
+        "writing_results",
+        "users_writing",
+        "writing_tags",
+        "writing_topic_tags",
+    ];
+    for (const table of tables) {
+        await DB().query(`TRUNCATE TABLE ${table} RESTART IDENTITY CASCADE;`);
+    }
 };
 
 beforeAll(async () => {
