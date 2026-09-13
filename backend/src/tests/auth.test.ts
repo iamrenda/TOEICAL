@@ -9,8 +9,8 @@ import {
     getValidRefreshToken,
     getRevokedRefreshToken,
     getExpiredRefreshToken,
-    TEST_USER,
 } from "./util.ts";
+import { TEST_USER } from "./constants.ts";
 
 dotenv.config();
 
