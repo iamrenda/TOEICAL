@@ -1,7 +1,7 @@
-import { ErrorCode } from "./ErrorCode";
+import { type ErrorCodeType, ErrorCode } from "@toeical/shared";
 import { ErrorType } from "./ErrorType";
 
-export const ErrorCodeMapping: Record<ErrorCode, ErrorType> = {
+export const ErrorCodeMapping: Record<ErrorCodeType, ErrorType> = {
     [ErrorCode.INVALID_CREDENTIALS]: ErrorType.INVALID_CREDENTIALS,
 
     [ErrorCode.TOKEN_EXPIRED]: ErrorType.SESSION_EXPIRED,

@@ -8,9 +8,8 @@ import type { NextFunction, Response } from "express";
 import type { ValidatedRequest } from "express-zod-safe";
 import type { UserLoginSchema, UserSignupSchema, UserTokenSchema } from "../../schemas/users.schema.ts";
 import type { UserTokenPayload, UserEntity } from "../../types/User.ts";
-import type { ApiSuccessResponse } from "../../types/ApiResponse.ts";
-import { sendSuccess } from "../../util/apiResponse.ts";
-import { ErrorCode } from "../../types/ErrorCode.ts";
+import { sendSuccess } from "../../util/sendResponse.ts";
+import { ErrorCode, type ApiSuccessResponse } from "@toeical/shared";
 
 dotenv.config();
 

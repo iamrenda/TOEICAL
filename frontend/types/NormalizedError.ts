@@ -1,10 +1,10 @@
-import { ErrorCode } from "./ErrorCode";
+import { ErrorCodeType } from "@toeical/shared";
 import { ErrorType } from "./ErrorType";
 
 export interface NormalizedError {
     success: false;
     code: number;
-    errorCode?: ErrorCode; // from api response
+    errorCode?: ErrorCodeType; // from api response
     errorType: ErrorType; // for ui debugging
     message: string;
     serverMessage?: string;

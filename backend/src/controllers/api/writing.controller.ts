@@ -3,21 +3,24 @@ import DB from "../../db/db.ts";
 import ApiError from "../../util/ApiError.ts";
 import type { Response, NextFunction } from "express";
 import type { ValidatedRequest } from "express-zod-safe";
-import type { WritingTopicRequestSchema, WritingRequestSchema, WritingHistoryRequestSchema } from "@toeical/shared";
-import type { ApiSuccessResponse, fastApiSuccessResponse } from "../../types/ApiResponse.ts";
-import { ErrorCode } from "../../types/ErrorCode.ts";
-import { sendSuccess } from "../../util/apiResponse.ts";
+import type { fastApiSuccessResponse } from "../../types/FastApiResponse.ts";
+import { sendSuccess } from "../../util/sendResponse.ts";
 import {
     WritingAiAnalysisResponseSchema,
     WritingResponseSchema,
     WritingTopicListResponseSchema,
     WritingHistoryListResponseSchema,
+    ErrorCode,
     type WritingAiAnalysisResponse,
     type WritingResponse,
     type WritingTopicResponse,
     type WritingTopicListResponse,
     type WritingHistoryResponse,
     type WritingHistoryListResponse,
+    type WritingTopicRequestSchema,
+    type WritingRequestSchema,
+    type WritingHistoryRequestSchema,
+    type ApiSuccessResponse,
 } from "@toeical/shared";
 
 const getWritingAnalysis = async (

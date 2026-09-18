@@ -18,8 +18,6 @@ export const ErrorCode = {
     // SERVER
     INTERNAL_SERVER_ERROR: "INTERNAL_SERVER_ERROR",
     DATABASE_ERROR: "DATABASE_ERROR",
-    AI_UNAVAILABLE: "AI_UNAVAILABLE",
+    AI_FAILURE: "AI_UNAVAILABLE",
     TOKEN_GENERATION_FAILED: "TOKEN_GENERATION_FAILED",
 } as const;
-
-export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];

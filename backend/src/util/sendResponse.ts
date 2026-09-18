@@ -1,6 +1,5 @@
 import type { Response } from "express";
-import type { ApiSuccessResponse, ApiErrorResponse } from "../types/ApiResponse.ts";
-import type { ErrorCode } from "../types/ErrorCode.ts";
+import type { ApiSuccessResponse, ApiErrorResponse, ErrorCodeType } from "@toeical/shared";
 
 const sendSuccess = <T>(
     res: Response<ApiSuccessResponse<T>>,
@@ -20,7 +19,7 @@ const sendError = (
     res: Response<ApiErrorResponse>,
     code: number,
     message: string,
-    errorCode?: ErrorCode,
+    errorCode?: ErrorCodeType,
 ): Response<ApiErrorResponse> => {
     return res.status(code).json({
         status: "error",

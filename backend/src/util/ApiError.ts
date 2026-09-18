@@ -1,14 +1,14 @@
-import type { ErrorCode } from "../types/ErrorCode.ts";
+import type { ErrorCodeType } from "@toeical/shared";
 
 interface ApiErrorOptions extends ErrorOptions {
-    errorCode?: ErrorCode;
+    errorCode?: ErrorCodeType;
     zodError?: unknown; // API response type validation error, if any
 }
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error/Error
 export class ApiError extends Error {
     readonly statusCode: number;
-    readonly errorCode?: ErrorCode | undefined;
+    readonly errorCode?: ErrorCodeType | undefined;
     readonly zodError?: unknown | undefined;
 
     constructor(statusCode: number, message: string, options?: ApiErrorOptions) {

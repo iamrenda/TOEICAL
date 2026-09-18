@@ -10,17 +10,17 @@ import {
     QuestionResponseSchema,
     QuestionListResponseSchema,
     QuestionCountResponseSchema,
+    ErrorCode,
     type QuestionOverviewListResponse,
     type QuestionResponse,
     type QuestionListResponse,
     type QuestionCountResponse,
+    type ApiSuccessResponse,
 } from "@toeical/shared";
 import type { ValidatedRequest } from "express-zod-safe";
 import type { z } from "zod";
 import ApiError from "../../util/ApiError.ts";
-import type { ApiSuccessResponse } from "../../types/ApiResponse.ts";
-import { sendSuccess } from "../../util/apiResponse.ts";
-import { ErrorCode } from "../../types/ErrorCode.ts";
+import { sendSuccess } from "../../util/sendResponse.ts";
 
 type SortBy = z.infer<typeof OverviewQuestionRequestSchema>["sortBy"];
 
