@@ -5,13 +5,13 @@ import FontAwesome6 from "@expo/vector-icons/build/FontAwesome6";
 import getRelativeTime from "@/util/getRelativeTime";
 import useQuestionOverviewStore from "@/store/useQuestionOverviewStore";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Overview } from "@/types/Question";
 import { router } from "expo-router";
 import { QuestionIdLabel } from "../question/questionIdLabel";
 import useQuizStore from "@/store/useQuizStore";
+import { QuestionOverviewResponse } from "@toeical/shared";
 
 interface Props {
-    overview: Overview;
+    overview: QuestionOverviewResponse;
 }
 
 const QuestionOverviewItem = ({ overview }: Props) => {

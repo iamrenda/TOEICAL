@@ -1,5 +1,7 @@
 {
     "compilerOptions": {
+        "composite": true,
+        "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
         "rootDir": "./",
         "outDir": "./dist",
         "rewriteRelativeImportExtensions": true,
@@ -18,5 +20,6 @@
         "moduleDetection": "force",
         "skipLibCheck": true
     },
-    "include": ["**/*.ts"]
+    "include": ["**/*.ts"],
+    "exclude": ["dist"]
 }

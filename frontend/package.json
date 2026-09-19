@@ -5,6 +5,7 @@
     "scripts": {
         "dev": "expo start",
         "clear": "expo start --clear",
+        "typecheck": "npx tsc --noEmit",
         "routes": "npx expo-router-sitemap",
         "reset-project": "node ./scripts/reset-project.js",
         "android": "expo start --android",

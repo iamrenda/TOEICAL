@@ -2,9 +2,8 @@ import api from "@/api/api";
 import handleError from "@/util/handleError";
 import useQuestionOverviewStore from "./useQuestionOverviewStore";
 import { create } from "zustand";
-import { ApiSuccessResponse } from "@/types/ApiResponse";
+import { ApiSuccessResponse, QuestionListResponse, QuestionResponse } from "@toeical/shared";
 import { StoreResult } from "@/types/StoreResult";
-import { QuestionListResponse, QuestionResponse } from "@toeical/shared";
 
 interface QuizState {
     // Single Question Mode

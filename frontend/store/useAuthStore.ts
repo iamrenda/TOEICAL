@@ -8,7 +8,7 @@ import { ErrorType } from "@/types/ErrorType";
 import { setItemAsync, deleteItemAsync, getItemAsync } from "expo-secure-store";
 import { UserStorageData, UserTokenData } from "@/types/User";
 import { StoreResult } from "@/types/StoreResult";
-import { ApiSuccessResponse } from "@/types/ApiResponse";
+import { ApiSuccessResponse } from "@toeical/shared";
 
 interface UserLoginResponse {
     username: string;

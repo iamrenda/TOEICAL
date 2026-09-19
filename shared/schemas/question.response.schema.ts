@@ -1,14 +1,12 @@
 import { z } from "zod";
 
-export const QuestionOverviewListResponseSchema = z.array(
-    z.object({
-        id: z.number().int(),
-        question: z.string(),
-        is_starred: z.boolean(),
-        was_last_attempt_correct: z.boolean().nullable(),
-        last_answered_at: z.date().nullable(),
-    }),
-);
+export const QuestionOverviewResponseSchema = z.object({
+    id: z.number().int(),
+    question: z.string(),
+    is_starred: z.boolean(),
+    was_last_attempt_correct: z.boolean().nullable(),
+    last_answered_at: z.date().nullable(),
+});
 
 export const QuestionResponseSchema = z.object({
     id: z.number().int(),
@@ -28,8 +26,6 @@ export const QuestionResponseSchema = z.object({
     translated_vocabs: z.array(z.string()),
 });
 
-export const QuestionListResponseSchema = z.array(QuestionResponseSchema);
-
 export const QuestionCountResponseSchema = z.object({
     all: z.number().int(),
     answered: z.number().int(),
@@ -37,7 +33,11 @@ export const QuestionCountResponseSchema = z.object({
     last_answered_wrong: z.number().int(),
 });
 
+export const QuestionOverviewListResponseSchema = z.array(QuestionOverviewResponseSchema);
+export const QuestionListResponseSchema = z.array(QuestionResponseSchema);
+
 export type QuestionOverviewListResponse = z.infer<typeof QuestionOverviewListResponseSchema>;
+export type QuestionOverviewResponse = z.infer<typeof QuestionOverviewResponseSchema>;
 export type QuestionResponse = z.infer<typeof QuestionResponseSchema>;
 export type QuestionListResponse = z.infer<typeof QuestionListResponseSchema>;
 export type QuestionCountResponse = z.infer<typeof QuestionCountResponseSchema>;

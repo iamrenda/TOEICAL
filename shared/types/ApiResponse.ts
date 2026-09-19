@@ -1,4 +1,4 @@
-import type { ErrorCodeType } from "@toeical/shared";
+import type { ErrorCodeType } from "./ErrorCodeType.ts";
 
 export type ApiSuccessResponse<T> = {
     status: "success";

@@ -1,5 +1,5 @@
 import api from "@/api/api";
-import { ApiSuccessResponse } from "@/types/ApiResponse";
+import { ApiSuccessResponse } from "@toeical/shared";
 import { ErrorType } from "@/types/ErrorType";
 import { UserWritingHistory } from "@/types/Writing";
 import { StoreResult } from "@/types/StoreResult";

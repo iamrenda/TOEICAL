@@ -3,3 +3,5 @@ sql
 .vscode
 .claude
 node_modules
+**/dist
+**/*.tsbuildinfo

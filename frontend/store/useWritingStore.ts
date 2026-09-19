@@ -1,6 +1,6 @@
 import api from "@/api/api";
 import handleError from "@/util/handleError";
-import { ApiSuccessResponse } from "@/types/ApiResponse";
+import { ApiSuccessResponse } from "@toeical/shared";
 import {
     WritingDifficulty,
     WritingEssayAnalysisInput,

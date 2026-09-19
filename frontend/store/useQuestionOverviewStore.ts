@@ -2,7 +2,7 @@ import api from "@/api/api";
 import handleError from "@/util/handleError";
 import { create } from "zustand";
 import { StoreResult } from "@/types/StoreResult";
-import { ApiSuccessResponse } from "@/types/ApiResponse";
+import { ApiSuccessResponse } from "@toeical/shared";
 import { type QuestionOverviewListResponse } from "@toeical/shared";
 
 export type OverviewFilters = "all" | "starred";

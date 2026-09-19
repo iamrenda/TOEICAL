@@ -4,7 +4,7 @@ import { isAxiosError } from "axios";
 import { ErrorCodeMapping } from "@/types/ErrorCodeMapping";
 import { HttpStatusMapping } from "@/types/HttpStatusMapping";
 import { ErrorType } from "@/types/ErrorType";
-import { ApiErrorResponse } from "@/types/ApiResponse";
+import { ApiErrorResponse } from "@toeical/shared";
 
 const normalizeError = (error: unknown): NormalizedError => {
     // Axios errors
