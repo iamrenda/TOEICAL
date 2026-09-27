@@ -11,6 +11,7 @@ https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
 
 ## 補足
 
+- **特定のデータはスクレイピングによって取得しました。よってデータベースはローカル環境のみに構築しており、外部に公開する予定はありません。**
 - UIデザイン・レビューのみ Claude Code を使用しています。
 
 ## 進捗
@@ -74,7 +75,7 @@ fastapi dev main.py
 ## 設計 （リンク）
 
 アーキテクチャ設計：
-https://excalidraw.com/#json=mCtq7xazp-BYQ3ysaGOAI,gcZ4M6etazrvDM3q0izzQA
+https://excalidraw.com/#json=l6-Mq1zUY9A7S7m-Jv9Io,dIfsYm-TxRZ-TOO5egtecg
 
 データベース設計：
 https://dbdiagram.io/d/TOEICAL-699127c6bd82f5fce2bc1d01
