@@ -45,5 +45,6 @@
         "moduleDetection": "force",
         "skipLibCheck": true
     },
+    "references": [{ "path": "../shared" }],
     "include": ["src/**/*", "types/express.d.ts"]
 }

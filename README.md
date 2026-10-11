@@ -21,7 +21,7 @@ https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
 - [x] フロントエンドとバックエンドの統合
 - [x] リーディングモードの実装
 - [x] ライティングモードの実装
-- [ ] テストの実装
+- [x] テストの実装
 - [ ] Rate limit の実装
 
 ## 技術スタック
@@ -47,6 +47,7 @@ https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
 - Pino
 - Jest
 - Supertest
+- Express Rate Limit
 
 ## セットアップ方法
 
