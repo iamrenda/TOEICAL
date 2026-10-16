@@ -2,7 +2,7 @@
 
 TOEICから始める英語学習アプリ
 
-https://github.com/user-attachments/assets/3c192f98-d20b-4c28-b39c-1ce6341715bc
+https://github.com/user-attachments/assets/558e2190-7c66-4006-a122-a3de88bf74d2
 
 ## 機能
 
