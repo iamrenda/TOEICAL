@@ -1,0 +1,27 @@
+{
+    "permissions": {
+        "allow": [
+            "Bash(npx tsc *)",
+            "Bash(npm run lint*)",
+            "Bash(npm test*)",
+            "Bash(npx jest *)",
+            "Bash(git status*)",
+            "Bash(git diff*)",
+            "Bash(git log*)",
+            "Bash(ls *)",
+            "WebFetch(domain:docs.expo.dev)",
+            "WebFetch(domain:reactnative.dev)",
+            "WebFetch(domain:fastapi.tiangolo.com)"
+        ],
+        "ask": ["Bash(git push*)", "Bash(npm install*)", "Bash(pip install*)", "Bash(psql*)"],
+        "deny": [
+            "Read(./.env)",
+            "Read(./.env.*)",
+            "Read(./**/.env)",
+            "Read(./**/.env.*)",
+            "Read(./ai/venv/**)",
+            "Read(./**/node_modules/**)",
+            "Bash(rm -rf*)"
+        ]
+    }
+}
