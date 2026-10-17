@@ -1,6 +1,6 @@
 import Variables from "@/constants/Variables";
 import useAuthStore from "@/store/useAuthStore";
-import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
+import { NativeTabs } from "expo-router/unstable-native-tabs";
 import { Redirect } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 
@@ -22,24 +22,20 @@ function TabLayout() {
     return (
         <NativeTabs tintColor={Variables.primary600} backBehavior="history">
             <NativeTabs.Trigger name="index">
-                <Label>Home</Label>
-                <Icon sf="house.fill" />
+                <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf="house.fill" />
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="(reading)">
-                <Label>Reading</Label>
-                <Icon sf="list.clipboard.fill" />
+                <NativeTabs.Trigger.Label>Reading</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf="list.clipboard.fill" />
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="(writing)">
-                <Label>Writing</Label>
-                <Icon sf="pencil.line" />
-            </NativeTabs.Trigger>
-            <NativeTabs.Trigger name="speaking">
-                <Label>Speaking</Label>
-                <Icon sf="mic.fill" />
+                <NativeTabs.Trigger.Label>Writing</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf="pencil.line" />
             </NativeTabs.Trigger>
             <NativeTabs.Trigger name="profile">
-                <Label>Profile</Label>
-                <Icon sf="person.circle.fill" />
+                <NativeTabs.Trigger.Label>Profile</NativeTabs.Trigger.Label>
+                <NativeTabs.Trigger.Icon sf="person.circle.fill" />
             </NativeTabs.Trigger>
         </NativeTabs>
     );

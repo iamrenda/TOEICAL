@@ -15,7 +15,7 @@ import {
     Alert,
 } from "react-native";
 import useWritingStore from "@/store/useWritingStore";
-import { useHeaderHeight } from "@react-navigation/elements";
+import { useHeaderHeight } from "expo-router/react-navigation";
 
 const EssayWritingScreen = () => {
     const [text, setText] = React.useState("");

@@ -24,12 +24,6 @@ const gamemodes: GameModeDetails[] = [
         title: "ライティング",
         subTitle: "一日一回英文を書いてみよう！",
     },
-    {
-        href: "/(tabs)/speaking",
-        icon: "microphone",
-        title: "スピーキング",
-        subTitle: "即興で英語を話してみよう！",
-    },
 ];
 
 const GamemodeItem = ({ gamemode }: { gamemode: GameModeDetails }) => {

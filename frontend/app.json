@@ -4,10 +4,8 @@
         "slug": "TOEICAL",
         "version": "1.0.0",
         "orientation": "portrait",
-        "icon": "./assets/images/icon.png",
         "scheme": "toeical",
         "userInterfaceStyle": "light",
-        "newArchEnabled": true,
         "ios": {
             "supportsTablet": true
         },
@@ -16,9 +14,6 @@
             [
                 "expo-splash-screen",
                 {
-                    "image": "./assets/images/splash-icon.png",
-                    "imageWidth": 200,
-                    "resizeMode": "contain",
                     "backgroundColor": "#ffffff",
                     "dark": {
                         "backgroundColor": "#000000"
@@ -32,7 +27,9 @@
                 }
             ],
             "expo-font",
-            "expo-web-browser"
+            "expo-web-browser",
+            "expo-image",
+            "expo-status-bar"
         ],
         "experiments": {
             "typedRoutes": true,
