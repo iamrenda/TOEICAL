@@ -179,7 +179,7 @@ const getHistory = async (
             ON uw.writing_topic_id = wt.id
             INNER JOIN writing_results AS wr
             ON uw.writing_results_id = wr.id
-            WHERE uw.user_id = $1 AND $2 <= wr.created_at AND wr.created_at <= $3;
+            WHERE uw.user_id = $1 AND $2 <= uw.created_at AND uw.created_at <= $3;
         `,
             [user?.id, from, to],
         );
