@@ -13,7 +13,13 @@
             "WebFetch(domain:reactnative.dev)",
             "WebFetch(domain:fastapi.tiangolo.com)"
         ],
-        "ask": ["Bash(git push*)", "Bash(npm install*)", "Bash(pip install*)", "Bash(psql*)"],
+        "ask": [
+            "Bash(npm install*)",
+            "Bash(pip install*)",
+            "Bash(psql*)",
+            "Bash(git add*)",
+            "Bash(git commit*)"
+        ],
         "deny": [
             "Read(./.env)",
             "Read(./.env.*)",
@@ -21,7 +27,11 @@
             "Read(./**/.env.*)",
             "Read(./ai/venv/**)",
             "Read(./**/node_modules/**)",
-            "Bash(rm -rf*)"
+            "Bash(rm -rf*)",
+            "Bash(git push*)"
         ]
+    },
+    "worktree": {
+        "bgIsolation": "none"
     }
 }
