@@ -1,6 +1,8 @@
 scrape
 sql
-.vscode
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .claude/settings.local.json
 node_modules
 **/dist

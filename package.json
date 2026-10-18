@@ -2,7 +2,9 @@
     "name": "toeical",
     "private": true,
     "scripts": {
-        "typecheck": "tsc --b"
+        "typecheck": "tsc --b",
+        "format": "prettier --write .",
+        "format:check": "prettier --check ."
     },
     "workspaces": [
         "frontend",
@@ -10,6 +12,7 @@
         "shared"
     ],
     "devDependencies": {
-        "@babel/core": "^7.28.4"
+        "@babel/core": "^7.28.4",
+        "prettier": "^3.9.10"
     }
 }
