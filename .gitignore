@@ -3,7 +3,9 @@ sql
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
-.claude/settings.local.json
+.claude/*
+!.claude/settings.json
+!.claude/agents
 node_modules
 **/dist
 **/*.tsbuildinfo
