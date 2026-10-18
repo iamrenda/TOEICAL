@@ -61,7 +61,11 @@ const Signup = () => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Variables.white }}>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-                <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="always" keyboardDismissMode="interactive">
+                <ScrollView
+                    style={{ flex: 1 }}
+                    keyboardShouldPersistTaps="always"
+                    keyboardDismissMode="interactive"
+                >
                     <View style={styles.container}>
                         <AuthHeader />
 
@@ -94,11 +98,18 @@ const Signup = () => {
                                 requirements="6文字以上、大文字、小文字、数字を含めてください"
                                 rules={{
                                     required: "この項目は必須です",
-                                    minLength: { value: 6, message: "パスワードは6文字以上である必要があります" },
-                                    maxLength: { value: 128, message: "パスワードは128文字以下である必要があります" },
+                                    minLength: {
+                                        value: 6,
+                                        message: "パスワードは6文字以上である必要があります",
+                                    },
+                                    maxLength: {
+                                        value: 128,
+                                        message: "パスワードは128文字以下である必要があります",
+                                    },
                                     pattern: {
                                         value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
-                                        message: "パスワードは大文字、小文字、数字を含める必要があります",
+                                        message:
+                                            "パスワードは大文字、小文字、数字を含める必要があります",
                                     },
                                 }}
                                 secureTextEntry
@@ -116,7 +127,11 @@ const Signup = () => {
                             />
                         </View>
 
-                        <AuthFooter text="既にアカウントをお持ちですか？" linkLabel="ログイン" linkDir="/login" />
+                        <AuthFooter
+                            text="既にアカウントをお持ちですか？"
+                            linkLabel="ログイン"
+                            linkDir="/login"
+                        />
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>

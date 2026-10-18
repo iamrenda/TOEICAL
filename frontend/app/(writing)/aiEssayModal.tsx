@@ -16,7 +16,9 @@ const AiEssay = () => {
     if (!essayAnalysisResult) {
         return (
             <View style={styles.container}>
-                <Text style={styles.title}>エッセイの読み込みに失敗しました。もう一度試してください。</Text>
+                <Text style={styles.title}>
+                    エッセイの読み込みに失敗しました。もう一度試してください。
+                </Text>
             </View>
         );
     }
@@ -38,7 +40,9 @@ const AiEssay = () => {
             >
                 {/* User Essay Card */}
                 <View style={[styles.card, { width: CARD_WIDTH, marginHorizontal: SPACING / 2 }]}>
-                    <Text style={[styles.heading, { color: Variables.primary600 }]}>あなたのエッセイ</Text>
+                    <Text style={[styles.heading, { color: Variables.primary600 }]}>
+                        あなたのエッセイ
+                    </Text>
                     <ScrollView showsVerticalScrollIndicator={false} style={styles.innerScroll}>
                         <Text style={styles.essayText}>{userEssay}</Text>
                     </ScrollView>

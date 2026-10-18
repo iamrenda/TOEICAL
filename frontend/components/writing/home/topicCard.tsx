@@ -16,7 +16,9 @@ const TopicCard = ({ item, onClickTopicItem }: Props) => {
         <Pressable style={styles.card} onPress={() => onClickTopicItem(item.id)}>
             <View style={styles.cardHeader}>
                 <View style={[styles.badge, { backgroundColor: diffColors.bg }]}>
-                    <Text style={[styles.badgeText, { color: diffColors.text }]}>{item.difficulty.toUpperCase()}</Text>
+                    <Text style={[styles.badgeText, { color: diffColors.text }]}>
+                        {item.difficulty.toUpperCase()}
+                    </Text>
                 </View>
             </View>
 

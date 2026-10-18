@@ -95,18 +95,26 @@ const EssayWritingScreen = () => {
                             onPress={() => {
                                 setIsClockRunning(false);
 
-                                Alert.alert("ライティングモードを終了しますか？", "書いてある内容は失われます。", [
-                                    { text: "閉じる", style: "cancel", onPress: () => setIsClockRunning(true) },
-                                    {
-                                        text: "終了する",
-                                        style: "destructive",
-                                        onPress: () => {
-                                            router.back();
-                                            setIsClockRunning(false);
-                                            reset();
+                                Alert.alert(
+                                    "ライティングモードを終了しますか？",
+                                    "書いてある内容は失われます。",
+                                    [
+                                        {
+                                            text: "閉じる",
+                                            style: "cancel",
+                                            onPress: () => setIsClockRunning(true),
                                         },
-                                    },
-                                ]);
+                                        {
+                                            text: "終了する",
+                                            style: "destructive",
+                                            onPress: () => {
+                                                router.back();
+                                                setIsClockRunning(false);
+                                                reset();
+                                            },
+                                        },
+                                    ],
+                                );
                             }}
                         />
                     ),
@@ -116,7 +124,11 @@ const EssayWritingScreen = () => {
                                 setIsClockRunning(false);
 
                                 Alert.alert("提出しますか？", "提出後は内容を変更できません。", [
-                                    { text: "キャンセル", style: "cancel", onPress: () => setIsClockRunning(true) },
+                                    {
+                                        text: "キャンセル",
+                                        style: "cancel",
+                                        onPress: () => setIsClockRunning(true),
+                                    },
                                     {
                                         text: "提出する",
                                         style: "default",
@@ -155,9 +167,14 @@ const EssayWritingScreen = () => {
                     </View>
                 </ScrollView>
                 <View style={styles.toolbar}>
-                    <Pressable style={styles.timerContainer} onPress={() => setIsClockHidden(!isClockHidden)}>
+                    <Pressable
+                        style={styles.timerContainer}
+                        onPress={() => setIsClockHidden(!isClockHidden)}
+                    >
                         <Text style={styles.timerText}>
-                            {!isClockHidden || timeLeftSeconds < 60 ? formatTime(timeLeftSeconds) : "--:--"}
+                            {!isClockHidden || timeLeftSeconds < 60
+                                ? formatTime(timeLeftSeconds)
+                                : "--:--"}
                         </Text>
                     </Pressable>
                     <Text style={styles.wordCountText}>

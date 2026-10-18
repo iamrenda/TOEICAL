@@ -52,7 +52,9 @@ const DB = () => {
             }
         },
         transaction: async <T>(
-            callback: (client: { query: <U>(sql: string, params?: any[]) => Promise<U[]> }) => Promise<T>,
+            callback: (client: {
+                query: <U>(sql: string, params?: any[]) => Promise<U[]>;
+            }) => Promise<T>,
         ) => {
             const client: PoolClient | ApiError = await getPool();
             if (client instanceof ApiError) {

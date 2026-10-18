@@ -17,11 +17,11 @@ export enum WritingDifficulty {
 
 export enum WritingTags {
     ALL = "ALL",
-    "daily_life" = "daily-life",
-    "reflection" = "reflection",
-    "opinion" = "opinion",
-    "creativity" = "creativity",
-    "social" = "social",
+    daily_life = "daily-life",
+    reflection = "reflection",
+    opinion = "opinion",
+    creativity = "creativity",
+    social = "social",
 }
 
 export interface WritingEssayAnalysisInput {

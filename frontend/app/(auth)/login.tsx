@@ -58,7 +58,11 @@ const Login = () => {
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Variables.white }}>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-                <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="always" keyboardDismissMode="interactive">
+                <ScrollView
+                    style={{ flex: 1 }}
+                    keyboardShouldPersistTaps="always"
+                    keyboardDismissMode="interactive"
+                >
                     <View style={styles.container}>
                         <AuthHeader />
 
@@ -90,7 +94,11 @@ const Login = () => {
                             />
                         </View>
 
-                        <AuthFooter text="アカウントをお持ちでないですか？ " linkLabel="新規登録" linkDir="/signup" />
+                        <AuthFooter
+                            text="アカウントをお持ちでないですか？ "
+                            linkLabel="新規登録"
+                            linkDir="/signup"
+                        />
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>

@@ -7,7 +7,13 @@ export const TEST_USER = {
 
 export const TEST_WRITING_DIFFICULTIES = ["EASY", "MEDIUM", "HARD"] as const;
 
-export const TEST_WRITING_TAGS = ["daily-life", "reflection", "opinion", "creativity", "social"] as const;
+export const TEST_WRITING_TAGS = [
+    "daily-life",
+    "reflection",
+    "opinion",
+    "creativity",
+    "social",
+] as const;
 
 type WritingTopic = {
     id: number;

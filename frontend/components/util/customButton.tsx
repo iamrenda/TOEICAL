@@ -60,7 +60,9 @@ const CustomButton = ({
         >
             {!isLoading && <Text style={[styles.text, { color: textColor }]}>{text}</Text>}
 
-            {iconName && !isLoading && <FontAwesome6 name={iconName} size={16} color={iconColor} style={styles.icon} />}
+            {iconName && !isLoading && (
+                <FontAwesome6 name={iconName} size={16} color={iconColor} style={styles.icon} />
+            )}
             {isLoading && <ActivityIndicator size="small" color={iconColor} style={styles.icon} />}
         </Pressable>
     );

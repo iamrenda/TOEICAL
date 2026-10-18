@@ -23,7 +23,9 @@ const normalizeError = (error: unknown): NormalizedError => {
         const status = responseData.code ?? error.response?.status ?? 500;
         const errorCode = responseData.errorCode ?? undefined;
         const errorType =
-            (errorCode ? ErrorCodeMapping[errorCode] : undefined) ?? HttpStatusMapping[status] ?? ErrorType.SERVER;
+            (errorCode ? ErrorCodeMapping[errorCode] : undefined) ??
+            HttpStatusMapping[status] ??
+            ErrorType.SERVER;
         const errorMessage = ErrorMessages[errorType];
 
         return {

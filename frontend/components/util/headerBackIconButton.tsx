@@ -9,7 +9,12 @@ interface Props {
     iconColor?: string;
 }
 
-const HeaderBackIconButton = ({ iconName, shouldGoBack = true, onPress, iconColor = "black" }: Props) => {
+const HeaderBackIconButton = ({
+    iconName,
+    shouldGoBack = true,
+    onPress,
+    iconColor = "black",
+}: Props) => {
     const handlePress = () => {
         if (onPress) {
             onPress();

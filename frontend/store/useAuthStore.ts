@@ -59,12 +59,19 @@ const useAuthStore = create<AuthState>((set, get) => ({
         try {
             const current = get();
             if (!current.refreshToken) {
-                return { success: false, errorType: ErrorType.AUTH, errorMessage: "認証に失敗しました。" };
+                return {
+                    success: false,
+                    errorType: ErrorType.AUTH,
+                    errorMessage: "認証に失敗しました。",
+                };
             }
 
-            const res = await api.post<ApiSuccessResponse<{ accessToken: string }>>(`${Links.BASE_URL_AUTH}/token`, {
-                token: current.refreshToken,
-            });
+            const res = await api.post<ApiSuccessResponse<{ accessToken: string }>>(
+                `${Links.BASE_URL_AUTH}/token`,
+                {
+                    token: current.refreshToken,
+                },
+            );
 
             const { accessToken } = res.data.data;
             const tokenData: UserTokenData = {
@@ -87,7 +94,11 @@ const useAuthStore = create<AuthState>((set, get) => ({
             const rawTokenData = await getItemAsync("token-data");
 
             if (!rawTokenData) {
-                return { success: false, errorType: ErrorType.AUTH, errorMessage: "認証に失敗しました。" };
+                return {
+                    success: false,
+                    errorType: ErrorType.AUTH,
+                    errorMessage: "認証に失敗しました。",
+                };
             }
 
             return { success: true, data: JSON.parse(rawTokenData) };
@@ -117,7 +128,10 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
     clearSession: async () => {
         try {
-            await Promise.all([AsyncStorage.removeItem("user-data"), deleteItemAsync("token-data")]);
+            await Promise.all([
+                AsyncStorage.removeItem("user-data"),
+                deleteItemAsync("token-data"),
+            ]);
         } catch (e) {
             console.error("Failed to clear session", e);
         } finally {
@@ -202,10 +216,13 @@ const useAuthStore = create<AuthState>((set, get) => ({
 
         try {
             const current = get();
-            const res = await api.post<ApiSuccessResponse<UserLoginResponse>>(`${Links.BASE_URL_AUTH}/login`, {
-                email,
-                password,
-            });
+            const res = await api.post<ApiSuccessResponse<UserLoginResponse>>(
+                `${Links.BASE_URL_AUTH}/login`,
+                {
+                    email,
+                    password,
+                },
+            );
 
             if (res.data.status !== "success") {
                 set({ isLoggedIn: false, accessToken: null });

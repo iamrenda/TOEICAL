@@ -14,10 +14,18 @@ const TagSelector = () => {
                 {Object.values(WritingTags).map((tag) => (
                     <Pressable
                         key={tag}
-                        style={[styles.filterButton, selectedTags === tag && styles.filterButtonActive]}
+                        style={[
+                            styles.filterButton,
+                            selectedTags === tag && styles.filterButtonActive,
+                        ]}
                         onPress={() => setSelectedTags(tag)}
                     >
-                        <Text style={[styles.filterButtonText, selectedTags === tag && styles.filterButtonTextActive]}>
+                        <Text
+                            style={[
+                                styles.filterButtonText,
+                                selectedTags === tag && styles.filterButtonTextActive,
+                            ]}
+                        >
                             {tag}
                         </Text>
                     </Pressable>

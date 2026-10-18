@@ -30,7 +30,12 @@ const GamemodeItem = ({ gamemode }: { gamemode: GameModeDetails }) => {
     return (
         <Link href={gamemode.href} push asChild>
             <Pressable style={styles.button}>
-                <FontAwesome6 name={gamemode.icon} size={16} color={Variables.primary600} style={styles.buttonIcon} />
+                <FontAwesome6
+                    name={gamemode.icon}
+                    size={16}
+                    color={Variables.primary600}
+                    style={styles.buttonIcon}
+                />
                 <View>
                     <Text style={styles.buttonTitle}>{gamemode.title}</Text>
                     <Text style={styles.buttonSubtitle}>{gamemode.subTitle}</Text>

@@ -5,7 +5,12 @@ import { FontAwesome6 } from "@expo/vector-icons";
 const AuthHeader = () => {
     return (
         <View style={styles.headerContainer}>
-            <FontAwesome6 name="graduation-cap" size={24} color={Variables.white} style={styles.headerIcon} />
+            <FontAwesome6
+                name="graduation-cap"
+                size={24}
+                color={Variables.white}
+                style={styles.headerIcon}
+            />
             <Text style={styles.headerTitle}>TOEICAL</Text>
             <Text style={styles.headerSubtitle}>TOEICから始める英語学習アプリ</Text>
         </View>

@@ -42,7 +42,10 @@ const insertWritingTopicsTags = async () => {
     for (const topic of TEST_WRITING_TOPICS) {
         const randomTags = TEST_WRITING_TAGS.filter(() => Math.random() < 0.5);
         for (const tag of randomTags) {
-            const res = await DB().query<{ id: number }>("SELECT id FROM writing_tags WHERE tag = $1", [tag]);
+            const res = await DB().query<{ id: number }>(
+                "SELECT id FROM writing_tags WHERE tag = $1",
+                [tag],
+            );
             const tagId = res[0]!.id;
             await DB().query(
                 `INSERT INTO writing_topic_tags (writing_topic_id, writing_tag_id) 

@@ -8,7 +8,9 @@ interface Props {
 }
 
 const QuestionIdLabel = ({ id, style }: Props) => {
-    return <Text style={[styles.questionIdText, style]}>問題ID: {id.toString().padStart(4, "0")}</Text>;
+    return (
+        <Text style={[styles.questionIdText, style]}>問題ID: {id.toString().padStart(4, "0")}</Text>
+    );
 };
 
 export { QuestionIdLabel };

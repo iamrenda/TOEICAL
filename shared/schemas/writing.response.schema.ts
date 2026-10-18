@@ -44,6 +44,7 @@ export const WritingHistoryResponseSchema = z.object({
     overall_score: z.number().min(1).max(100),
     revised_essay: z.string(),
     feedback_summary: z.string(),
+    created_at: z.coerce.date(),
 });
 
 export const WritingHistoryListResponseSchema = z.array(WritingHistoryResponseSchema);

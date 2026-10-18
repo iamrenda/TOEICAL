@@ -59,7 +59,14 @@ const CircularProgressChart: React.FC<CircularProgressChartProps> = ({
 
     return (
         <View style={{ alignItems: "center" }}>
-            <View style={{ width: size, height: size, justifyContent: "center", alignItems: "center" }}>
+            <View
+                style={{
+                    width: size,
+                    height: size,
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
                 <Svg width={size} height={size} style={{ position: "absolute" }}>
                     <Circle
                         cx={size / 2}
@@ -86,7 +93,9 @@ const CircularProgressChart: React.FC<CircularProgressChartProps> = ({
                     />
                 </Svg>
 
-                <Animated.View style={[animatedTextStyle, { alignItems: "center" }]}>{children}</Animated.View>
+                <Animated.View style={[animatedTextStyle, { alignItems: "center" }]}>
+                    {children}
+                </Animated.View>
             </View>
         </View>
     );

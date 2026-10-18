@@ -13,14 +13,24 @@ const problemTypes = [
     { id: 1, title: "ランダム", subtitle: "こちらが決めちゃいますよ！", icon: "dice" },
     { id: 2, title: "お気に入りのみ", subtitle: "ブックマークした問題を解く", icon: "star" },
     { id: 3, title: "未回答のみ", subtitle: "まだ解いていない問題を解く", icon: "circle-question" },
-    { id: 4, title: "間違えた問題のみ", subtitle: "過去のミスを復習する", icon: "circle-exclamation" },
+    {
+        id: 4,
+        title: "間違えた問題のみ",
+        subtitle: "過去のミスを復習する",
+        icon: "circle-exclamation",
+    },
 ];
 
 const SoloQuizSettingsModal = () => {
     const [questionCount, setQuestionCount] = React.useState(20);
     const [isPickerVisible, setIsPickerVisible] = React.useState(false);
     const [selectedProblemType, setSelectedProblemType] = React.useState(1);
-    const [counts, setCounts] = React.useState({ all: 0, answered: 0, starred: 0, last_answered_wrong: 0 });
+    const [counts, setCounts] = React.useState({
+        all: 0,
+        answered: 0,
+        starred: 0,
+        last_answered_wrong: 0,
+    });
     const [maxCount, setMaxCount] = React.useState(0);
 
     React.useEffect(() => {
@@ -56,7 +66,12 @@ const SoloQuizSettingsModal = () => {
     }, [maxCount]);
 
     const onStartSession = async () => {
-        const typeMap: Record<number, string> = { 1: "random", 2: "starred", 3: "unanswered", 4: "wrong" };
+        const typeMap: Record<number, string> = {
+            1: "random",
+            2: "starred",
+            3: "unanswered",
+            4: "wrong",
+        };
         const type = typeMap[selectedProblemType];
 
         const res = await useQuizStore.getState().fetchQuizQuestions(type, questionCount);
@@ -81,7 +96,12 @@ const SoloQuizSettingsModal = () => {
     return (
         <View style={styles.container}>
             <View style={styles.titleContainer}>
-                <FontAwesome6 name="pen-to-square" size={24} style={styles.titleIcon} color={Variables.primary600} />
+                <FontAwesome6
+                    name="pen-to-square"
+                    size={24}
+                    style={styles.titleIcon}
+                    color={Variables.primary600}
+                />
                 <Text style={styles.titleText}>TOEIC Part 5 クイズ</Text>
             </View>
 
@@ -91,7 +111,10 @@ const SoloQuizSettingsModal = () => {
                     <Text style={styles.questionSettingsTitle}>問題数</Text>
                 </View>
                 <View>
-                    <Pressable onPress={() => setIsPickerVisible(true)} style={styles.questionCountButton}>
+                    <Pressable
+                        onPress={() => setIsPickerVisible(true)}
+                        style={styles.questionCountButton}
+                    >
                         <Text>{questionCount}</Text>
                         <FontAwesome6 name="angle-down" size={16} />
                     </Pressable>
@@ -120,7 +143,10 @@ const SoloQuizSettingsModal = () => {
                                     name={type.icon}
                                     size={20}
                                     color={isSelected ? Variables.primary600 : Variables.gray600}
-                                    style={[styles.questionTypeIcon, isSelected && styles.selectedQuestionTypeIcon]}
+                                    style={[
+                                        styles.questionTypeIcon,
+                                        isSelected && styles.selectedQuestionTypeIcon,
+                                    ]}
                                 />
                                 <View style={styles.questionTypeTitleContainer}>
                                     <Text style={styles.questionTypeTitle}>{type.title}</Text>
@@ -130,7 +156,10 @@ const SoloQuizSettingsModal = () => {
                                     <Switch
                                         value={isSelected}
                                         onValueChange={() => setSelectedProblemType(type.id)}
-                                        trackColor={{ false: Variables.gray300, true: Variables.primary600 }}
+                                        trackColor={{
+                                            false: Variables.gray300,
+                                            true: Variables.primary600,
+                                        }}
                                     />
                                 </View>
                             </View>

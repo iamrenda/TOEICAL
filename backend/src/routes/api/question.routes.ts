@@ -38,6 +38,10 @@ router.post(
 );
 
 router.post("/starred/:questionId", validate({ params: QuestionIdRequestSchema }), starQuestion);
-router.delete("/starred/:questionId", validate({ params: QuestionIdRequestSchema }), unstarQuestion);
+router.delete(
+    "/starred/:questionId",
+    validate({ params: QuestionIdRequestSchema }),
+    unstarQuestion,
+);
 
 export default router;

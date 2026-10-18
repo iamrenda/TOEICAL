@@ -107,7 +107,10 @@ const useWritingStore = create<WritingState>((set, get) => ({
         };
 
         try {
-            const res = await api.post<ApiSuccessResponse<WritingEssayAnalysisOutput>>("writing", body);
+            const res = await api.post<ApiSuccessResponse<WritingEssayAnalysisOutput>>(
+                "writing",
+                body,
+            );
 
             set({ essayAnalysisResult: res.data.data });
 

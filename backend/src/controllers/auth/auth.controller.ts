@@ -6,7 +6,11 @@ import ApiError from "../../util/ApiError.ts";
 import logger from "../../logger.ts";
 import type { NextFunction, Response } from "express";
 import type { ValidatedRequest } from "express-zod-safe";
-import type { UserLoginSchema, UserSignupSchema, UserTokenSchema } from "../../schemas/users.schema.ts";
+import type {
+    UserLoginSchema,
+    UserSignupSchema,
+    UserTokenSchema,
+} from "../../schemas/users.schema.ts";
 import type { UserTokenPayload, UserEntity } from "../../types/User.ts";
 import { sendSuccess } from "../../util/sendResponse.ts";
 import { ErrorCode, type ApiSuccessResponse } from "@toeical/shared";
@@ -26,9 +30,13 @@ interface RefreshTokenEntity {
 
 const generateAccessToken = (user: UserTokenPayload) => {
     try {
-        return jwt.sign({ id: user.id, username: user.username, email: user.email }, process.env.ACCESS_TOKEN_SECRET!, {
-            expiresIn: ACCESS_TOKEN_EXPIRY,
-        });
+        return jwt.sign(
+            { id: user.id, username: user.username, email: user.email },
+            process.env.ACCESS_TOKEN_SECRET!,
+            {
+                expiresIn: ACCESS_TOKEN_EXPIRY,
+            },
+        );
     } catch (e) {
         throw new ApiError(401, "Failed to generate access token", {
             cause: e,
@@ -58,7 +66,10 @@ const verifyToken = (refreshToken: string): UserTokenPayload => {
     try {
         return jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as UserTokenPayload;
     } catch (e) {
-        throw new ApiError(401, "Invalid refresh token", { cause: e, errorCode: ErrorCode.TOKEN_INVALID });
+        throw new ApiError(401, "Invalid refresh token", {
+            cause: e,
+            errorCode: ErrorCode.TOKEN_INVALID,
+        });
     }
 };
 
@@ -97,16 +108,22 @@ export const userLogin = async (
     next: NextFunction,
 ) => {
     try {
-        const [user] = await DB().query<UserEntity>("SELECT * FROM users WHERE email = $1;", [req.body.email]);
+        const [user] = await DB().query<UserEntity>("SELECT * FROM users WHERE email = $1;", [
+            req.body.email,
+        ]);
 
         if (!user) {
-            throw new ApiError(400, "Invalid email or password", { errorCode: ErrorCode.USER_NOT_FOUND });
+            throw new ApiError(400, "Invalid email or password", {
+                errorCode: ErrorCode.USER_NOT_FOUND,
+            });
         }
 
         const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password);
 
         if (!isPasswordCorrect || !user) {
-            throw new ApiError(400, "Invalid email or password", { errorCode: ErrorCode.VALIDATION_FAILED });
+            throw new ApiError(400, "Invalid email or password", {
+                errorCode: ErrorCode.VALIDATION_FAILED,
+            });
         }
 
         const accessToken = generateAccessToken(user);
@@ -115,11 +132,10 @@ export const userLogin = async (
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + 30);
 
-        await DB().query("INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3);", [
-            user.id,
-            refreshToken,
-            expiresAt.toISOString(),
-        ]);
+        await DB().query(
+            "INSERT INTO refresh_tokens (user_id, token, expires_at) VALUES ($1, $2, $3);",
+            [user.id, refreshToken, expiresAt.toISOString()],
+        );
 
         logger.info(`User ${user.username} logged in successfully`);
 
@@ -145,7 +161,9 @@ export const fetchAccessToken = async (
         );
 
         if (!data || data.length === 0) {
-            throw new ApiError(401, "Invalid refresh token", { errorCode: ErrorCode.TOKEN_INVALID });
+            throw new ApiError(401, "Invalid refresh token", {
+                errorCode: ErrorCode.TOKEN_INVALID,
+            });
         }
 
         const user = verifyToken(refreshToken);
@@ -165,15 +183,20 @@ export const userLogout = async (
     try {
         const refreshToken = req.body.token;
 
-        const data = await DB().query<RefreshTokenEntity>("SELECT * FROM refresh_tokens WHERE token = $1", [
-            refreshToken,
-        ]);
+        const data = await DB().query<RefreshTokenEntity>(
+            "SELECT * FROM refresh_tokens WHERE token = $1",
+            [refreshToken],
+        );
 
         if (!data || data.length === 0) {
-            throw new ApiError(401, "Invalid refresh token", { errorCode: ErrorCode.TOKEN_INVALID });
+            throw new ApiError(401, "Invalid refresh token", {
+                errorCode: ErrorCode.TOKEN_INVALID,
+            });
         }
 
-        await DB().query("UPDATE refresh_tokens SET is_revoked = TRUE WHERE token = $1;", [refreshToken]);
+        await DB().query("UPDATE refresh_tokens SET is_revoked = TRUE WHERE token = $1;", [
+            refreshToken,
+        ]);
 
         logger.info({ userId: data[0]!.user_id }, "User logged out successfully");
 

@@ -29,7 +29,12 @@ const ReadingScreen = () => {
     }, []);
 
     if (isLoading) {
-        return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: "center", alignItems: "center" }} />;
+        return (
+            <ActivityIndicator
+                size="large"
+                style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            />
+        );
     }
 
     return (

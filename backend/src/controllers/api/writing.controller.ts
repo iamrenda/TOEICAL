@@ -7,9 +7,6 @@ import type { fastApiSuccessResponse } from "../../types/FastApiResponse.ts";
 import { sendSuccess } from "../../util/sendResponse.ts";
 import {
     WritingAiAnalysisResponseSchema,
-    WritingResponseSchema,
-    WritingTopicListResponseSchema,
-    WritingHistoryListResponseSchema,
     ErrorCode,
     type WritingAiAnalysisResponse,
     type WritingResponse,
@@ -31,7 +28,8 @@ const getWritingAnalysis = async (
     next: NextFunction,
 ) => {
     const { user } = req;
-    const { topic, topicId, description, essay, difficulty, timeLimit, timeTaken, wordCount } = req.body;
+    const { topic, topicId, description, essay, difficulty, timeLimit, timeTaken, wordCount } =
+        req.body;
 
     try {
         const writingAnalysis = await api.post<fastApiSuccessResponse<WritingAiAnalysisResponse>>(
@@ -47,7 +45,9 @@ const getWritingAnalysis = async (
             },
         );
 
-        const analysisValidationResult = WritingAiAnalysisResponseSchema.safeParse(writingAnalysis.data.data);
+        const analysisValidationResult = WritingAiAnalysisResponseSchema.safeParse(
+            writingAnalysis.data.data,
+        );
         if (!analysisValidationResult.success) {
             throw new ApiError(500, "Invalid response from AI writing analysis.", {
                 errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
@@ -102,15 +102,12 @@ const getWritingAnalysis = async (
             );
         });
 
-        const validationResult = WritingResponseSchema.safeParse(writingAnalysis.data.data);
-        if (!validationResult.success) {
-            throw new ApiError(500, "Invalid response from AI writing analysis", {
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                zodError: validationResult.error,
-            });
-        }
-
-        return sendSuccess(res, 200, "Writing results saved successfully", validationResult.data);
+        return sendSuccess(
+            res,
+            200,
+            "Writing results saved successfully",
+            analysisValidationResult.data,
+        );
     } catch (e) {
         next(e);
     }
@@ -148,15 +145,7 @@ const getTopics = async (
             [difficulty === "ALL" ? null : difficulty, tag === "ALL" ? null : tag],
         );
 
-        const validationResult = WritingTopicListResponseSchema.safeParse(data);
-        if (!validationResult.success) {
-            throw new ApiError(500, "Invalid response from writing topic", {
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                zodError: validationResult.error,
-            });
-        }
-
-        return sendSuccess(res, 200, "Topics retrieved successfully", validationResult.data);
+        return sendSuccess(res, 200, "Topics retrieved successfully", data);
     } catch (e) {
         next(e);
     }
@@ -179,20 +168,12 @@ const getHistory = async (
             ON uw.writing_topic_id = wt.id
             INNER JOIN writing_results AS wr
             ON uw.writing_results_id = wr.id
-            WHERE uw.user_id = $1 AND $2 <= wr.created_at AND wr.created_at <= $3;
+            WHERE uw.user_id = $1 AND $2 <= uw.created_at AND uw.created_at <= $3;
         `,
             [user?.id, from, to],
         );
 
-        const validationResult = WritingHistoryListResponseSchema.safeParse(data);
-        if (!validationResult.success) {
-            throw new ApiError(500, "Invalid response from writing history", {
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                zodError: validationResult.error,
-            });
-        }
-
-        return sendSuccess(res, 200, "Writing history retrieved successfully", validationResult.data);
+        return sendSuccess(res, 200, "Writing history retrieved successfully", data);
     } catch (e) {
         next(e);
     }

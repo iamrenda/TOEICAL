@@ -3,7 +3,13 @@ import Variables from "@/constants/Variables";
 import useQuizStore from "@/store/useQuizStore";
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from "react-native";
 import { Stack, useLocalSearchParams, router, useNavigation } from "expo-router";
-import { Footer, QuestionOption, CustomButton, QuestionIdLabel, HeaderBackIconButton } from "@/components";
+import {
+    Footer,
+    QuestionOption,
+    CustomButton,
+    QuestionIdLabel,
+    HeaderBackIconButton,
+} from "@/components";
 import showErrorAlert from "@/util/showErrorAlert";
 import { ErrorMessages } from "@/constants/ErrorMessages";
 import { ErrorType } from "@/types/ErrorType";
@@ -105,10 +111,18 @@ const QuestionScreen = () => {
     }, [questionId, isQuizMode]);
 
     if (!isReady || !question) {
-        return <ActivityIndicator size="large" style={{ flex: 1, justifyContent: "center", alignItems: "center" }} />;
+        return (
+            <ActivityIndicator
+                size="large"
+                style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+            />
+        );
     }
 
-    const progress = isQuizMode && quizQuestions.length > 0 ? ((quizCurrentIndex + 1) / quizQuestions.length) * 100 : 0;
+    const progress =
+        isQuizMode && quizQuestions.length > 0
+            ? ((quizCurrentIndex + 1) / quizQuestions.length) * 100
+            : 0;
 
     return (
         <View style={styles.container}>
@@ -118,8 +132,19 @@ const QuestionScreen = () => {
                     options={{
                         headerTitle: () => (
                             <View style={{ alignItems: "center", width: "100%", paddingTop: 8 }}>
-                                <View style={{ flexDirection: "row", alignItems: "center", gap: 12, width: "100%" }}>
-                                    <HeaderBackIconButton iconName="xmark" onPress={onQuizQuit} shouldGoBack={false} />
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        gap: 12,
+                                        width: "100%",
+                                    }}
+                                >
+                                    <HeaderBackIconButton
+                                        iconName="xmark"
+                                        onPress={onQuizQuit}
+                                        shouldGoBack={false}
+                                    />
                                     <View
                                         style={{
                                             flex: 1,
@@ -163,7 +188,10 @@ const QuestionScreen = () => {
                     }}
                 />
             )}
-            <QuestionIdLabel id={Number(questionId)} style={{ alignSelf: "flex-start", marginBottom: 12 }} />
+            <QuestionIdLabel
+                id={Number(questionId)}
+                style={{ alignSelf: "flex-start", marginBottom: 12 }}
+            />
             <Text style={styles.questionText}>{question.question}</Text>
 
             {/* Quiz Options */}
@@ -190,7 +218,12 @@ const QuestionScreen = () => {
                             onPress={() => router.push("/(reading)/explanation")}
                             flex={3}
                         />
-                        <CustomButton text="次の問題" variant="primary" onPress={onNextQuestion} flex={7} />
+                        <CustomButton
+                            text="次の問題"
+                            variant="primary"
+                            onPress={onNextQuestion}
+                            flex={7}
+                        />
                     </>
                 ) : (
                     <CustomButton

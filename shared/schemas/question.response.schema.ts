@@ -5,7 +5,7 @@ export const QuestionOverviewResponseSchema = z.object({
     question: z.string(),
     is_starred: z.boolean(),
     was_last_attempt_correct: z.boolean().nullable(),
-    last_answered_at: z.date().nullable(),
+    last_answered_at: z.coerce.date().nullable(),
 });
 
 export const QuestionResponseSchema = z.object({

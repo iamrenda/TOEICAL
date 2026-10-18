@@ -2,7 +2,12 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import { sendError } from "../../util/sendResponse.ts";
 import { ErrorCode } from "@toeical/shared";
-import { userLogin, userSignup, fetchAccessToken, userLogout } from "../../controllers/auth/auth.controller.ts";
+import {
+    userLogin,
+    userSignup,
+    fetchAccessToken,
+    userLogout,
+} from "../../controllers/auth/auth.controller.ts";
 import validate from "express-zod-safe";
 import { UserLoginSchema, UserSignupSchema, UserTokenSchema } from "../../schemas/users.schema.ts";
 

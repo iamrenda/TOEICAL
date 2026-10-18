@@ -20,7 +20,8 @@ const QuestionOverviewItem = ({ overview }: Props) => {
 
     const [isStarred, setIsStarred] = React.useState(is_starred);
 
-    const diffInMs = last_answered_at !== null ? Date.now() - new Date(last_answered_at).getTime() : 0;
+    const diffInMs =
+        last_answered_at !== null ? Date.now() - new Date(last_answered_at).getTime() : 0;
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
     const statusColor =
@@ -30,7 +31,8 @@ const QuestionOverviewItem = ({ overview }: Props) => {
               ? Variables.green600
               : Variables.red600;
 
-    const statusLabel = was_last_attempt_correct === null ? "未回答" : was_last_attempt_correct ? "正解" : "不正解";
+    const statusLabel =
+        was_last_attempt_correct === null ? "未回答" : was_last_attempt_correct ? "正解" : "不正解";
 
     const onPress = () => {
         router.push(`/(reading)/${id.toString()}`);

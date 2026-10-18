@@ -18,7 +18,11 @@ const CalendarDayCell = ({ cell }: Props) => {
     }
 
     const weekdayColor =
-        weekday === 0 ? Variables.red500 : weekday === 6 ? Variables.primary600 : Variables.textPrimary;
+        weekday === 0
+            ? Variables.red500
+            : weekday === 6
+              ? Variables.primary600
+              : Variables.textPrimary;
 
     const circleStyle = [
         styles.circle,
@@ -28,11 +32,17 @@ const CalendarDayCell = ({ cell }: Props) => {
 
     const numberStyle = [
         styles.dayNumber,
-        isSelected ? styles.dayNumberSelected : isToday ? styles.dayNumberToday : { color: weekdayColor },
+        isSelected
+            ? styles.dayNumberSelected
+            : isToday
+              ? styles.dayNumberToday
+              : { color: weekdayColor },
     ];
 
     const handleClick = () => {
-        setSelectedDate(`${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(day).padStart(2, "0")}`);
+        setSelectedDate(
+            `${currentYear}-${String(currentMonth).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+        );
     };
 
     return (

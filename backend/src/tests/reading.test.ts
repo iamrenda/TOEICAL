@@ -3,6 +3,13 @@ import app from "../index.ts";
 import supertest from "supertest";
 import DB from "../db/db.ts";
 import { getTestUserId, getValidAccessToken } from "./util.ts";
+import { z } from "zod";
+import {
+    QuestionOverviewListResponseSchema,
+    QuestionListResponseSchema,
+    QuestionResponseSchema,
+    QuestionCountResponseSchema,
+} from "@toeical/shared";
 
 dotenv.config();
 
@@ -37,21 +44,9 @@ describe("GET /overview", () => {
                     .set("Authorization", `Bearer ${accessToken}`);
 
                 expect(res.status).toBe(200);
-                expect(Array.isArray(res.body.data)).toBe(true);
-
-                if (res.body.length > 0) {
-                    const questionData = res.body.data[0];
-
-                    expect(questionData).toEqual(
-                        expect.objectContaining({
-                            id: expect.any(Number),
-                            question: expect.any(String),
-                            is_starred: expect.any(Boolean),
-                            was_last_attempt_correct: expect.any(Boolean),
-                            last_answered_at: expect.any(String),
-                        }),
-                    );
-                }
+                expect(
+                    QuestionOverviewListResponseSchema.safeParse(res.body.data).error,
+                ).toBeUndefined();
             }
         });
     });
@@ -88,9 +83,10 @@ describe("GET /random", () => {
 
         // seeding starred and wrong question
         const testUserId = await getTestUserId();
-        await DB().query(`INSERT INTO answer_history (user_id, question_id, was_correct) VALUES ($1, 1, false);`, [
-            testUserId!,
-        ]);
+        await DB().query(
+            `INSERT INTO answer_history (user_id, question_id, was_correct) VALUES ($1, 1, false);`,
+            [testUserId!],
+        );
         const validQuestionId = await getValidQuestionId();
         await DB().query("INSERT INTO starred_question (user_id, question_id) VALUES ($1, $2);", [
             testUserId,
@@ -129,33 +125,10 @@ describe("GET /random", () => {
                     .set("Authorization", `Bearer ${accessToken}`);
 
                 expect(res.status).toBe(200);
-                expect(Array.isArray(res.body.data)).toBe(true);
-                if (res.body.data.length > 1) {
-                    const questionData = res.body.data[0];
-
-                    expect(questionData).toEqual(
-                        // Question type
-                        expect.objectContaining({
-                            id: expect.any(Number),
-                            question: expect.any(String),
-                            is_starred: expect.any(Boolean),
-                            correct_option_id: expect.any(Number),
-                            translated_question: expect.any(String),
-                            type_description: expect.any(String),
-                            options: expect.any(Array),
-                            ...(res.body.data.detailed_descriptions && { detailed_descriptions: expect.any(Array) }),
-                            ...(res.body.data.translated_vocabs && { translated_vocabs: expect.any(Array) }),
-                        }),
-                    );
-                    expect(questionData.options).toHaveLength(4);
-                    questionData.options.forEach((optionObject: any) => {
-                        expect(optionObject).toEqual({
-                            option: expect.any(String),
-                            option_id: expect.any(Number),
-                            translated_option: expect.any(String),
-                        });
-                    });
-                }
+                expect(QuestionListResponseSchema.safeParse(res.body.data).error).toBeUndefined();
+                res.body.data.forEach((question: { options: unknown[] }) => {
+                    expect(question.options).toHaveLength(4);
+                });
             }
         });
     });
@@ -195,34 +168,10 @@ describe("GET /random", () => {
                     .set("Authorization", `Bearer ${accessToken}`);
 
                 expect(res.status).toBe(200);
-                expect(Array.isArray(res.body.data)).toBe(true);
-
-                if (res.body.data.length > 0) {
-                    const questionData = res.body.data[0];
-
-                    expect(questionData).toEqual(
-                        // Question type
-                        expect.objectContaining({
-                            id: expect.any(Number),
-                            question: expect.any(String),
-                            is_starred: expect.any(Boolean),
-                            correct_option_id: expect.any(Number),
-                            translated_question: expect.any(String),
-                            type_description: expect.any(String),
-                            options: expect.any(Array),
-                            ...(res.body.data.detailed_descriptions && { detailed_descriptions: expect.any(Array) }),
-                            ...(res.body.data.translated_vocabs && { translated_vocabs: expect.any(Array) }),
-                        }),
-                    );
-                    expect(questionData.options).toHaveLength(4);
-                    questionData.options.forEach((optionObject: any) => {
-                        expect(optionObject).toEqual({
-                            option: expect.any(String),
-                            option_id: expect.any(Number),
-                            translated_option: expect.any(String),
-                        });
-                    });
-                }
+                expect(QuestionListResponseSchema.safeParse(res.body.data).error).toBeUndefined();
+                res.body.data.forEach((question: { options: unknown[] }) => {
+                    expect(question.options).toHaveLength(4);
+                });
             }
         });
     });
@@ -242,17 +191,12 @@ describe("GET /count", () => {
     });
 
     test("HAPPY PATH - should return data with an array with objects", async () => {
-        const res = await supertest(app).get("/api/question/count").set("Authorization", `Bearer ${accessToken}`);
+        const res = await supertest(app)
+            .get("/api/question/count")
+            .set("Authorization", `Bearer ${accessToken}`);
 
         expect(res.status).toBe(200);
-        expect(res.body.data).toEqual(
-            expect.objectContaining({
-                all: expect.any(Number),
-                answered: expect.any(Number),
-                starred: expect.any(Number),
-                last_answered_wrong: expect.any(Number),
-            }),
-        );
+        expect(QuestionCountResponseSchema.safeParse(res.body.data).error).toBeUndefined();
     });
 });
 
@@ -271,27 +215,8 @@ describe("GET /:questionId", () => {
                 .set("Authorization", `Bearer ${accessToken}`);
 
             expect(res.status).toBe(200);
-            expect(res.body.data).toEqual(
-                expect.objectContaining({
-                    id: expect.any(Number),
-                    question: expect.any(String),
-                    is_starred: expect.any(Boolean),
-                    correct_option_id: expect.any(Number),
-                    translated_question: expect.any(String),
-                    type_description: expect.any(String),
-                    options: expect.any(Array),
-                    ...(res.body.data.detailed_descriptions && { detailed_descriptions: expect.any(Array) }),
-                    ...(res.body.data.translated_vocabs && { translated_vocabs: expect.any(Array) }),
-                }),
-            );
+            expect(QuestionResponseSchema.safeParse(res.body.data).error).toBeUndefined();
             expect(res.body.data.options).toHaveLength(4);
-            res.body.data.options.forEach((optionObject: any) => {
-                expect(optionObject).toEqual({
-                    option: expect.any(String),
-                    option_id: expect.any(Number),
-                    translated_option: expect.any(String),
-                });
-            });
         });
     });
 
@@ -309,7 +234,9 @@ describe("GET /:questionId", () => {
 
     describe("SAD PATH - when question with given id are not found", () => {
         test("should respond with a 404 status code", async () => {
-            const res = await supertest(app).get(`/api/question/9999999`).set("Authorization", `Bearer ${accessToken}`);
+            const res = await supertest(app)
+                .get(`/api/question/9999999`)
+                .set("Authorization", `Bearer ${accessToken}`);
             expect(res.status).toBe(404);
         });
     });
@@ -322,8 +249,14 @@ describe("GET /:questionId/next", () => {
         accessToken = await getValidAccessToken();
         // seeding (starred question id: 1 and 2)
         const testUserId = await getTestUserId();
-        await DB().query("INSERT INTO starred_question (user_id, question_id) VALUES ($1, $2);", [testUserId, 1]);
-        await DB().query("INSERT INTO starred_question (user_id, question_id) VALUES ($1, $2);", [testUserId, 2]);
+        await DB().query("INSERT INTO starred_question (user_id, question_id) VALUES ($1, $2);", [
+            testUserId,
+            1,
+        ]);
+        await DB().query("INSERT INTO starred_question (user_id, question_id) VALUES ($1, $2);", [
+            testUserId,
+            2,
+        ]);
     });
 
     describe("HAPPY PATH - when valid question id is given", () => {
@@ -331,8 +264,14 @@ describe("GET /:questionId/next", () => {
             const validOptions = [
                 { questionId: 1, query: { sortBy: "id.asc", starred: false } },
                 { questionId: 2, query: { sortBy: "id.desc", starred: true } },
-                { questionId: 1, query: { sortBy: "starred_date.asc", starred: false } },
-                { questionId: 2, query: { sortBy: "starred_date.desc", starred: true } },
+                {
+                    questionId: 1,
+                    query: { sortBy: "starred_date.asc", starred: false },
+                },
+                {
+                    questionId: 2,
+                    query: { sortBy: "starred_date.desc", starred: true },
+                },
             ];
 
             for (const { questionId, query } of validOptions) {
@@ -343,27 +282,8 @@ describe("GET /:questionId/next", () => {
                     .set("Authorization", `Bearer ${accessToken}`);
 
                 expect(res.status).toBe(200);
-                expect(res.body.data).toEqual(
-                    expect.objectContaining({
-                        id: expect.any(Number),
-                        question: expect.any(String),
-                        is_starred: expect.any(Boolean),
-                        correct_option_id: expect.any(Number),
-                        translated_question: expect.any(String),
-                        type_description: expect.any(String),
-                        options: expect.any(Array),
-                        ...(res.body.data.detailed_descriptions && { detailed_descriptions: expect.any(Array) }),
-                        ...(res.body.data.translated_vocabs && { translated_vocabs: expect.any(Array) }),
-                    }),
-                );
+                expect(QuestionResponseSchema.safeParse(res.body.data).error).toBeUndefined();
                 expect(res.body.data.options).toHaveLength(4);
-                res.body.data.options.forEach((optionObject: any) => {
-                    expect(optionObject).toEqual({
-                        option: expect.any(String),
-                        option_id: expect.any(Number),
-                        translated_option: expect.any(String),
-                    });
-                });
             }
         });
     });
@@ -528,10 +448,10 @@ describe("DELETE /question/starred/:questionId", () => {
             const validQuestionId = await getValidQuestionId();
 
             // seed: star the question
-            await DB().query("DELETE FROM starred_question WHERE user_id = $1 AND question_id = $2;", [
-                testUserId,
-                validQuestionId,
-            ]);
+            await DB().query(
+                "DELETE FROM starred_question WHERE user_id = $1 AND question_id = $2;",
+                [testUserId, validQuestionId],
+            );
 
             // test: unstar the question
             const res = await supertest(app)
@@ -545,7 +465,9 @@ describe("DELETE /question/starred/:questionId", () => {
         test("should respond with a 200 status code", async () => {
             const validQuestionId = await getValidQuestionId();
             // seed: unstar the question (in case it was starred)
-            await DB().query("DELETE FROM starred_question WHERE question_id = $1;", [validQuestionId]);
+            await DB().query("DELETE FROM starred_question WHERE question_id = $1;", [
+                validQuestionId,
+            ]);
 
             // test: unstar it again
             const res = await supertest(app)

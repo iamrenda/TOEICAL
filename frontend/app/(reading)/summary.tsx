@@ -22,7 +22,8 @@ const SummaryScreen = () => {
         reset();
     };
 
-    const scorePercentage = questions.length > 0 ? (correctAnswersCount / questions.length) * 100 : 0;
+    const scorePercentage =
+        questions.length > 0 ? (correctAnswersCount / questions.length) * 100 : 0;
     const averageTime = times.length > 0 ? times.reduce((a, b) => a + b, 0) / times.length : 0;
 
     const onQuestionPress = (index: number) => {
@@ -32,7 +33,10 @@ const SummaryScreen = () => {
 
     return (
         <SafeAreaView style={styles.container} edges={["top"]}>
-            <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
                 {/* Animated Circular Progress */}
                 <View style={styles.scoreCircleContainer}>
                     <CircularProgressChart
@@ -41,10 +45,18 @@ const SummaryScreen = () => {
                         strokeWidth={10}
                         animationDuration={1500}
                     >
-                        <Text style={{ fontSize: 48, fontWeight: "800", color: Variables.textPrimary }}>
+                        <Text
+                            style={{
+                                fontSize: 48,
+                                fontWeight: "800",
+                                color: Variables.textPrimary,
+                            }}
+                        >
                             {scorePercentage.toFixed(0)}%
                         </Text>
-                        <Text style={{ fontSize: 16, fontWeight: "700", color: Variables.gray400 }}>正解率</Text>
+                        <Text style={{ fontSize: 16, fontWeight: "700", color: Variables.gray400 }}>
+                            正解率
+                        </Text>
                     </CircularProgressChart>
                 </View>
 
@@ -52,7 +64,12 @@ const SummaryScreen = () => {
                 <View style={styles.statsContainer}>
                     <View style={styles.statCard}>
                         <View style={styles.statHeader}>
-                            <FontAwesome6 name="square-check" size={16} color={Variables.primary600} solid />
+                            <FontAwesome6
+                                name="square-check"
+                                size={16}
+                                color={Variables.primary600}
+                                solid
+                            />
                             <Text style={styles.statTitle}>正解数</Text>
                         </View>
                         <View style={styles.statValueContainer}>
@@ -87,13 +104,17 @@ const SummaryScreen = () => {
                                     <View
                                         style={[
                                             styles.questionNumberContainer,
-                                            isCorrect ? styles.numberCorrect : styles.numberIncorrect,
+                                            isCorrect
+                                                ? styles.numberCorrect
+                                                : styles.numberIncorrect,
                                         ]}
                                     >
                                         <Text
                                             style={[
                                                 styles.questionNumberText,
-                                                isCorrect ? styles.textCorrect : styles.textIncorrect,
+                                                isCorrect
+                                                    ? styles.textCorrect
+                                                    : styles.textIncorrect,
                                             ]}
                                         >
                                             {index + 1}
@@ -106,13 +127,19 @@ const SummaryScreen = () => {
                                         <Text
                                             style={[
                                                 styles.resultText,
-                                                isCorrect ? styles.textCorrect : styles.textIncorrect,
+                                                isCorrect
+                                                    ? styles.textCorrect
+                                                    : styles.textIncorrect,
                                             ]}
                                         >
                                             {isCorrect ? "正解！" : "不正解"}
                                         </Text>
                                     </View>
-                                    <FontAwesome6 name="angle-right" size={16} color={Variables.gray400} />
+                                    <FontAwesome6
+                                        name="angle-right"
+                                        size={16}
+                                        color={Variables.gray400}
+                                    />
                                 </TouchableOpacity>
                             );
                         })}

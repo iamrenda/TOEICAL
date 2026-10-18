@@ -40,7 +40,13 @@ describe("POST /auth/signup", () => {
     describe("when the email does not follow email format", () => {
         test("should respond with 400 status code", async () => {
             const salt = Date.now();
-            const testEmails = [`test_${salt}`, `test_${salt}@`, `test_${salt}.com`, `test_${salt}@.com`, ""];
+            const testEmails = [
+                `test_${salt}`,
+                `test_${salt}@`,
+                `test_${salt}.com`,
+                `test_${salt}@.com`,
+                "",
+            ];
 
             for (const email of testEmails) {
                 const response = await supertest(app).post("/auth/signup").send({
@@ -152,9 +158,13 @@ describe("POST /auth/token", () => {
 
     describe("when the refresh token is expired", () => {
         test("should respond with a status code of 401", async () => {
-            const expiredToken = jwt.sign({ userId: await getTestUserId() }, process.env.REFRESH_TOKEN_SECRET!, {
-                expiresIn: "-10s",
-            });
+            const expiredToken = jwt.sign(
+                { userId: await getTestUserId() },
+                process.env.REFRESH_TOKEN_SECRET!,
+                {
+                    expiresIn: "-10s",
+                },
+            );
             const response = await supertest(app).post("/auth/token").send({
                 token: expiredToken,
             });

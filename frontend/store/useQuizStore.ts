@@ -61,7 +61,9 @@ const useQuizStore = create<QuizState>((set, get) => ({
         set({ isLoading: true });
 
         try {
-            const res = await api.get<ApiSuccessResponse<QuestionResponse>>(`/question/${questionId}`);
+            const res = await api.get<ApiSuccessResponse<QuestionResponse>>(
+                `/question/${questionId}`,
+            );
 
             set({
                 currentQuestion: res.data.data,
@@ -151,7 +153,9 @@ const useQuizStore = create<QuizState>((set, get) => ({
 
     answerQuizQuestion: (isCorrect: boolean, selectedOptionId: number) => {
         set((state) => ({
-            correctAnswersCount: isCorrect ? state.correctAnswersCount + 1 : state.correctAnswersCount,
+            correctAnswersCount: isCorrect
+                ? state.correctAnswersCount + 1
+                : state.correctAnswersCount,
             quizAnswers: [...state.quizAnswers, selectedOptionId],
         }));
     },
@@ -163,7 +167,8 @@ const useQuizStore = create<QuizState>((set, get) => ({
     nextQuizQuestion: () => {
         set((state) => {
             const nextIndex = state.quizCurrentIndex + 1;
-            const nextQuestion = nextIndex < state.quizQuestions.length ? state.quizQuestions[nextIndex] : null;
+            const nextQuestion =
+                nextIndex < state.quizQuestions.length ? state.quizQuestions[nextIndex] : null;
 
             return {
                 quizCurrentIndex: nextIndex,
@@ -202,7 +207,9 @@ const useQuizStore = create<QuizState>((set, get) => ({
 
     getCurrentQuestion: () => {
         const state = get();
-        return state.isQuizMode ? (state.quizQuestions[state.quizCurrentIndex] ?? null) : state.currentQuestion;
+        return state.isQuizMode
+            ? (state.quizQuestions[state.quizCurrentIndex] ?? null)
+            : state.currentQuestion;
     },
 
     isCurrentAnswerCorrect: () => {

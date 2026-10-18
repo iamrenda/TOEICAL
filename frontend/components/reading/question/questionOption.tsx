@@ -3,7 +3,10 @@ import Variables from "@/constants/Variables";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { QuestionResponse } from "@toeical/shared";
 
-type Option = Pick<QuestionResponse["options"][number], "option" | "option_id" | "translated_option">;
+type Option = Pick<
+    QuestionResponse["options"][number],
+    "option" | "option_id" | "translated_option"
+>;
 
 const QuestionOption = ({
     option,
@@ -56,7 +59,9 @@ const QuestionOption = ({
             <Text style={stylesArray.letter}>{letter}</Text>
             <View>
                 <Text style={stylesArray.text}>{option.option}</Text>
-                {isSubmitted && <Text style={stylesArray.translatedOptionText}>{option.translated_option}</Text>}
+                {isSubmitted && (
+                    <Text style={stylesArray.translatedOptionText}>{option.translated_option}</Text>
+                )}
             </View>
         </Pressable>
     );

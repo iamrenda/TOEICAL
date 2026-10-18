@@ -27,12 +27,21 @@ const QuestionOverviewFilter = () => {
                     >
                         {filter.icon && (
                             <FontAwesome
-                                name={isSelected && filter.iconFilled ? filter.iconFilled : (filter.icon as any)}
+                                name={
+                                    isSelected && filter.iconFilled
+                                        ? filter.iconFilled
+                                        : (filter.icon as any)
+                                }
                                 size={16}
                                 color={isSelected ? Variables.white : Variables.textTertiary}
                             />
                         )}
-                        <Text style={[styles.filterButtonText, isSelected && styles.selectedFilterButtonText]}>
+                        <Text
+                            style={[
+                                styles.filterButtonText,
+                                isSelected && styles.selectedFilterButtonText,
+                            ]}
+                        >
                             {filter.label}
                         </Text>
                     </Pressable>

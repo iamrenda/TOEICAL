@@ -42,8 +42,14 @@ const ResultScreen = () => {
         );
     }
 
-    const { structure_score, topic_relevancy_score, grammar_score, vocabulary_score, overall_score, feedback_summary } =
-        essayAnalysisResult;
+    const {
+        structure_score,
+        topic_relevancy_score,
+        grammar_score,
+        vocabulary_score,
+        overall_score,
+        feedback_summary,
+    } = essayAnalysisResult;
 
     const rubrics = [
         {
@@ -69,10 +75,18 @@ const ResultScreen = () => {
             <ScrollView contentContainerStyle={styles.container}>
                 <View style={styles.card}>
                     <CircularProgressChart percentage={overall_score} color={Variables.primary600}>
-                        <Text style={{ fontSize: 36, fontWeight: "800", color: Variables.textPrimary }}>
+                        <Text
+                            style={{
+                                fontSize: 36,
+                                fontWeight: "800",
+                                color: Variables.textPrimary,
+                            }}
+                        >
                             {overall_score}%
                         </Text>
-                        <Text style={{ fontSize: 16, fontWeight: "700", color: Variables.gray400 }}>総合評価</Text>
+                        <Text style={{ fontSize: 16, fontWeight: "700", color: Variables.gray400 }}>
+                            総合評価
+                        </Text>
                     </CircularProgressChart>
                 </View>
 
@@ -100,7 +114,12 @@ const ResultScreen = () => {
                 </View>
             </ScrollView>
             <Footer style={{ paddingVertical: 12, paddingHorizontal: 24, gap: 12 }}>
-                <CustomButton text="戻る" variant="secondary" onPress={() => router.back()} flex={3} />
+                <CustomButton
+                    text="戻る"
+                    variant="secondary"
+                    onPress={() => router.back()}
+                    flex={3}
+                />
                 <CustomButton
                     text="模範解答を見る"
                     variant="primary"

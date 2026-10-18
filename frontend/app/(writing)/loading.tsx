@@ -114,7 +114,11 @@ const LoadingScreen = () => {
             false,
         );
 
-        scan.value = withRepeat(withTiming(1, { duration: 2300, easing: Easing.inOut(Easing.cubic) }), -1, false);
+        scan.value = withRepeat(
+            withTiming(1, { duration: 2300, easing: Easing.inOut(Easing.cubic) }),
+            -1,
+            false,
+        );
 
         bubbleMotion.value = withRepeat(
             withSequence(
@@ -160,13 +164,30 @@ const LoadingScreen = () => {
             <View style={styles.content}>
                 <View>
                     <Text style={styles.kicker}>AI ANALYSIS IN PROGRESS</Text>
-                    <Text style={styles.title}>Your essay is being scanned, polished, and scored.</Text>
+                    <Text style={styles.title}>
+                        Your essay is being scanned, polished, and scored.
+                    </Text>
                 </View>
 
                 <View style={[styles.stage, { width: sceneWidth }]}>
-                    <FloatingSnippet text="The impact of" style={styles.snippetTopLeft} delay={0} drift={10} />
-                    <FloatingSnippet text="technology on..." style={styles.snippetTopRight} delay={220} drift={-10} />
-                    <FloatingSnippet text="In conclusion" style={styles.snippetBottomLeft} delay={440} drift={14} />
+                    <FloatingSnippet
+                        text="The impact of"
+                        style={styles.snippetTopLeft}
+                        delay={0}
+                        drift={10}
+                    />
+                    <FloatingSnippet
+                        text="technology on..."
+                        style={styles.snippetTopRight}
+                        delay={220}
+                        drift={-10}
+                    />
+                    <FloatingSnippet
+                        text="In conclusion"
+                        style={styles.snippetBottomLeft}
+                        delay={440}
+                        drift={14}
+                    />
 
                     <Animated.View style={[styles.paperCard, cardStyle]}>
                         <Animated.View style={[styles.scanBeam, scanStyle]} />
@@ -209,7 +230,8 @@ const LoadingScreen = () => {
                 <View style={styles.statusCard}>
                     <Text style={styles.statusTitle}>AI is reading between the lines</Text>
                     <Text style={styles.statusText}>
-                        Looking for ideas, structure, grammar, and the little details that make an essay shine.
+                        Looking for ideas, structure, grammar, and the little details that make an
+                        essay shine.
                     </Text>
                 </View>
             </View>

@@ -45,7 +45,9 @@ const useWritingHistory = create<WritingHistory>((set, get) => ({
             return;
         }
 
-        const entries = currentMonthHistory.filter((entry) => entry.created_at.startsWith(selectedDate));
+        const entries = currentMonthHistory.filter((entry) =>
+            entry.created_at.startsWith(selectedDate),
+        );
 
         set({ selectedEntries: entries });
     },

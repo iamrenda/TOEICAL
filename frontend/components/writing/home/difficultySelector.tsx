@@ -14,7 +14,10 @@ const DifficultySelector = () => {
                 {Object.values(WritingDifficulty).map((diff) => (
                     <Pressable
                         key={diff}
-                        style={[styles.filterButton, selectedDifficulty === diff && styles.filterButtonActive]}
+                        style={[
+                            styles.filterButton,
+                            selectedDifficulty === diff && styles.filterButtonActive,
+                        ]}
                         onPress={() => setSelectedDifficulty(diff)}
                     >
                         <Text

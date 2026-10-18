@@ -1,7 +1,15 @@
 import express from "express";
 import validate from "express-zod-safe";
-import { getHistory, getTopics, getWritingAnalysis } from "../../controllers/api/writing.controller.ts";
-import { WritingRequestSchema, WritingTopicRequestSchema, WritingHistoryRequestSchema } from "@toeical/shared";
+import {
+    getHistory,
+    getTopics,
+    getWritingAnalysis,
+} from "../../controllers/api/writing.controller.ts";
+import {
+    WritingRequestSchema,
+    WritingTopicRequestSchema,
+    WritingHistoryRequestSchema,
+} from "@toeical/shared";
 
 // api/writing routes
 const router = express.Router();

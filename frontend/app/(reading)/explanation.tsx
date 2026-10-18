@@ -6,8 +6,15 @@ import { FontAwesome6 } from "@expo/vector-icons";
 import { QuestionIdLabel, ExplanationText } from "@/components";
 
 const ExplanationModal = () => {
-    const { getCurrentQuestion, selectedOptionId: globalSelectedOptionId, isQuizMode, quizQuestions, explanationQuestionIndex, quizAnswers } = useQuizStore();
-    
+    const {
+        getCurrentQuestion,
+        selectedOptionId: globalSelectedOptionId,
+        isQuizMode,
+        quizQuestions,
+        explanationQuestionIndex,
+        quizAnswers,
+    } = useQuizStore();
+
     let question;
     let selectedOptionId;
 
@@ -32,24 +39,34 @@ const ExplanationModal = () => {
     return (
         <ScrollView style={styles.container}>
             <View style={styles.questionContainer}>
-                <QuestionIdLabel id={question.id} style={{ alignSelf: "flex-start", marginBottom: 8 }} />
+                <QuestionIdLabel
+                    id={question.id}
+                    style={{ alignSelf: "flex-start", marginBottom: 8 }}
+                />
                 <Text style={styles.questionText}>{question.question}</Text>
             </View>
 
             <View style={styles.optionContainers}>
                 <View style={[styles.optionContainer, styles.correctOptionContainer]}>
                     <Text style={styles.optionLabel}>正解</Text>
-                    <Text style={[styles.optionText, styles.correctOptionText]}>{correctOption?.option}</Text>
+                    <Text style={[styles.optionText, styles.correctOptionText]}>
+                        {correctOption?.option}
+                    </Text>
                 </View>
                 <View
                     style={[
                         styles.optionContainer,
-                        wasCorrect ? styles.correctOptionContainer : styles.incorrectOptionContainer,
+                        wasCorrect
+                            ? styles.correctOptionContainer
+                            : styles.incorrectOptionContainer,
                     ]}
                 >
                     <Text style={styles.optionLabel}>あなたの解答</Text>
                     <Text
-                        style={[styles.optionText, wasCorrect ? styles.correctOptionText : styles.incorrectOptionText]}
+                        style={[
+                            styles.optionText,
+                            wasCorrect ? styles.correctOptionText : styles.incorrectOptionText,
+                        ]}
                     >
                         {selectedOption ? selectedOption.option : "未選択"}
                     </Text>

@@ -9,11 +9,14 @@ import { TEST_USER } from "./constants.ts";
 dotenv.config();
 
 export const getRandomEmail = () => `${Date.now()}@test.com`;
-export const getRandomUsername = (length = 10) => randomBytes(length).toString("hex").slice(0, length);
+export const getRandomUsername = (length = 10) =>
+    randomBytes(length).toString("hex").slice(0, length);
 
 export const getTestUserId = async () => {
     try {
-        const [user] = await DB().query<{ id: number }>("SELECT id FROM users WHERE email = $1", [TEST_USER.email]);
+        const [user] = await DB().query<{ id: number }>("SELECT id FROM users WHERE email = $1", [
+            TEST_USER.email,
+        ]);
         return user!.id;
     } catch (e) {
         console.error("failed to get test users' id", e);

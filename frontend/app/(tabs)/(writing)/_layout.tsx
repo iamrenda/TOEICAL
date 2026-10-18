@@ -15,7 +15,12 @@ const WritingLayout = () => {
                     headerRight: () => (
                         <Pressable
                             onPress={() => router.push(`/(tabs)/(writing)/writingCalendarModal`)}
-                            style={{ justifyContent: "center", alignItems: "center", width: 40, height: 40 }}
+                            style={{
+                                justifyContent: "center",
+                                alignItems: "center",
+                                width: 40,
+                                height: 40,
+                            }}
                         >
                             <FontAwesome6 name="calendar" size={24} />
                         </Pressable>

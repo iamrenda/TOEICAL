@@ -22,7 +22,10 @@ export const OverviewQuestionRequestSchema = z.object({
     }),
 });
 
-export const NextQuestionRequestSchema = OverviewQuestionRequestSchema.pick({ sortBy: true, starred: true });
+export const NextQuestionRequestSchema = OverviewQuestionRequestSchema.pick({
+    sortBy: true,
+    starred: true,
+});
 
 export const RandomQuestionRequestSchema = z.object({
     type: z.enum(["random", "starred", "unanswered", "wrong"]),
