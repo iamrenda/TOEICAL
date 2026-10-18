@@ -6,7 +6,7 @@ TOEICAL is an English-learning app for Japanese speakers (UI copy is in Japanese
 
 ## Services & how to run them
 
-There is no root-level build/test orchestration — each service is started independently in its own terminal.
+`frontend/`, `backend/` and `shared/` (`@toeical/shared`, zod schemas/types) are **npm workspaces** declared in the root `package.json`. Dependencies are installed **once, from the repo root** (`npm install` / `npm ci`) into a single hoisted root `node_modules/` and a single root `package-lock.json`. There is no `frontend/node_modules` and no per-workspace lockfile — don't run `npm install` inside a workspace dir or commit a workspace-level `package-lock.json`. `ai/` is Python and separate. Root scripts: `npm run typecheck` (`tsc --b` across the project references), `npm run format` / `format:check` (prettier). There is no root dev orchestration — each service is still started independently in its own terminal.
 
 | Dir         | Stack                                     | Dev command                                                                                                         |
 | ----------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
@@ -17,6 +17,10 @@ There is no root-level build/test orchestration — each service is started inde
 - **Lint (frontend):** `cd frontend && npm run lint` (eslint-config-expo). There is no test suite in any service.
 - **Type-check (frontend):** `cd frontend && npx tsc --noEmit`. Note: an unrelated pre-existing error exists in `components/reading/question/questionOption.tsx` (missing `@/types/questions` module) — it is not caused by your changes.
 - The backend runs TypeScript directly via Node's ESM loader, so **relative imports include the `.ts` extension** (e.g. `import DB from "../../db/db.ts"`). Match this in new backend files.
+
+### Troubleshooting: `Cannot find module '@babel/...'` (or any hoisted transitive dep)
+
+Seen on `expo-router/entry.js` and `app/(auth)/_layout.tsx` — the error appears in many unrelated files because Metro's Babel transform itself fails. Root cause was a **root `package-lock.json` that nested every `@babel/generator` copy under individual packages and had no top-level `node_modules/@babel/generator` entry**. `npm ci` installs exactly what the lockfile says, so reinstalling reproduced the gap. Fix: delete `node_modules`, `package-lock.json` and any stray `frontend/package-lock.json`, run `npm install` at the repo root to regenerate a consistent lockfile, then `npx expo start --clear` from `frontend/`. Verify with `Test-Path node_modules\@babel\generator`. `npm ci` cannot repair a bad lockfile — regenerate it with `npm install`.
 
 ## Request flow / architecture
 
