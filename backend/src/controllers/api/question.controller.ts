@@ -6,12 +6,9 @@ import {
     RandomQuestionRequestSchema,
     OverviewQuestionRequestSchema,
     NextQuestionRequestSchema,
-    QuestionOverviewListResponseSchema,
-    QuestionResponseSchema,
-    QuestionListResponseSchema,
-    QuestionCountResponseSchema,
     ErrorCode,
     type QuestionOverviewListResponse,
+    type QuestionOverviewResponse,
     type QuestionResponse,
     type QuestionListResponse,
     type QuestionCountResponse,
@@ -143,17 +140,10 @@ export const getQuestionOverviews = async (
             LIMIT $2 OFFSET $3;
     `;
 
-        const data = await DB().query<QuestionOverviewListResponse>(query, [user?.id, limit, offset]);
+        const data = await DB().query<QuestionOverviewResponse>(query, [user?.id, limit, offset]);
 
-        const validationResult = QuestionOverviewListResponseSchema.safeParse(data);
-        if (!validationResult.success) {
-            throw new ApiError(500, "Response validation failed for question overviews", {
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                zodError: validationResult.error.issues,
-            });
-        }
 
-        return sendSuccess(res, 200, "Question overviews retrieved successfully", validationResult.data);
+        return sendSuccess(res, 200, "Question overviews retrieved successfully", data);
     } catch (e) {
         next(e);
     }
@@ -255,17 +245,10 @@ export const getRandomQuestions = async (
         `;
 
         const queryParameters = [user?.id, count];
-        const data = await DB().query<QuestionListResponse>(query, queryParameters);
+        const data = await DB().query<QuestionResponse>(query, queryParameters);
 
-        const validationResult = QuestionListResponseSchema.safeParse(data);
-        if (!validationResult.success) {
-            throw new ApiError(500, "Response validation failed for random questions", {
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                zodError: validationResult.error.issues,
-            });
-        }
 
-        return sendSuccess(res, 200, "Random questions retrieved successfully", validationResult.data);
+        return sendSuccess(res, 200, "Random questions retrieved successfully", data);
     } catch (e) {
         next(e);
     }
@@ -317,15 +300,8 @@ export const getQuestionCount = async (
             last_answered_wrong: Number(lastWrongAttemptCount[0]?.last_attempt_count),
         };
 
-        const validationResult = QuestionCountResponseSchema.safeParse(data);
-        if (!validationResult.success) {
-            throw new ApiError(500, "Response validation failed for question count", {
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                zodError: validationResult.error.issues,
-            });
-        }
 
-        return sendSuccess(res, 200, "Question count retrieved successfully", validationResult.data);
+        return sendSuccess(res, 200, "Question count retrieved successfully", data);
     } catch (e) {
         next(e);
     }
@@ -384,15 +360,8 @@ export const getQuestionById = async (
             });
         }
 
-        const validationResult = QuestionResponseSchema.safeParse(data[0]);
-        if (!validationResult.success) {
-            throw new ApiError(500, "Response validation failed for question by ID", {
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                zodError: validationResult.error.issues,
-            });
-        }
 
-        return sendSuccess(res, 200, "Question retrieved successfully", validationResult.data);
+        return sendSuccess(res, 200, "Question retrieved successfully", data[0]!);
     } catch (e) {
         next(e);
     }
@@ -447,15 +416,8 @@ export const getNextQuestionById = async (
             });
         }
 
-        const validationResult = QuestionResponseSchema.safeParse(data[0]);
-        if (!validationResult.success) {
-            throw new ApiError(500, "Response validation failed for next question", {
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                zodError: validationResult.error.issues,
-            });
-        }
 
-        return sendSuccess(res, 200, "Next question retrieved successfully", validationResult.data);
+        return sendSuccess(res, 200, "Next question retrieved successfully", data[0]!);
     } catch (e) {
         next(e);
     }

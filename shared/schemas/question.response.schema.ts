@@ -1,36 +1,36 @@
 import { z } from "zod";
 
 export const QuestionOverviewResponseSchema = z.object({
-    id: z.number().int(),
-    question: z.string(),
-    is_starred: z.boolean(),
-    was_last_attempt_correct: z.boolean().nullable(),
-    last_answered_at: z.date().nullable(),
+  id: z.number().int(),
+  question: z.string(),
+  is_starred: z.boolean(),
+  was_last_attempt_correct: z.boolean().nullable(),
+  last_answered_at: z.coerce.date().nullable(),
 });
 
 export const QuestionResponseSchema = z.object({
-    id: z.number().int(),
-    question: z.string(),
-    is_starred: z.boolean(),
-    correct_option_id: z.number().int(),
-    translated_question: z.string(),
-    type_description: z.string(),
-    options: z.array(
-        z.object({
-            option_id: z.number().int(),
-            option: z.string(),
-            translated_option: z.string().nullable(),
-        }),
-    ),
-    detailed_descriptions: z.array(z.string()),
-    translated_vocabs: z.array(z.string()),
+  id: z.number().int(),
+  question: z.string(),
+  is_starred: z.boolean(),
+  correct_option_id: z.number().int(),
+  translated_question: z.string(),
+  type_description: z.string(),
+  options: z.array(
+    z.object({
+      option_id: z.number().int(),
+      option: z.string(),
+      translated_option: z.string().nullable(),
+    }),
+  ),
+  detailed_descriptions: z.array(z.string()),
+  translated_vocabs: z.array(z.string()),
 });
 
 export const QuestionCountResponseSchema = z.object({
-    all: z.number().int(),
-    answered: z.number().int(),
-    starred: z.number().int(),
-    last_answered_wrong: z.number().int(),
+  all: z.number().int(),
+  answered: z.number().int(),
+  starred: z.number().int(),
+  last_answered_wrong: z.number().int(),
 });
 
 export const QuestionOverviewListResponseSchema = z.array(QuestionOverviewResponseSchema);

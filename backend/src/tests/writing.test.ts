@@ -4,7 +4,11 @@ import supertest from "supertest";
 import DB from "../db/db.ts";
 import api from "../api/api.ts";
 import { getTestUserId, getValidAccessToken } from "./util.ts";
-import { WritingResponseSchema } from "@toeical/shared";
+import {
+    WritingResponseSchema,
+    WritingTopicListResponseSchema,
+    WritingHistoryListResponseSchema,
+} from "@toeical/shared";
 import { TEST_WRITING_DIFFICULTIES, TEST_WRITING_TAGS, TEST_WRITING_TOPICS } from "./constants.ts";
 
 dotenv.config();
@@ -71,7 +75,7 @@ describe("POST /api/writing", () => {
                 .send(validRequestBody);
 
             expect(res.status).toBe(200);
-            expect(WritingResponseSchema.safeParse(res.body.data).success).toBe(true);
+            expect(WritingResponseSchema.safeParse(res.body.data).error).toBeUndefined();
 
             // the payload forwarded to fast api
             expect(mockedApi.post).toHaveBeenCalledWith("/ai/writing/analysis", {
@@ -181,6 +185,7 @@ describe("GET /api/writing/topics", () => {
                     .query(query);
 
                 expect(res.status).toBe(200);
+                expect(WritingTopicListResponseSchema.safeParse(res.body.data).error).toBeUndefined();
             }
         });
     });
@@ -225,6 +230,7 @@ describe("GET /api/writing/history", () => {
                     .set("Authorization", `Bearer ${accessToken}`)
                     .query(query);
                 expect(res.status).toBe(200);
+                expect(WritingHistoryListResponseSchema.safeParse(res.body.data).error).toBeUndefined();
             }
         });
     });

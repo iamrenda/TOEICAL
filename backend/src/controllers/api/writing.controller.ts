@@ -7,9 +7,6 @@ import type { fastApiSuccessResponse } from "../../types/FastApiResponse.ts";
 import { sendSuccess } from "../../util/sendResponse.ts";
 import {
     WritingAiAnalysisResponseSchema,
-    WritingResponseSchema,
-    WritingTopicListResponseSchema,
-    WritingHistoryListResponseSchema,
     ErrorCode,
     type WritingAiAnalysisResponse,
     type WritingResponse,
@@ -102,15 +99,7 @@ const getWritingAnalysis = async (
             );
         });
 
-        const validationResult = WritingResponseSchema.safeParse(writingAnalysis.data.data);
-        if (!validationResult.success) {
-            throw new ApiError(500, "Invalid response from AI writing analysis", {
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                zodError: validationResult.error,
-            });
-        }
-
-        return sendSuccess(res, 200, "Writing results saved successfully", validationResult.data);
+        return sendSuccess(res, 200, "Writing results saved successfully", analysisValidationResult.data);
     } catch (e) {
         next(e);
     }
@@ -148,15 +137,7 @@ const getTopics = async (
             [difficulty === "ALL" ? null : difficulty, tag === "ALL" ? null : tag],
         );
 
-        const validationResult = WritingTopicListResponseSchema.safeParse(data);
-        if (!validationResult.success) {
-            throw new ApiError(500, "Invalid response from writing topic", {
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                zodError: validationResult.error,
-            });
-        }
-
-        return sendSuccess(res, 200, "Topics retrieved successfully", validationResult.data);
+        return sendSuccess(res, 200, "Topics retrieved successfully", data);
     } catch (e) {
         next(e);
     }
@@ -184,15 +165,7 @@ const getHistory = async (
             [user?.id, from, to],
         );
 
-        const validationResult = WritingHistoryListResponseSchema.safeParse(data);
-        if (!validationResult.success) {
-            throw new ApiError(500, "Invalid response from writing history", {
-                errorCode: ErrorCode.INTERNAL_SERVER_ERROR,
-                zodError: validationResult.error,
-            });
-        }
-
-        return sendSuccess(res, 200, "Writing history retrieved successfully", validationResult.data);
+        return sendSuccess(res, 200, "Writing history retrieved successfully", data);
     } catch (e) {
         next(e);
     }
