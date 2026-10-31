@@ -61,11 +61,14 @@ The **backend is the only service the frontend talks to.** The `ai/` FastAPI ser
 
 ## Data & schemas
 
-- Database is PostgreSQL; the backend connects via `pg` using `DB_*` env vars.
+- Database is PostgreSQL; the backend connects via `pg` using the single `DATABASE_URL` connection string (the old `DB_*` vars are no longer read).
 - Domain types are duplicated per service (`backend/src/types/`, `frontend/types/`, and the FastAPI Pydantic models in `ai/main.py`). When changing a shared payload (e.g. the writing-analysis request/response), update all three so the cross-service contract stays aligned.
 
 ## Environment variables (not committed)
 
-- **frontend:** `EXPO_PUBLIC_IP`, `EXPO_PUBLIC_PORT` (used by `constants/Links.ts` to build the backend base URL — must point at the running backend, including for physical-device testing over LAN).
-- **backend:** `PORT`, `DB_USER`/`DB_HOST`/`DB_DATABASE`/`DB_PASSWORD`/`DB_PORT`, `ACCESS_TOKEN_SECRET`, `REFRESH_TOKEN_SECRET`, `FASTAPI_URL`.
+Each service ships a committed `.env.example` — copy it to `.env` and fill it in. `.env*` is gitignored except `.env.example` (and `.env.test.example` in the backend).
+
+- **frontend:** `EXPO_PUBLIC_API_HOST` (backend host, no scheme or port; falls back to the Metro `hostUri` in dev; `Links.ts` throws if neither is set), `EXPO_PUBLIC_PORT` (default `3000`). Used by `constants/Links.ts` to build the backend base URL — must point at the running backend, including for physical-device testing over LAN.
+- **backend:** all env access goes through `src/config/env.ts`, which validates `process.env` with zod at import time and exports a typed `env`. Never read `process.env` directly elsewhere. Variables: `NODE_ENV` (`development|production|test`, required), `PORT` (default `3000`), `DATABASE_URL` (required), `ACCESS_TOKEN_SECRET`, `REFRESH_TOKEN_SECRET` (required), `ACCESS_TOKEN_EXPIRATION` (default `1h`), `REFRESH_TOKEN_EXPIRATION` (default `30d`), `FASTAPI_URL` (required; use `127.0.0.1`, not `localhost`, since uvicorn binds IPv4 only).
+- **backend tests:** `npm test` loads `backend/.env.test` (via `dotenv -e .env.test`) so tests hit a separate test database, never the dev one.
 - **ai:** `GEMINI_KEY`.

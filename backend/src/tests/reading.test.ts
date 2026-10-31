@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import app from "../index.ts";
 import supertest from "supertest";
 import DB from "../db/db.ts";
@@ -10,8 +9,6 @@ import {
     QuestionResponseSchema,
     QuestionCountResponseSchema,
 } from "@toeical/shared";
-
-dotenv.config();
 
 const getValidQuestionId = async () => {
     const [q] = await DB().query<{ id: number }>("SELECT id FROM question ORDER BY id LIMIT 1;");

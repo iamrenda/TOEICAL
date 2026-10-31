@@ -1,12 +1,10 @@
 import supertest from "supertest";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 import app from "../index.ts";
 import DB from "../db/db.ts";
 import { randomBytes } from "crypto";
 import { TEST_USER } from "./constants.ts";
-
-dotenv.config();
+import { env } from "../config/env.ts";
 
 export const getRandomEmail = () => `${Date.now()}@test.com`;
 export const getRandomUsername = (length = 10) =>
@@ -42,7 +40,7 @@ export const getValidRefreshToken = async () => {
 };
 
 export const getExpiredRefreshToken = async () =>
-    jwt.sign({ userId: await getTestUserId() }, process.env.REFRESH_TOKEN_SECRET!, {
+    jwt.sign({ userId: await getTestUserId() }, env.REFRESH_TOKEN_SECRET, {
         expiresIn: "-10s",
     });
 

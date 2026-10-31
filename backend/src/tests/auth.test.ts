@@ -1,6 +1,5 @@
 import supertest from "supertest";
 import app from "../index.ts";
-import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
 import {
     getRandomUsername,
@@ -11,8 +10,7 @@ import {
     getExpiredRefreshToken,
 } from "./util.ts";
 import { TEST_USER } from "./constants.ts";
-
-dotenv.config();
+import { env } from "../config/env.ts";
 
 describe("POST /auth/signup", () => {
     describe("when valid username, email and password are given", () => {
@@ -160,7 +158,7 @@ describe("POST /auth/token", () => {
         test("should respond with a status code of 401", async () => {
             const expiredToken = jwt.sign(
                 { userId: await getTestUserId() },
-                process.env.REFRESH_TOKEN_SECRET!,
+                env.REFRESH_TOKEN_SECRET,
                 {
                     expiresIn: "-10s",
                 },
