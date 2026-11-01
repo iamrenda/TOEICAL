@@ -50,7 +50,7 @@ jobs:
                   cache: npm
             - run: npm ci
             - name: Create test schema
-              working-directory: sql_test
+              working-directory: backend/sql
               run: psql "$DATABASE_URL" -f init.sql
             - name: Run backend tests
               working-directory: backend
