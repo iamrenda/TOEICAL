@@ -1,6 +1,6 @@
 import Variables from "@/constants/Variables";
 import useAuthStore from "@/store/useAuthStore";
-import { NativeTabs } from "expo-router/unstable-native-tabs";
+import { NativeTabs } from "expo-router/native-tabs";
 import { Redirect } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 

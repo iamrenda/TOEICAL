@@ -1,16 +1,8 @@
 import { Pool, type PoolClient } from "pg";
-import dotenv from "dotenv";
 import ApiError from "../util/ApiError.ts";
+import { env } from "../config/env.ts";
 
-dotenv.config();
-
-const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_DATABASE,
-    password: process.env.DB_PASSWORD,
-    port: process.env.DB_PORT ? +process.env.DB_PORT : 5432,
-});
+const pool = new Pool({ connectionString: env.DATABASE_URL });
 
 const errorMapping: Record<string, { status: number; message: string }> = {
     "23503": { status: 400, message: "Related record not found." },

@@ -6,7 +6,9 @@ TOEICAL is an English-learning app for Japanese speakers (UI copy is in Japanese
 
 ## Services & how to run them
 
-`frontend/`, `backend/` and `shared/` (`@toeical/shared`, zod schemas/types) are **npm workspaces** declared in the root `package.json`. Dependencies are installed **once, from the repo root** (`npm install` / `npm ci`) into a single hoisted root `node_modules/` and a single root `package-lock.json`. There is no `frontend/node_modules` and no per-workspace lockfile — don't run `npm install` inside a workspace dir or commit a workspace-level `package-lock.json`. `ai/` is Python and separate. Root scripts: `npm run typecheck` (`tsc --b` across the project references), `npm run format` / `format:check` (prettier). There is no root dev orchestration — each service is still started independently in its own terminal.
+`frontend/`, `backend/` and `shared/` (`@toeical/shared`, zod schemas/types) are **npm workspaces** declared in the root `package.json`. Dependencies are installed **once, from the repo root** (`npm install` / `npm ci`) into a single hoisted root `node_modules/` and a single root `package-lock.json`. There is no `frontend/node_modules` and no per-workspace lockfile — don't run `npm install` inside a workspace dir or commit a workspace-level `package-lock.json`. `ai/` is Python and separate. Root scripts: `npm run typecheck` (runs each workspace's `tsc --noEmit`), `npm run format` / `format:check` (prettier). There is no root dev orchestration — each service is still started independently in its own terminal.
+
+**`@toeical/shared` is an "internal package" with no build step.** Its `package.json` has `"exports": "./index.ts"`, so backend and frontend import the TypeScript source directly (via the workspace symlink in `node_modules/@toeical/shared`). There is no `dist/`, no `tsc --b`, no `composite` / project references — edits to `shared/` are picked up immediately. Node runs the `.ts` natively (needs Node >= 22.18), Metro and Jest/Babel transpile it. Because of that, every workspace tsconfig sets `noEmit` and `allowImportingTsExtensions`, and relative imports inside `shared/` keep the `.ts` extension. Don't reintroduce `main`/`types` pointing at `dist`.
 
 | Dir         | Stack                                     | Dev command                                                                                                         |
 | ----------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
@@ -15,7 +17,7 @@ TOEICAL is an English-learning app for Japanese speakers (UI copy is in Japanese
 | `ai/`       | Python FastAPI + Google GenAI (Gemini)    | `cd ai && ./venv/Scripts/activate && fastapi dev main.py`                                                           |
 
 - **Lint (frontend):** `cd frontend && npm run lint` (eslint-config-expo). There is no test suite in any service.
-- **Type-check (frontend):** `cd frontend && npx tsc --noEmit`. Note: an unrelated pre-existing error exists in `components/reading/question/questionOption.tsx` (missing `@/types/questions` module) — it is not caused by your changes.
+- **Type-check:** `npm run typecheck` from the repo root (all workspaces), or `npm run typecheck` inside a single workspace.
 - The backend runs TypeScript directly via Node's ESM loader, so **relative imports include the `.ts` extension** (e.g. `import DB from "../../db/db.ts"`). Match this in new backend files.
 
 ### Troubleshooting: `Cannot find module '@babel/...'` (or any hoisted transitive dep)
@@ -61,11 +63,14 @@ The **backend is the only service the frontend talks to.** The `ai/` FastAPI ser
 
 ## Data & schemas
 
-- Database is PostgreSQL; the backend connects via `pg` using `DB_*` env vars.
+- Database is PostgreSQL; the backend connects via `pg` using the single `DATABASE_URL` connection string (the old `DB_*` vars are no longer read).
 - Domain types are duplicated per service (`backend/src/types/`, `frontend/types/`, and the FastAPI Pydantic models in `ai/main.py`). When changing a shared payload (e.g. the writing-analysis request/response), update all three so the cross-service contract stays aligned.
 
 ## Environment variables (not committed)
 
-- **frontend:** `EXPO_PUBLIC_IP`, `EXPO_PUBLIC_PORT` (used by `constants/Links.ts` to build the backend base URL — must point at the running backend, including for physical-device testing over LAN).
-- **backend:** `PORT`, `DB_USER`/`DB_HOST`/`DB_DATABASE`/`DB_PASSWORD`/`DB_PORT`, `ACCESS_TOKEN_SECRET`, `REFRESH_TOKEN_SECRET`, `FASTAPI_URL`.
+Each service ships a committed `.env.example` — copy it to `.env` and fill it in. `.env*` is gitignored except `.env.example` (and `.env.test.example` in the backend).
+
+- **frontend:** `EXPO_PUBLIC_API_HOST` (backend host, no scheme or port; falls back to the Metro `hostUri` in dev; `Links.ts` throws if neither is set), `EXPO_PUBLIC_PORT` (default `3000`). Used by `constants/Links.ts` to build the backend base URL — must point at the running backend, including for physical-device testing over LAN.
+- **backend:** all env access goes through `src/config/env.ts`, which validates `process.env` with zod at import time and exports a typed `env`. Never read `process.env` directly elsewhere. Variables: `NODE_ENV` (`development|production|test`, required), `PORT` (default `3000`), `DATABASE_URL` (required), `ACCESS_TOKEN_SECRET`, `REFRESH_TOKEN_SECRET` (required), `ACCESS_TOKEN_EXPIRATION` (default `1h`), `REFRESH_TOKEN_EXPIRATION` (default `30d`), `FASTAPI_URL` (required; use `127.0.0.1`, not `localhost`, since uvicorn binds IPv4 only).
+- **backend tests:** `npm test` loads `backend/.env.test` (via `dotenv -e .env.test`) so tests hit a separate test database, never the dev one.
 - **ai:** `GEMINI_KEY`.

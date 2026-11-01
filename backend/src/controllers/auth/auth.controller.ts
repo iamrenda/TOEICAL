@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
 import DB from "../../db/db.ts";
 import ApiError from "../../util/ApiError.ts";
 import logger from "../../logger.ts";
@@ -14,11 +13,8 @@ import type {
 import type { UserTokenPayload, UserEntity } from "../../types/User.ts";
 import { sendSuccess } from "../../util/sendResponse.ts";
 import { ErrorCode, type ApiSuccessResponse } from "@toeical/shared";
-
-dotenv.config();
-
-const ACCESS_TOKEN_EXPIRY = "1h";
-const REFRESH_TOKEN_EXPIRY = "30d";
+import { env } from "../../config/env.ts";
+import type { StringValue } from "ms";
 
 interface RefreshTokenEntity {
     id: number;
@@ -32,9 +28,9 @@ const generateAccessToken = (user: UserTokenPayload) => {
     try {
         return jwt.sign(
             { id: user.id, username: user.username, email: user.email },
-            process.env.ACCESS_TOKEN_SECRET!,
+            env.ACCESS_TOKEN_SECRET,
             {
-                expiresIn: ACCESS_TOKEN_EXPIRY,
+                expiresIn: env.ACCESS_TOKEN_EXPIRATION as StringValue,
             },
         );
     } catch (e) {
@@ -49,9 +45,9 @@ const generateRefreshToken = (user: UserEntity) => {
     try {
         return jwt.sign(
             { id: user.id, username: user.username, email: user.email, jti: crypto.randomUUID() },
-            process.env.REFRESH_TOKEN_SECRET!,
+            env.REFRESH_TOKEN_SECRET,
             {
-                expiresIn: REFRESH_TOKEN_EXPIRY,
+                expiresIn: env.REFRESH_TOKEN_EXPIRATION as StringValue,
             },
         );
     } catch (e) {
@@ -64,7 +60,7 @@ const generateRefreshToken = (user: UserEntity) => {
 
 const verifyToken = (refreshToken: string): UserTokenPayload => {
     try {
-        return jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!) as UserTokenPayload;
+        return jwt.verify(refreshToken, env.REFRESH_TOKEN_SECRET) as UserTokenPayload;
     } catch (e) {
         throw new ApiError(401, "Invalid refresh token", {
             cause: e,

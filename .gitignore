@@ -1,5 +1,5 @@
 scrape
-sql
+backend/sql/full
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
@@ -7,5 +7,3 @@ sql
 !.claude/settings.json
 !.claude/agents
 node_modules
-**/dist
-**/*.tsbuildinfo

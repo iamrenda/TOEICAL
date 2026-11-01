@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import app from "../index.ts";
 import supertest from "supertest";
 import DB from "../db/db.ts";
@@ -10,8 +9,6 @@ import {
     WritingHistoryListResponseSchema,
 } from "@toeical/shared";
 import { TEST_WRITING_DIFFICULTIES, TEST_WRITING_TAGS, TEST_WRITING_TOPICS } from "./constants.ts";
-
-dotenv.config();
 
 jest.mock("../api/api.ts", () => ({
     __esModule: true,

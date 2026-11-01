@@ -1,13 +1,9 @@
 {
     // Visit https://aka.ms/tsconfig to read more about this file
     "compilerOptions": {
-        "composite": true,
+        "noEmit": true,
+        "allowImportingTsExtensions": true,
         "forceConsistentCasingInFileNames": true,
-        "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
-        // File Layout
-        "rootDir": "./src",
-        "outDir": "./dist",
-        "rewriteRelativeImportExtensions": true,
 
         // Environment Settings
         // See also https://aka.ms/tsconfig/module
@@ -21,9 +17,6 @@
         // and npm install -D @types/node
 
         // Other Outputs
-        "sourceMap": true,
-        "declaration": true,
-        "declarationMap": true,
 
         // Stricter Typechecking Options
         "noUncheckedIndexedAccess": true,
@@ -46,6 +39,5 @@
         "moduleDetection": "force",
         "skipLibCheck": true
     },
-    "references": [{ "path": "../shared" }],
     "include": ["src/**/*", "types/express.d.ts"]
 }

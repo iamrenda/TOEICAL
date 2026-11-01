@@ -1,19 +1,12 @@
 {
     "compilerOptions": {
-        "composite": true,
+        "noEmit": true,
+        "allowImportingTsExtensions": true,
         "forceConsistentCasingInFileNames": true,
-        "tsBuildInfoFile": "./dist/tsconfig.tsbuildinfo",
-        "rootDir": "./",
-        "outDir": "./dist",
-        "rewriteRelativeImportExtensions": true,
 
         "module": "nodenext",
         "moduleResolution": "nodenext",
         "target": "esnext",
-
-        "declaration": true,
-        "declarationMap": true,
-        "sourceMap": true,
 
         "strict": true,
         "verbatimModuleSyntax": true,
@@ -22,5 +15,5 @@
         "skipLibCheck": true
     },
     "include": ["**/*.ts"],
-    "exclude": ["dist"]
+    "exclude": ["node_modules"]
 }

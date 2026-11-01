@@ -2,7 +2,7 @@
     "name": "toeical",
     "private": true,
     "scripts": {
-        "typecheck": "tsc --b",
+        "typecheck": "npm run typecheck --workspaces --if-present",
         "format": "prettier --write .",
         "format:check": "prettier --check ."
     },
