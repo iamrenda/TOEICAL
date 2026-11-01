@@ -10,6 +10,7 @@ const envSchema = z.object({
     ACCESS_TOKEN_EXPIRATION: z.string().default("1h"),
     REFRESH_TOKEN_EXPIRATION: z.string().default("30d"),
     FASTAPI_URL: z.url(),
+    LOG_LEVEL: z.enum(["trace", "debug", "info", "warn", "error", "fatal"]).default("info"),
 });
 
 type EnvSchema = z.infer<typeof envSchema>;
