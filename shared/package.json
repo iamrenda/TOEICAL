@@ -1,11 +1,10 @@
 {
     "name": "@toeical/shared",
     "version": "1.0.0",
-    "main": "dist/index.js",
     "type": "module",
-    "types": "dist/index.d.ts",
+    "exports": "./index.ts",
     "scripts": {
-        "typecheck": "tsc -b"
+        "typecheck": "tsc --noEmit"
     },
     "dependencies": {
         "zod": "^4.3.6"

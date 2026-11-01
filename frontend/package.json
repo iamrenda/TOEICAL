@@ -1,17 +1,17 @@
 {
-    "name": "toeical",
+    "name": "@toeical/frontend",
     "main": "expo-router/entry",
     "version": "1.0.0",
     "scripts": {
         "dev": "expo start",
         "clear": "expo start --clear",
-        "typecheck": "npx tsc --noEmit",
         "routes": "npx expo-router-sitemap",
         "reset-project": "node ./scripts/reset-project.js",
         "android": "expo start --android",
         "ios": "expo start --ios",
         "web": "expo start --web",
-        "lint": "expo lint"
+        "lint": "expo lint",
+        "typecheck": "tsc --noEmit"
     },
     "dependencies": {
         "@expo-google-fonts/noto-sans-jp": "^0.4.3",

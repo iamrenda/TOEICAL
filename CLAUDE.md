@@ -6,7 +6,9 @@ TOEICAL is an English-learning app for Japanese speakers (UI copy is in Japanese
 
 ## Services & how to run them
 
-`frontend/`, `backend/` and `shared/` (`@toeical/shared`, zod schemas/types) are **npm workspaces** declared in the root `package.json`. Dependencies are installed **once, from the repo root** (`npm install` / `npm ci`) into a single hoisted root `node_modules/` and a single root `package-lock.json`. There is no `frontend/node_modules` and no per-workspace lockfile — don't run `npm install` inside a workspace dir or commit a workspace-level `package-lock.json`. `ai/` is Python and separate. Root scripts: `npm run typecheck` (`tsc --b` across the project references), `npm run format` / `format:check` (prettier). There is no root dev orchestration — each service is still started independently in its own terminal.
+`frontend/`, `backend/` and `shared/` (`@toeical/shared`, zod schemas/types) are **npm workspaces** declared in the root `package.json`. Dependencies are installed **once, from the repo root** (`npm install` / `npm ci`) into a single hoisted root `node_modules/` and a single root `package-lock.json`. There is no `frontend/node_modules` and no per-workspace lockfile — don't run `npm install` inside a workspace dir or commit a workspace-level `package-lock.json`. `ai/` is Python and separate. Root scripts: `npm run typecheck` (runs each workspace's `tsc --noEmit`), `npm run format` / `format:check` (prettier). There is no root dev orchestration — each service is still started independently in its own terminal.
+
+**`@toeical/shared` is an "internal package" with no build step.** Its `package.json` has `"exports": "./index.ts"`, so backend and frontend import the TypeScript source directly (via the workspace symlink in `node_modules/@toeical/shared`). There is no `dist/`, no `tsc --b`, no `composite` / project references — edits to `shared/` are picked up immediately. Node runs the `.ts` natively (needs Node >= 22.18), Metro and Jest/Babel transpile it. Because of that, every workspace tsconfig sets `noEmit` and `allowImportingTsExtensions`, and relative imports inside `shared/` keep the `.ts` extension. Don't reintroduce `main`/`types` pointing at `dist`.
 
 | Dir         | Stack                                     | Dev command                                                                                                         |
 | ----------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
@@ -15,7 +17,7 @@ TOEICAL is an English-learning app for Japanese speakers (UI copy is in Japanese
 | `ai/`       | Python FastAPI + Google GenAI (Gemini)    | `cd ai && ./venv/Scripts/activate && fastapi dev main.py`                                                           |
 
 - **Lint (frontend):** `cd frontend && npm run lint` (eslint-config-expo). There is no test suite in any service.
-- **Type-check (frontend):** `cd frontend && npx tsc --noEmit`. Note: an unrelated pre-existing error exists in `components/reading/question/questionOption.tsx` (missing `@/types/questions` module) — it is not caused by your changes.
+- **Type-check:** `npm run typecheck` from the repo root (all workspaces), or `npm run typecheck` inside a single workspace.
 - The backend runs TypeScript directly via Node's ESM loader, so **relative imports include the `.ts` extension** (e.g. `import DB from "../../db/db.ts"`). Match this in new backend files.
 
 ### Troubleshooting: `Cannot find module '@babel/...'` (or any hoisted transitive dep)
