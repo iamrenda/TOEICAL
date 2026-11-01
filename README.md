@@ -51,26 +51,83 @@ https://github.com/user-attachments/assets/558e2190-7c66-4006-a122-a3de88bf74d2
 
 ## セットアップ方法
 
-### フロントエンド
+### 前提条件
+
+- Node.js 22.18 以上
+- PostgreSQL
+- Python 3
+- Gemini API キー
+
+### 1. 依存関係のインストール
+
+`frontend` / `backend` / `shared` は npm workspaces です。リポジトリのルートで一度だけ実行してください。
 
 ```
+npm install
+```
+
+AI サービス (Python) は別途セットアップします。
+
+```
+cd ai
+python -m venv venv
+./venv/Scripts/activate        # macOS / Linux: source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 2. 環境変数の設定
+
+各サービスの `.env.example` を `.env` にコピーして値を設定します。
+
+| サービス    | ファイル                          | 主な変数                                                                                                      |
+| ----------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `backend/`  | `.env` (`.env.example`)           | `NODE_ENV`, `PORT`, `DATABASE_URL`, `ACCESS_TOKEN_SECRET`, `REFRESH_TOKEN_SECRET`, `FASTAPI_URL`, `LOG_LEVEL` |
+| `backend/`  | `.env.test` (`.env.test.example`) | テスト用。開発用とは別のデータベースを指定してください                                                        |
+| `frontend/` | `.env` (`.env.example`)           | `EXPO_PUBLIC_API_HOST`, `EXPO_PUBLIC_PORT`（未設定でも Metro のホストから自動解決されます）                   |
+| `ai/`       | `.env` (`.env.example`)           | `GEMINI_KEY`                                                                                                  |
+
+### 3. データベースの作成
+
+PostgreSQL にデータベースを作成し、`backend/sql/init.sql` でテーブルを作成します。`init.sql` は `\i` で同じディレクトリのファイルを読み込むため、**`backend/sql` に移動してから** 実行してください。
+
+```
+createdb toeical
+cd backend/sql
+psql "$DATABASE_URL" -f init.sql
+```
+
+- `backend/sql/` にはスキーマと少量のサンプルデータが入っています。
+- スクレイピングで取得した全データは `backend/sql/full/` に置く想定です（Git 管理外）。
+- テスト用データベースも同様に作成してください（`backend/.env.test` の `DATABASE_URL` を指定）。
+
+### 4. 各サービスの起動
+
+それぞれ別のターミナルで起動します。
+
+```
+# AI (FastAPI)
+cd ai
+./venv/Scripts/activate
+fastapi dev main.py
+
+# バックエンド (Express.js)
+cd backend
+npm run dev
+
+# フロントエンド (Expo)
 cd frontend
 npm run dev
 ```
 
-### バックエンド (Express.js)
+フロントエンドが通信するのはバックエンドのみです。FastAPI はバックエンドからのみ呼び出されます。
+
+### その他のコマンド
 
 ```
-cd backend
-npm run dev
-```
-
-### バックエンド (FastAPI)
-
-```
-cd ai
-./venv/Scripts/activate
-fastapi dev main.py
+npm run typecheck      # 全 workspace の型チェック（ルートで実行）
+npm run format         # prettier で整形（ルートで実行）
+cd backend && npm test # バックエンドのテスト（.env.test を使用）
+cd frontend && npm run lint
 ```
 
 ## 設計 （リンク）
