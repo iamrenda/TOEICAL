@@ -7,7 +7,6 @@ export const ErrorCodeMapping: Record<ErrorCodeType, ErrorType> = {
     [ErrorCode.TOKEN_INVALID]: ErrorType.SESSION_EXPIRED,
     [ErrorCode.FORBIDDEN]: ErrorType.FORBIDDEN,
     [ErrorCode.RESOURCE_NOT_FOUND]: ErrorType.NOT_FOUND,
-    [ErrorCode.USER_NOT_FOUND]: ErrorType.NOT_FOUND,
     [ErrorCode.EMAIL_ALREADY_EXISTS]: ErrorType.EMAIL_ALREADY_EXISTS,
     [ErrorCode.USERNAME_ALREADY_EXISTS]: ErrorType.USERNAME_ALREADY_EXISTS,
     [ErrorCode.INVALID_FORMAT]: ErrorType.VALIDATION,
