@@ -33,6 +33,35 @@ describe("POST /auth/signup", () => {
             });
             expect(response.statusCode).toBe(409);
         });
+
+        test("should respond errorCode of USERNAME_ALREADY_EXISTS", async () => {
+            const response = await supertest(app).post("/auth/signup").send({
+                username: TEST_USER.username,
+                email: getRandomEmail(),
+                password: TEST_USER.password,
+            });
+            expect(response.body.errorCode).toBe("USERNAME_ALREADY_EXISTS");
+        });
+    });
+
+    describe("when the email has already exist", () => {
+        test("should respond with 409 status code", async () => {
+            const response = await supertest(app).post("/auth/signup").send({
+                username: getRandomUsername(),
+                email: TEST_USER.email,
+                password: TEST_USER.password,
+            });
+            expect(response.statusCode).toBe(409);
+        });
+
+        test("should respond errorCode of EMAIL_ALREADY_EXISTS", async () => {
+            const response = await supertest(app).post("/auth/signup").send({
+                username: getRandomUsername(),
+                email: TEST_USER.email,
+                password: TEST_USER.password,
+            });
+            expect(response.body.errorCode).toBe("EMAIL_ALREADY_EXISTS");
+        });
     });
 
     describe("when the email does not follow email format", () => {
@@ -102,6 +131,14 @@ describe("POST /auth/login", () => {
                 const response = await supertest(app).post("/auth/signup").send(body);
                 expect(response.statusCode).toBe(400);
             }
+        });
+
+        test("should respond errorCode of INVALID_CREDENTIALS", async () => {
+            const response = await supertest(app).post("/auth/login").send({
+                email: "testing@example.com",
+                password: "wrongpassword",
+            });
+            expect(response.body.errorCode).toBe("INVALID_CREDENTIALS");
         });
     });
 

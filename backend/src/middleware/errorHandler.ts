@@ -16,7 +16,7 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
         if (err.cause instanceof DatabaseError && err.cause.code === "23505") {
             return sendError(
                 res,
-                400,
+                409,
                 err.cause.constraint === "users_username_key"
                     ? "Username already exists"
                     : "Email already exists",
