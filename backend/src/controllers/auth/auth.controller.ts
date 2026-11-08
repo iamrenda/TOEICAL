@@ -110,7 +110,7 @@ export const userLogin = async (
 
         if (!user) {
             throw new ApiError(400, "Invalid email or password", {
-                errorCode: ErrorCode.USER_NOT_FOUND,
+                errorCode: ErrorCode.INVALID_CREDENTIALS,
             });
         }
 
@@ -118,7 +118,7 @@ export const userLogin = async (
 
         if (!isPasswordCorrect || !user) {
             throw new ApiError(400, "Invalid email or password", {
-                errorCode: ErrorCode.VALIDATION_FAILED,
+                errorCode: ErrorCode.INVALID_CREDENTIALS,
             });
         }
 
