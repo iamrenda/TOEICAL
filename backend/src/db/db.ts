@@ -35,7 +35,7 @@ const DB = () => {
                 const error = errorMapping[(e as any).code];
 
                 if (error) {
-                    throw new ApiError(error.status, error.message, { cause: error });
+                    throw new ApiError(error.status, error.message, { cause: e });
                 }
 
                 throw new ApiError(500, "An unexpected error occurred.", { cause: e });
@@ -63,8 +63,8 @@ const DB = () => {
                     } catch (e) {
                         const error = errorMapping[(e as any).code];
                         throw error
-                            ? new ApiError(error.status, error.message)
-                            : new ApiError(500, "An unexpected error occurred.");
+                            ? new ApiError(error.status, error.message, { cause: e })
+                            : new ApiError(500, "An unexpected error occurred.", { cause: e });
                     }
                 };
 

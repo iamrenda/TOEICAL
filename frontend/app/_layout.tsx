@@ -15,11 +15,6 @@ const RootLayout = () => {
         }
     }, [isLoading]);
 
-    // Not render anything until we know the auth status
-    if (isLoading) {
-        return null;
-    }
-
     return (
         <Stack screenOptions={{ headerShown: false }}>
             <Stack.Protected guard={!isLoggedIn}>

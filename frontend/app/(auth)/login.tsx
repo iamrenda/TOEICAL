@@ -37,22 +37,11 @@ const Login = () => {
 
         const { errorType } = res;
 
-        switch (errorType) {
-            case ErrorType.VALIDATION:
-                setError("root", { message: ErrorMessages[errorType] });
-                break;
-
-            case ErrorType.NETWORK:
-            case ErrorType.SERVER:
-                showErrorAlert({ title: "ログインエラー", message: ErrorMessages[errorType] });
-                break;
-
-            default:
-                showErrorAlert({
-                    title: "ログインエラー",
-                    message: "不明なエラーが発生しました。もう一度お試しください。",
-                });
+        if (errorType === ErrorType.INVALID_CREDENTIALS) {
+            setError("root", { message: ErrorMessages[errorType] });
+            return;
         }
+        showErrorAlert({ title: "ログインエラー", message: ErrorMessages[errorType] });
     };
 
     return (

@@ -39,23 +39,7 @@ const Signup = () => {
         }
 
         const { errorType } = res;
-
-        switch (errorType) {
-            case ErrorType.VALIDATION:
-                setError("root", { message: ErrorMessages[errorType] });
-                break;
-
-            case ErrorType.NETWORK:
-            case ErrorType.SERVER:
-                showErrorAlert({ title: "サインアップエラー", message: ErrorMessages[errorType] });
-                break;
-
-            default:
-                showErrorAlert({
-                    title: "サインアップエラー",
-                    message: "不明なエラーが発生しました。もう一度お試しください。",
-                });
-        }
+        setError("root", { message: ErrorMessages[errorType] });
     };
 
     return (
